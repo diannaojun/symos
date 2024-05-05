@@ -1,2 +1,3 @@
 # symos
-This is a straightforward IA-32e operating system.
+一个简单的IA-32e操作系统。
+由DiannaoJun, SymbolDT制作。
