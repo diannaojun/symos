@@ -8,49 +8,15 @@
 
 #include <lib/loader/main.h>
 #include <lib/loader/paging_init.h>
-#include <lib/loader/segment_init.h>
-#include <lib/loader/print.h>
+#include <lib/loader/loader.h>
+int support_long_mode(void);
+int support_CPUID(void);
+void enter_long_mode(void);
 
-
-u8 checkSupport64(){
-    if(!chkSupCPUID()){
-        return 0x02;
-    }
-    return 0x00;
-}
 void enter64(void){
-	if(checkSupport64())
-		_fin();
-    buildTempPages();
-    // struct PAGE_ITEM*p=0x90000;
-    // printsl("\n\rPageBase: ");
-    // printdl(p->addr);
-    // printsl("\n\rACS: ");
-    // printdl(p->flag);
-    // printsl("\n\rK: ");
-    // printdl(*(u64*)p);
-    // p=0x91000;
-    // printsl("\n\rPageBase: ");
-    // printdl(p->addr);
-    // printsl("\n\rACS: ");
-    // printdl(p->flag);
-    // printsl("\n\rK: ");
-    // printdl(*(u64*)p);
-    // p=0x92000;
-    // printsl("\n\rPageBase: ");
-    // printdl(p->addr);
-    // printsl("\n\rACS: ");
-    // printdl(p->flag);
-    // printsl("\n\rK: ");
-    // printdl(*(u64*)p);
-    // p=0x92000+8*8;
-    // printsl("\n\rPageBase: ");
-    // printdl(p->addr);
-    // printsl("\n\rACS: ");
-    // printdl(p->flag);
-    // printsl("\n\rK: ");
-    // printdl(*(u64*)p);
-    Enter();
-    return ;
+  buildTempPages();
+  printsl("PAGE BUILT\n\r");
+  enter_long_mode();
+  return ;
 }
 #endif

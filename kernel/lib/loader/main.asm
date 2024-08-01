@@ -5,10 +5,11 @@
 
 BITS 32
 GLOBAL memcpy,memset,delay
-GLOBAL chkSupCPUID,chkSup64,Enter
 GLOBAL _hlt,_sti,_cli,_fin,_nop
 GLOBAL _in8,_in16,_in32
 GLOBAL _out8,_out16,_out32
+GLOBAL support_CPUID
+GLOBAL support_long_mode,enter_long_mode
 [section .data]
 REG_TEMP:
     .ESI    DD 0
@@ -161,7 +162,7 @@ GDT64_INFO:
     dd GDT64_BGN
 
 [section .text]
-chkSupCPUID:
+support_CPUID:
     push ebx
     push ecx
     push edx
@@ -184,20 +185,19 @@ chkSupCPUID:
     pop ecx
     pop ebx
     ret
-chkSup64:
+support_long_mode:
     mov eax,0x80000000
     cpuid
     cmp eax,0x80000001
-    setnb al  
-    jb supportLongModeRet
+    setnb al
+    jb support_long_mode
     mov eax,0x80000001
     cpuid
     bt edx,29
     setc al
-    supportLongModeRet:
-    movzx   eax,    al
+    movzx eax,al
     ret
-Enter:
+enter_long_mode:
     lgdt [GDT64_INFO]
     mov ax,0x10
     mov ds,ax
@@ -220,7 +220,7 @@ Enter:
     bts eax,8
     wrmsr
     ; 设置页面地址
-    mov eax,0x90000
+    mov eax,0x00d000
     mov cr3,eax
     ; 启用分页
     mov eax,cr0
@@ -231,8 +231,8 @@ Enter:
     mov es,ax
     mov fs,ax
     mov gs,ax
-    jmp dword 0x08:MODE64
+    jmp dword 0x0008:MODE64
     ret
 BITS 64
 MODE64:
-    jmp 0x100000
+    jmp 0x020000
