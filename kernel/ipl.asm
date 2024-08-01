@@ -7,13 +7,13 @@ BITS 16
 ; %define dbg
 jmp START
 
-DAT_OEM     DB "SYMOS1.0"   ; 0x02  0x08
-DAT_BPS     DW 512          ; 0x0a  0x02
-DAT_RS      DW 32           ; 0x0c  0x02
-DAT_NoS     DD 0x8000       ; 0x0e  0x04
-DAT_UUID    DD 0xffffffff   ; 0x12  0x04
-DAT_SPC     DB 1            ; 0x16  0x01
-DAT_DL      DB "SYMOS1.0 "  ; 0x17  0x09
+DAT_OEM     DB "SYMOS1.0"
+DAT_DL      DB "SYMOS1.0"
+DAT_UUID    DD 0xffffffff
+DAT_RS      DW 16
+DAT_SNO     DQ 64
+DAT_SYS     DB 0x01
+ROT_STR		DQ 529
 
 TIMES 64-($-$$) DB 0x00
 
