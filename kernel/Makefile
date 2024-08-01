@@ -27,25 +27,29 @@ CLEAN:
 	rm -rf $(BDPATH)/*
 	rm -rf ./*.lock
 
-BUILD: IPL LOADER DISK
+BUILD: IPL FAT LOADER LLOADER DISK
 	# BUUILDING
 
 DISK:
-	dd if=/dev/zero of=$(BDPATH)/test.img bs=512 count=2880
+#	dd if=/dev/zero of=$(BDPATH)/test.img bs=512 count=2880
 	dd if=/dev/zero of=$(OUT) bs=512 count=32768
 	dd if=$(BDPATH)/ipl.bin of=$(OUT) seek=0 bs=512 count=1 conv=notrunc
 	dd if=$(BDPATH)/loader.asm.bin of=$(OUT) seek=1 bs=512 count=1 conv=notrunc
 	dd if=$(BDPATH)/loader.c.bin of=$(OUT) seek=2 bs=512 count=14 conv=notrunc
-# 	dd if=$(BDPATH)/lloader.c.bin of=$(OUT) seek=14 bs=512 count=1 conv=notrunc
-
+	dd if=$(BDPATH)/SYMFS_fat.bin of=$(OUT) seek=16 bs=512 count=513 conv=notrunc
+	dd if=$(BDPATH)/SYMFS_root.bin of=$(OUT) seek=529 bs=512 count=2 conv=notrunc
+	dd if=$(BDPATH)/lloader.c.bin of=$(OUT) seek=531 bs=512 count=1 conv=notrunc
+FAT: SYMFS_fat.asm SYMFS_root.asm
+	$(AS) SYMFS_fat.asm -o $(BDPATH)/SYMFS_fat.bin $(ASFLAGS)
+	$(AS) SYMFS_root.asm -o $(BDPATH)/SYMFS_root.bin $(ASFLAGS)
 IPL: ipl.asm
 	$(AS) ipl.asm -o $(BDPATH)/ipl.bin $(ASFLAGS)
 LOADER: loader.asm loader.c
 	$(AS) loader.asm -o $(BDPATH)/loader.asm.bin $(ASFLAGS)
 	$(CC) -c loader.c -o $(BDPATH)/loader.c.obj $(CCFLAGS) -I./ -m32
-	$(AS) ./lib/loader/main.asm -o $(BDPATH)/loader.loader.asm.obj -f elf32
+	$(AS) ./lib/loader/main.asm -o $(BDPATH)/lloader.asm.obj -f elf32
 	$(LD) -m elf_i386 --oformat binary -o $(BDPATH)/loader.c.bin -T ./loader.lds \
-		$(BDPATH)/loader.c.obj $(BDPATH)/loader.loader.asm.obj
+		$(BDPATH)/loader.c.obj $(BDPATH)/lloader.asm.obj
 LLOADER: lloader.c 
 	$(CC) -c lloader.c -o $(BDPATH)/lloader.c.obj $(CCFLAGS) -I./ -m64
 	$(LD) -m elf_x86_64 --oformat binary -o $(BDPATH)/lloader.c.bin -T ./loader.lds \
