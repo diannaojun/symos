@@ -18,10 +18,10 @@ void main (void){
     printel("la IMK yanien net la CPUID Linda! Titizt xyd decoze "
       "Ini no CLK izt az glaista deno I486.\n\r",0x02);
     goto errLabel;
-  }//else if(!support_long_mode()){
-  //  printel("la IMK yanien net la IA-32e Mokziy!\n\r",0x03);
-  //  goto errLabel;
-  //}
+  }else if(!support_long_mode()){
+    printel("la IMK yanien net la IA-32e Mokziy!\n\r",0x03);
+    goto errLabel;
+  }
   DISK_INIT();
   (((struct DiskOpt*)(ATA[0].operation))->readSec)(ATA[0].object,tempa,0,1);
   SMYFS_INS_LOAD(ATA+0,tempa,529,tempb);

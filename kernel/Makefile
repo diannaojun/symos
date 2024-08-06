@@ -27,6 +27,8 @@ CLEAN:										# 清理
 	-mkdir $(BDPATH)
 	$(RM) $(BDPATH)/*
 	$(RM) ./*.lock
+	$(RM) ../*.vmdk
+	$(RM) ./*.img
 
 BUILD: IPL FAT LOADER LLOADER DISK			# 構建
 
