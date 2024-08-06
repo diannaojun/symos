@@ -1,6 +1,6 @@
-# 思博操作系统（Symbol OS）
+# 思博操作系统（$Symbol$ $OS$）
 
-[繁體中文](README.md)
+[ 繁體中文 ](README.md)
 
 ## 介绍
 
@@ -8,10 +8,10 @@
 
 ## 支持致谢（按照字典序排列）
 
-- CLydq（Symbol D.T.）
-- CW (Feynco)
-- DiannaoJun (Symbol D.T.)
-- XYZ (XYZ)
+- $CLydq$（$Symbol D.T.$）
+- $CW$（$Feynco$）
+- $DiannaoJun$ （$Symbol D.T.$）
+- $XYZ$（$XYZ$）
 
 ## 使用
 
@@ -31,17 +31,23 @@
 
 拿到源码后，请在 Linux 环境下编译。
 
-~~由于工具环境差异，以及平台特性，不保证Windows下编译结果。~~
+~~由于环境差异，以及平台特性，不保证 Windows 下能正常编译。~~
 
-~~Windows 环境我自己测试的时候由于开发是在 Linux 下进行的，编译无法正常运行。~~
+~~我测试的时候，Windows 环境无法正常编译。~~
 
-~~但是基于 WSL 是可以编译的。~~
+~~但是 WSL 环境下是可以正常编译的。~~
 
 编译环境需要您具备：
 
-$NASM$（` sudo apt install nasm -y `）
+$NASM$（可通过 `sudo apt install nasm -y` 来安装）
 
-$GCC$
+$GCC$（可通过 `sudo apt install build-essential` 来安装）
+
+如果您遇到了一点 ~~小~~ Bug，您可以尝试以下命令：
+
+`sudo apt update`
+
+更新您的 $apt$，然后重试。
 
 在控制台切换到源码根目录，输入 `make` 即可编译得到镜像。
 
