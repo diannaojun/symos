@@ -8,10 +8,10 @@
 
 ## 支援致謝（按照字典序排列）
 
-- $CLydq$（$Symbol D.T.$）
-- $CW$ ($Feynco$)
-- $DiannaoJun$ ($Symbol D.T.$)
-- $XYZ$ ($XYZ$)
+- CLydq（Symbol D.T.）
+- CW (Feynco)
+- DiannaoJun (Symbol D.T.)
+- XYZ
 
 ## 使用
 
