@@ -1,17 +1,17 @@
-# 思博作业系統（Symbol OS）
+# 思博操作系统（Symbol OS）
 
 [繁體中文](README.md)
 
 ## 介绍
 
-一个简单的 $IA-32e$ 作业系統，由思博开发团队提供支援。
+一个简单的 $IA-32e$ 操作系统，由思博开发团队提供支持。
 
-## 支援致谢（按照字典序排列）
+## 支持致谢（按照字典序排列）
 
-- $CLydq$（$Symbol D.T.$）
-- $CW$ ($Feynco$)
-- $DiannaoJun$ ($Symbol D.T.$)
-- $XYZ$ ($XYZ$)
+- CLydq（Symbol D.T.）
+- CW (Feynco)
+- DiannaoJun (Symbol D.T.)
+- XYZ (XYZ)
 
 ## 使用
 
@@ -31,13 +31,15 @@
 
 拿到源码后，请在 Linux 环境下编译。
 
+~~由于工具环境差异，以及平台特性，不保证Windows下编译结果。~~
+
 ~~Windows 环境我自己测试的时候由于开发是在 Linux 下进行的，编译无法正常运行。~~
 
-~~但是基于 Ubuntu 的 Windows 子系统是可以编译的。~~
+~~但是基于 WSL 是可以编译的。~~
 
 编译环境需要您具备：
 
-$NASM$
+$NASM$（` sudo apt install nasm -y `）
 
 $GCC$
 
