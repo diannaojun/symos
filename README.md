@@ -1,6 +1,6 @@
 # 思博作業系統（$Symbol~OS$）
 
-[ 簡化字 ](README_zh_CN.md)
+[ 簡化字 ](README_zh-cn.md)
 
 ## 介紹
 
