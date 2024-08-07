@@ -1,14 +1,14 @@
 /* Symbol DT
  * SymOS
  * DiannaoJun
- * 2024-07-28
+ * 2024-08-07
  */
 #ifndef _SYM_KERNEL_FILE_H_
 #define _SYM_KERNEL_FILE_H_
 
-#include <lib/loader/disks.h>
+#include <lib/lloader/disk.h>
 #include <lib/filesys.h>
-#include <ia32/stddef.h>
+#include <ia64/stddef.h>
 
 #define insp  struct Instrument *dp
 #define fsp   struct SMYFS *sp

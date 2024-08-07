@@ -9,6 +9,8 @@
 #include <lib/loader/main.h>
 #include <lib/loader/paging_init.h>
 #include <lib/loader/loader.h>
+#include <ia32/stddef.h>
+
 int support_long_mode(void);
 int support_CPUID(void);
 void enter_long_mode(void);

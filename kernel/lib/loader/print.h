@@ -9,6 +9,7 @@
 #include <lib/loader/main.h>
 #include <lib/loader/text_screen.h>
 #include <lib/loader/instrument.h>
+#include <ia32/stddef.h>
 
 struct Instrument *StdCon;
 struct Instrument *ErrCon;

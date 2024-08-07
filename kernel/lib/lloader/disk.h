@@ -6,7 +6,7 @@
 #ifndef _SYM_KERNEL_DISK_H_
 #define _SYM_KERNEL_DISK_H_
 
-#include <IA64/stddef.h>
+#include <ia64/stddef.h>
 
 #define ATA_DATA_REG(port)          (0x00+(port))
 #define ATA_ERROR_REG(port)         (0x01+(port))

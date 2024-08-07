@@ -17,7 +17,7 @@
 #define ATA_COMMAND_REG(port)       (0x07+(port))
 #define ATA_STATUS_REG(port)        (0x07+(port))
 
-#include <IA32/stddef.h>
+#include <ia32/stddef.h>
 #include <lib/loader/instrument.h>
 
 #pragma pack(4)

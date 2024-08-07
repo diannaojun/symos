@@ -6,7 +6,7 @@
 #ifndef _SYM_KERNEL_INSTRUMENT_H_
 #define _SYM_KERNEL_INSTRUMENT_H_
 
-#include <IA64/stddef.h>
+#include <ia64/stddef.h>
 
 
 #pragma pack(8)

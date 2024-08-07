@@ -6,7 +6,7 @@
 #ifndef _SYM_KERNEL_MAIN_H_
 #define _SYM_KERNEL_MAIN_H_
 
-#include <IA32/stddef.h>
+#include <ia32/stddef.h>
 
 void _hlt(void);
 void _sti(void);

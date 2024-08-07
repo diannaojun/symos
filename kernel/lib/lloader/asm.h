@@ -6,7 +6,7 @@
 #ifndef _SYM_KERNEL_ASM_H_
 #define _SYM_KERNEL_ASM_H_
 
-#include <IA64/stddef.h>
+#include <ia64/stddef.h>
 
 extern void _hlt (void);                    // 闲置 CPU 直到中断发生
 extern void _sti (void);                    // 启用中断

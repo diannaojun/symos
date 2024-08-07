@@ -7,6 +7,7 @@
 #define _SYM_KERNEL_TEXT_SCREEN_H_
 
 #include <lib/loader/main.h>
+#include <ia32/stddef.h>
 
 #pragma pack(4)
 struct TextScreen{

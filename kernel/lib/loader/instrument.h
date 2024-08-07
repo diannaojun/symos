@@ -7,6 +7,7 @@
 #define _SYM_KERNEL_INSTRUMENT_H_
 
 #include <lib/loader/main.h>
+#include <ia32/stddef.h>
 
 enum insType{
   UK,CONSOLE,HD,FP
