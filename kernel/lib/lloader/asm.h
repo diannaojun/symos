@@ -17,7 +17,7 @@ extern void _fin (void);                    // 死循环
 extern u64 _in8 (u64);                      // 从端口 $1 读入 1 字节
 extern u64 _in16 (u64);                     // 从端口 $1 读入 2 字节
 extern u64 _in32 (u64);                     // 从端口 $1 读入 4 字节
-extern void out8 (u64,u64);                 // 向端口 $1 写出 1 字节
+extern void _out8 (u64,u64);                 // 向端口 $1 写出 1 字节
 extern void _out16 (u64,u64);               // 向端口 $1 写出 2 字节
 extern void _out32 (u64,u64);               // 向端口 $1 写出 4 字节
 

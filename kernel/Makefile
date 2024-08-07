@@ -49,10 +49,11 @@ IPL: ipl.asm								# IPL編譯
 LOADER: loader.asm loader.c					# 加載程序編譯
 	$(AS) loader.asm -o $(BDPATH)/loader.asm.bin $(ASFLAGS)
 	$(CC) -c loader.c -o $(BDPATH)/loader.c.obj $(CCFLAGS) -I./ -m32
-	$(AS) ./lib/loader/main.asm -o $(BDPATH)/lloader.asm.obj -f elf32
+	$(AS) ./lib/loader/main.asm -o $(BDPATH)/loader.asm.obj -f elf32
 	$(LD) -m elf_i386 --oformat binary -o $(BDPATH)/loader.c.bin -T ./loader.lds \
-		$(BDPATH)/loader.c.obj $(BDPATH)/lloader.asm.obj
+		$(BDPATH)/loader.c.obj $(BDPATH)/loader.asm.obj
 LLOADER: lloader.c 							# 加載程序編譯
 	$(CC) -c lloader.c -o $(BDPATH)/lloader.c.obj $(CCFLAGS) -I./ -m64
+	$(AS) ./lib/lloader/lloader.asm -o $(BDPATH)/lloader.asm.obj -f elf64
 	$(LD) -m elf_x86_64 --oformat binary -o $(BDPATH)/lloader.c.bin -T ./loader.lds \
-		$(BDPATH)/lloader.c.obj
+		$(BDPATH)/lloader.c.obj $(BDPATH)/lloader.asm.obj

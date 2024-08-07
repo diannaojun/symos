@@ -6,8 +6,12 @@
 #ifndef _SYM_KERNEL_MAIN_H_
 #define _SYM_KERNEL_MAIN_H_
 
-#include <ia64/stddef.h>        // 64 位类型定义
-#include <lib/lloader/asm.h>    // 汇编函数声明
+#include <ia64/stddef.h>                // 64 位类型定义
+#include <lib/lloader/asm.h>            // 汇编函数声明
+#include <lib/lloader/instrument.h>     // 設備支持
+#include <lib/lloader/file.h>           // 文件支持
+#include <lib/lloader/disk.h>           // 硬盤支持
+#include <lib/filesys.h>                // SFS文件系統支持
 
 struct Instrument ins[16];
 struct INS_DISK_OPT ins_disk_ata_opt[4];

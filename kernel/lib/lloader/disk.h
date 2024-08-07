@@ -29,7 +29,7 @@ struct INS_DISK_OPT{
 	void (*read)(void*,void*,u64,u64);  // 读磁盘 $1 (INS_DISK_ATA_DAT) 从 $3 扇区开始长 $4 扇区的数据到 $2 地址
 	void (*write)(void*,void*,u64,u64); // 写磁盘 $1 (INS_DISK_ATA_DAT) 从 $2 地址的数据到 $3 扇区开始长 $4 扇区
 };
-inline void ins_disk_ata_wait (struct INS_DISK_ATA_DAT *dp){
+void ins_disk_ata_wait (struct INS_DISK_ATA_DAT *dp){
     // 等待磁盘 $1 (INS_DISK_ATA_DAT) 空闲
 	while((_in8(ATA_STATUS_REG(dp->port))&0x88)!=0x08);
 }
