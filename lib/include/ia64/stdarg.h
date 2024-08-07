@@ -6,6 +6,7 @@
 #ifndef _STDARG_H_
 #define _STDARG_H_
 
+#include <ia64/stddef.h>
 typedef void *va_list;
 
 #define __va_rounded_size(TYPE) (((sizeof(TYPE)+sizeof(type)-1)/sizeof(type))*sizeof(type))
