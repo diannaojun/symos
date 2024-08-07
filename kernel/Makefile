@@ -36,9 +36,19 @@ DISK:
 	dd if=$(BDPATH)/ipl.bin of=$(OUT) seek=0 bs=512 count=1 conv=notrunc
 	dd if=$(BDPATH)/loader.asm.bin of=$(OUT) seek=1 bs=512 count=1 conv=notrunc
 	dd if=$(BDPATH)/loader.c.bin of=$(OUT) seek=2 bs=512 count=14 conv=notrunc
+<<<<<<< Updated upstream
 # 	dd if=$(BDPATH)/lloader.c.bin of=$(OUT) seek=14 bs=512 count=1 conv=notrunc
 
 IPL: ipl.asm
+=======
+	dd if=$(BDPATH)/SYMFS_fat.bin of=$(OUT) seek=16 bs=512 count=513 conv=notrunc
+	dd if=$(BDPATH)/SYMFS_root.bin of=$(OUT) seek=529 bs=512 count=2 conv=notrunc
+	dd if=$(BDPATH)/lloader.c.bin of=$(OUT) seek=531 bs=512 count=10 conv=notrunc
+FAT: SYMFS_fat.asm SYMFS_root.asm			# 文件系統構建
+	$(AS) SYMFS_fat.asm -o $(BDPATH)/SYMFS_fat.bin $(ASFLAGS)
+	$(AS) SYMFS_root.asm -o $(BDPATH)/SYMFS_root.bin $(ASFLAGS)
+IPL: ipl.asm								# IPL編譯
+>>>>>>> Stashed changes
 	$(AS) ipl.asm -o $(BDPATH)/ipl.bin $(ASFLAGS)
 LOADER: loader.asm loader.c
 	$(AS) loader.asm -o $(BDPATH)/loader.asm.bin $(ASFLAGS)

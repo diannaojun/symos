@@ -1,4 +1,5 @@
 int main (void){
-	F:goto F;
-	return 0;
+    ins_init();
+    _fin();
+    return 0;
 }

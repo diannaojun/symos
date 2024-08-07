@@ -31,20 +31,20 @@ void setPageItem(struct PAGE_ITEM*p,u64 base,u16 flag){
 	return;
 }
 void buildTempPages(void){
-	static int i;
-	struct PAGE_ITEM*pml4=(struct PAGE_ITEM*)0x90000;
-	struct PAGE_ITEM*pml42=(struct PAGE_ITEM*)0x90800;
-	struct PAGE_ITEM*pdpt=(struct PAGE_ITEM*)0x91000;
-	struct PAGE_ITEM*pdt=(struct PAGE_ITEM*)0x92000;
-	memset((void*)0x90000,0x00,0x3000);
-	setPageItem(pml4,(u64)(u32)pdpt,PAGE_US|PAGE_RW|PAGE_AB);
-	setPageItem(pml42,(u64)(u32)pdpt,PAGE_US|PAGE_RW|PAGE_AB);
-	setPageItem(pdpt,(u64)(u32)pdt,PAGE_US|PAGE_RW|PAGE_AB);
-	for(i=0;i<16;i++){
-		pdt=(struct PAGE_ITEM*)0x92000+(i<<3);
-		setPageItem(pdt,0x0000+(i<<21),PAGE_US|PAGE_RL|PAGE_RW|PAGE_AB);
-	}
-	return ;
+    static int i;
+    struct PAGE_ITEM*pml4=(struct PAGE_ITEM*)0xD000;
+    struct PAGE_ITEM*pml42=(struct PAGE_ITEM*)0xE000;
+    struct PAGE_ITEM*pdpt=(struct PAGE_ITEM*)0xF000;
+    struct PAGE_ITEM*pdt=(struct PAGE_ITEM*)0x10000;
+    memset((void*)0xD000,0x00,0x4000);
+    setPageItem(pml4,(u64)(u32)pdpt,PAGE_US|PAGE_RW|PAGE_AB);
+    setPageItem(pml42,(u64)(u32)pdpt,PAGE_US|PAGE_RW|PAGE_AB);
+    setPageItem(pdpt,(u64)(u32)pdt,PAGE_US|PAGE_RW|PAGE_AB);
+    for(i=0;i<32;i++){
+        pdt=(struct PAGE_ITEM*)0x10000+(i<<3);
+        setPageItem(pdt,0x0000+(i<<21),PAGE_US|PAGE_RL|PAGE_RW|PAGE_AB);
+    }
+    return ;
 }
 // void buildTempPagesLong(void){
 // 	static int i;
