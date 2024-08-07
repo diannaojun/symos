@@ -8,7 +8,7 @@
 
 typedef void *va_list;
 
-#define __va_rounded_size(TYPE) (((sizeof(TYPE)+sizeof(int)-1)/sizeof(int))*sizeof(int))
+#define __va_rounded_size(TYPE) (((sizeof(TYPE)+sizeof(type)-1)/sizeof(type))*sizeof(type))
 
 #ifndef __sparc__
 #define va_start(AP, LASTARG) (AP=((void*)&(LASTARG)+__va_rounded_size(LASTARG)))

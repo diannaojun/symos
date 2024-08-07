@@ -8,7 +8,6 @@
 
 #include <ia64/stddef.h>
 
-
 #pragma pack(8)
 struct Instrument{
 	// “设备” 结构

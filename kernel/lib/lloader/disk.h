@@ -7,6 +7,7 @@
 #define _SYM_KERNEL_DISK_H_
 
 #include <ia64/stddef.h>
+#include <lib/lloader/asm.h>
 
 #define ATA_DATA_REG(port)          (0x00+(port))
 #define ATA_ERROR_REG(port)         (0x01+(port))
@@ -23,7 +24,7 @@ struct INS_DISK_ATA_DAT{
     // ATA 硬盘结构
 	u16 port;   // ATA 硬盘 I/O 端口
 };
-struct INS_DISK_ATA_OPT{
+struct INS_DISK_OPT{
     // ATA 硬盘方法结构
 	void (*read)(void*,void*,u64,u64);  // 读磁盘 $1 (INS_DISK_ATA_DAT) 从 $3 扇区开始长 $4 扇区的数据到 $2 地址
 	void (*write)(void*,void*,u64,u64); // 写磁盘 $1 (INS_DISK_ATA_DAT) 从 $2 地址的数据到 $3 扇区开始长 $4 扇区

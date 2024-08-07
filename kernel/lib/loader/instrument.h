@@ -10,14 +10,14 @@
 #include <ia32/stddef.h>
 
 enum insType{
-  UK,CONSOLE,HD,FP
+    UK,CONSOLE,HD,FP
 };
 #pragma pack(4)
 struct Instrument{
-  enum insType it;
-  u16 it2;
-  void* object;
-  void* operation;
+    enum insType it;
+    u16 it2;
+    void* object;
+    void* operation;
 };
 
 #endif //_SYM_KERNEL_INSTRUMENT_H_

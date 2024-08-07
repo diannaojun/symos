@@ -17,6 +17,7 @@ typedef signed short i16;
 typedef signed int i32;
 typedef signed long long i64;
 typedef void* pointer;
+typedef u64 type;
 #endif
 
 #ifndef _PTRDIFF_T
