@@ -13,7 +13,7 @@ DAT_UUID    DD 0xffffffff
 DAT_RS      DW 16
 DAT_SNO     DQ 16*1024*2
 DAT_SYS     DB 0x01
-ROT_STR		DQ 529
+ROT_STR		DQ 528
 
 TIMES 64-($-$$) DB 0x00
 

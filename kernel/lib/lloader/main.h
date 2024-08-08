@@ -8,6 +8,7 @@
 
 #include <ia64/stddef.h>                // 64 位类型定义
 #include <lib/lloader/asm.h>            // 汇编函数声明
+
 #include <lib/lloader/instrument.h>     // 設備支持
 #include <lib/lloader/file.h>           // 文件支持
 #include <lib/lloader/disk.h>           // 硬盤支持
@@ -30,6 +31,7 @@ void ins_init(void){
     ins[0].ins_class=ins[1].ins_class=0x0002;
     ins[0].ins_type=ins[1].ins_type=0x0001;
     ins[0].ins_uuid=0,ins[1].ins_uuid=1;
+    ins_disk_ata_init(&ins_disk_ata_dat[0]);
 }
 
 #endif //_SYM_KERNEL_MAIN_H_

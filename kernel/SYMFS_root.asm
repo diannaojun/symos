@@ -1,29 +1,29 @@
 ; SELF:
 	DB ".              "
 	DB 00010000b
-	DQ 0x211
+	DQ 0x210
 	DQ 0x200
 ; FATH:
 	DB "..             "
 	DB 00010000b
-	DQ 0x211
+	DQ 0x210
 	DQ 0x200
 ; SYS_PATH:
 	DB "SYS            "
 	DB 00010000b
-	DQ 0x212
+	DQ 0x211
 	DQ 0x200
 TIMES (512*1)-($-$$) DB 0x00
 
 ; SELF:
 	DB ".              "
 	DB 00010000b
-	DQ 0x212
+	DQ 0x211
 	DQ 0x200
 ; FATH:
 	DB "..             "
 	DB 00010000b
-	DQ 0x211
+	DQ 0x210
 	DQ 0x200
 ; IPL:
 	DB "IPL.SYS        "
@@ -43,6 +43,6 @@ TIMES (512*1)-($-$$) DB 0x00
 ; L64:
 	DB "L64.SYS        "
 	DB 00000111b
-	DQ 0x213
+	DQ 0x212
 	DQ 0x200
 TIMES (512*2)-($-$$) DB 0x00

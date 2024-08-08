@@ -24,7 +24,7 @@ void main (void){
     }
     DISK_INIT();
     (((struct DiskOpt*)(ATA[0].operation))->readSec)(ATA[0].object,tempa,0,1);
-    SMYFS_INS_LOAD(ATA+0,tempa,529,tempb);
+    SMYFS_INS_LOAD(ATA+0,tempa,((struct SMYFS*)tempa)->root_start,tempb);
     for(j=i=0;((struct SMYFS_FILE*)tempb)[i].name[0];++i)
         if(!strcmpn(((struct SMYFS_FILE*)tempb)[i].name,"SYS                        ",15)){
             j=((struct SMYFS_FILE*)tempb)[i].ptr;
@@ -44,7 +44,7 @@ void main (void){
         printel("la L64.SYS szsa ('/SYS/L64.SYS') izt paipibe!\n\r",0x05);
         goto errLabel;
     }
-    printsl("Found L64.SYS At"),printdl(j),printsl("\n\r");
+    printsl("Found L64.SYS At "),printdl(j),printsl("\n\r");
     SMYFS_INS_LOAD(ATA+0,tempa,j,tempb);
     enter64();
     _fin();

@@ -39,8 +39,8 @@ DISK:										# 写入原始文件
 	dd if=$(BDPATH)/loader.asm.bin of=$(OUT) seek=1 bs=512 count=1 conv=notrunc
 	dd if=$(BDPATH)/loader.c.bin of=$(OUT) seek=2 bs=512 count=14 conv=notrunc
 	dd if=$(BDPATH)/SYMFS_fat.bin of=$(OUT) seek=16 bs=512 count=513 conv=notrunc
-	dd if=$(BDPATH)/SYMFS_root.bin of=$(OUT) seek=529 bs=512 count=2 conv=notrunc
-	dd if=$(BDPATH)/lloader.c.bin of=$(OUT) seek=531 bs=512 count=1 conv=notrunc
+	dd if=$(BDPATH)/SYMFS_root.bin of=$(OUT) seek=528 bs=512 count=2 conv=notrunc
+	dd if=$(BDPATH)/lloader.c.bin of=$(OUT) seek=530 bs=512 count=16 conv=notrunc
 FAT: SYMFS_fat.asm SYMFS_root.asm			# 文件系统构建
 	$(AS) SYMFS_fat.asm -o $(BDPATH)/SYMFS_fat.bin $(ASFLAGS)
 	$(AS) SYMFS_root.asm -o $(BDPATH)/SYMFS_root.bin $(ASFLAGS)
