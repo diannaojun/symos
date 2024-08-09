@@ -3,7 +3,7 @@
 # DiannaoJun
 # 2024-04-05
 
-DEFAULT: CLEAN; BUILD; CLEAN
+DEFAULT: BUILD CLEAN
 
 BUILD:
 	cd lib && $(MAKE)

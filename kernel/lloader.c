@@ -18,11 +18,11 @@ int main (void){
         printsl("SYMBOL OPERATING SYSTEM LONG-MODE LOADER\n\r");
         printsl("SCAN \'/\' :\n\r");
         for(itr=0; ; ++itr){
-            if(((struct SMYFS_FILE*)secbuf2)[i].name[0]==0)
+            if(((struct SMYFS_FILE*)secbuf2)[itr].name[0]==0)
                 break;
-            printsnl(((struct SMYFS_FILE*)secbuf2)[i].name, 15);
+            printsnl(((struct SMYFS_FILE*)secbuf2)[itr].name, 15);
             printsl(" | ");
-            printdl(((struct SMYFS_FILE*)secbuf2)[i].length);
+            printdl(((struct SMYFS_FILE*)secbuf2)[itr].length);
             printsl("Bytes\n\r");
         }
     }
