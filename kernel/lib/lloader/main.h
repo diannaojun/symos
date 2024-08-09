@@ -36,7 +36,7 @@ void ins_init(void){
     ins[0].ins_uuid=0,ins[1].ins_uuid=1;
     ins_disk_ata_init(&ins_disk_ata_dat[0]);
     // 文本荧幕设备初始化
-    ins_print_init(&ins[2], &ins_con_opt, &ins_scrn_txt);
+    //ins_print_init(&ins[2], &ins_con_opt, &ins_scrn_txt);
 }
 
 #endif //_SYM_KERNEL_MAIN_H_
