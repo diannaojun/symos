@@ -23,7 +23,7 @@ int main (void){
             printsnl(((struct SMYFS_FILE*)secbuf2)[i].name, 15);
             printsl(" | ");
             printdl(((struct SMYFS_FILE*)secbuf2)[i].length);
-            printsl("Bytes\n\r");`
+            printsl("Bytes\n\r");
         }
     }
     _fin();
