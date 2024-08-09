@@ -20,7 +20,7 @@ CLEAN:
 
 IMG_CLEAN:
 	$(RM) ./*.vmdk
-	$(RM) ../*.img
+	$(RM) ./kernel/*.img
 	cd kernel && $(MAKE) CLEAN
 
 VM_IMAGE: BUILD
