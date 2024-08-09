@@ -36,10 +36,10 @@ void ins_print_init(struct Instrument *Console,
     ts->cx = ts->cy = 0;
     ts->vm = (void*)0xb8000;
 
-    tso->clear=ins_scrn_txt_clr;
-    tso->scroll=ins_scrn_txt_scr;
-    tso->putstr=ins_scrn_txt_puts;
-    tso->putchar=ins_scrn_txt_putc;
+    tso->clear=(void*)ins_scrn_txt_clr;
+    tso->scroll=(void*)ins_scrn_txt_scr;
+    tso->putstr=(void*)ins_scrn_txt_puts;
+    tso->putchar=(void*)ins_scrn_txt_putc;
 
     Console->ins_class=0x0001;
     Console->ins_type=0x0001;
@@ -48,7 +48,6 @@ void ins_print_init(struct Instrument *Console,
 
     StdCon = Console;
     ErrCon = StdCon;
-    printsl("\e0");
     return ;
 }
 

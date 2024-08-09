@@ -15,15 +15,15 @@
 #include <lib/filesys.h>                // SFS文件系統支持
 #include <lib/lloader/print.h>
 
-struct Instrument ins[16];
-struct INS_DISK_OPT ins_disk_ata_opt[4];
-struct INS_DISK_ATA_DAT ins_disk_ata_dat[2];
-struct INS_CONSOLE_OPT ins_con_opt;
-struct INS_SCRN_TXT ins_scrn_txt;
+static struct Instrument ins[16];
+static struct INS_DISK_OPT ins_disk_ata_opt[4];
+static struct INS_DISK_ATA_DAT ins_disk_ata_dat[2];
+static struct INS_CONSOLE_OPT ins_con_opt;
+static struct INS_SCRN_TXT ins_scrn_txt;
 
 void ins_init(void){
     // 0x1f0 0x170 ATA磁盘设备初始化
-    ins_disk_ata_opt[2].read=ins_disk_ata_read48;
+    ins_disk_ata_opt[2].read=(void*)ins_disk_ata_read48;
     ins_disk_ata_opt[2].write=NULL;
     ins_disk_ata_dat[0].port=0x01f0;
     ins_disk_ata_dat[1].port=0x0170;
@@ -36,7 +36,7 @@ void ins_init(void){
     ins[0].ins_uuid=0,ins[1].ins_uuid=1;
     ins_disk_ata_init(&ins_disk_ata_dat[0]);
     // 文本荧幕设备初始化
-    //ins_print_init(&ins[2], &ins_con_opt, &ins_scrn_txt);
+    ins_print_init(&ins[2], &ins_con_opt, &ins_scrn_txt);
 }
 
 #endif //_SYM_KERNEL_MAIN_H_
