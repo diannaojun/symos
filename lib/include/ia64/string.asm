@@ -9,13 +9,13 @@ GLOBAL memcpy,memset,strlen,strset
 strlen:
 	xor rax,rax
 	xor rbx,rbx
-		strlen_loop:
-	mov bl,[argd0]
-	test bl,bl
-	jz _ret
-	inc rax
-	inc argd0
-	jmp strlen_loop
+	strlen_loop:
+		mov bl,[argd0]
+		test bl,bl
+		jz _ret
+		inc rax
+		inc argd0
+		jmp strlen_loop
 strset:
 	push argd0
 	call strlen

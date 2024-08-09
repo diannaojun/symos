@@ -12,5 +12,5 @@ ASFLAGS	:=	-f elf
 OBJ		:=	kernel
 
 DEFAULT: $(OBJ)
-	#
+
 kernel:
