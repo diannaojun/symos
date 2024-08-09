@@ -20,19 +20,21 @@
 #define PAGE_GT 0x100    // 全局翻译
 #define PAGE_PT 0x080    // 内存类型
 
-
 #pragma pack(1)
 struct PAGE_ITEM{
     u64 flag:12,addr:52;
 };
+
 void setPageItem(struct PAGE_ITEM*p,u64 base,u16 flag){
     p->addr=(base>>12);
     p->flag=flag&0x0fff;
     return;
 }
+
 void buildPageTable(void){
     void *addr = (void *)0xD000;
 }
+
 void buildTempPages(void){
     static int i;
     struct PAGE_ITEM*pml4=(struct PAGE_ITEM*)0xD000;
@@ -49,6 +51,7 @@ void buildTempPages(void){
     }
     return ;
 }
+
 // void buildTempPagesLong(void){
 //     static int i;
 //     u32*pml4=(struct PAGE_ITEM*)0x90000;

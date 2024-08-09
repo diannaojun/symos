@@ -23,6 +23,7 @@ struct ConsoleOpt{
     void (*puts)(void*,const char*);
     void (*putc)(void*,char);
 };
+
 static struct Instrument Console;
 static struct ConsoleOpt tso;
 static struct TextScreen ts;
@@ -57,18 +58,22 @@ void initPrint(void){
 void printsi(const char*s, struct Instrument*ins){
     ((struct ConsoleOpt*)(ins->operation))->puts(ins->object, s);
 }
+
 void printsl(const char*s){
     printsi(s, StdCon);
 }
+
 void printsni(const char*s, u64 n, struct Instrument*ins){
     static u64 i;
     for(i=0; i<n; ++i){
         ((struct ConsoleOpt*)(ins->operation))->putc(ins->object, s[i]);
     }
 }
+
 void printsnl(const char*s, u64 n){
     printsni(s, n, StdCon);
 }
+
 void printel(const char*description,u16 code){
     static u16 i;
     for(i=0;i<4;++i,code<<=4)
@@ -80,6 +85,7 @@ void printel(const char*description,u16 code){
     printsi(description,ErrCon);
     printsi("\e0",ErrCon);
 }
+
 void printdi (u64 num,struct Instrument*ins){
     static u16 i;
     for(i=0;i<8;++i,num<<=4)
@@ -89,6 +95,7 @@ void printdi (u64 num,struct Instrument*ins){
     bufer[0]='0',bufer[1]='x',bufer[10]='_',bufer[19]=0;
     printsi(bufer,ins);
 }
+
 void printdl (u64 num){
     printdi(num,StdCon);
 }

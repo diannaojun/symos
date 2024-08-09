@@ -8,5 +8,4 @@
 
 #include <lib/loader/main.h>
 
-
 #endif //_SYM_KERNEL_PAGING_INIT_H_

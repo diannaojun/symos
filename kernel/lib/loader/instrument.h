@@ -12,6 +12,7 @@
 enum insType{
     UK,CONSOLE,HD,FP
 };
+
 #pragma pack(4)
 struct Instrument{
     enum insType it;

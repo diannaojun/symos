@@ -19,27 +19,30 @@
 %define argf2 xmm2
 %define argf3 xmm3
 
+global _hlt, _sti, _cli, _nop, _fin
+global _in8,_in16,_in32
+global _out8,_out16,_out32
+global memcpy,memset,strlen,strset
+
 [bits 64]
 [section .text]
-
-
-GLOBAL _hlt, _sti, _cli, _nop, _fin
-GLOBAL _in8,_in16,_in32
-GLOBAL _out8,_out16,_out32
-GLOBAL memcpy,memset,strlen,strset
 
 _hlt:
     hlt
     ret
+
 _sti:
     sti
     ret
+
 _cli:
     cli
     ret
+
 _nop:
     nop
     ret
+
 _fin:
     hlt
     nop
@@ -51,32 +54,36 @@ _in8:
     xor rax,rax
     in al,dx
     ret
+
 _in16:
     mov rdx,rdi
     xor rax,rax
     in ax,dx
     ret
+
 _in32:
     mov rdx,rdi
     xor rax,rax
     in eax,dx
     ret
+
 _out8:
     mov rdx,rdi
     mov rax,rsi
     out dx,al
     ret
+
 _out16:
     mov rdx,rdi
     mov rax,rsi
     out dx,ax
     ret
+
 _out32:
     mov rdx,rdi
     mov rax,rsi
     out dx,eax
     ret
-
 
 strlen:
 	xor rax,rax
@@ -88,6 +95,7 @@ strlen:
 	inc rax
 	inc argd0
 	jmp strlen_loop
+
 strset:
 	push argd0
 	call strlen
@@ -95,6 +103,7 @@ strset:
 	mov argd2,rax
 	call memset
 	ret
+
 memset:
 	mov rax,argd1
 	call _raxfull
@@ -112,6 +121,7 @@ memset:
 	dec argd2
 	inc argd0
 	jmp memset_lloop
+
 memcpy:
 	mov r10,argd0
 	mov r11,argd1
@@ -120,6 +130,7 @@ memcpy:
     mov rcx,argd2
     rep movsb
     ret
+
 _raxfull:
 	xor r11,r11
 	or r11,rax
@@ -138,5 +149,6 @@ _raxfull:
 	shl r11,8
 	or r11,rax
 	mov rax,r11
+
 _ret:
 	ret

@@ -24,15 +24,18 @@ struct INS_DISK_ATA_DAT{
     // ATA 硬盘结构
 	u16 port;   // ATA 硬盘 I/O 端口
 };
+
 struct INS_DISK_OPT{
     // ATA 硬盘方法结构
 	void (*read)(void*,void*,u64,u64);  // 读磁盘 $1 (INS_DISK_ATA_DAT) 从 $3 扇区开始长 $4 扇区的数据到 $2 地址
 	void (*write)(void*,void*,u64,u64); // 写磁盘 $1 (INS_DISK_ATA_DAT) 从 $2 地址的数据到 $3 扇区开始长 $4 扇区
 };
+
 void ins_disk_ata_wait (struct INS_DISK_ATA_DAT *dp){
     // 等待磁盘 $1 (INS_DISK_ATA_DAT) 空闲
 	while((_in8(ATA_STATUS_REG(dp->port))&0x88)!=0x08);
 }
+
 void ins_disk_ata_read48(struct INS_DISK_ATA_DAT *dp, void *buf, u64 lba, u64 cnt){
     // 读磁盘 $1 (INS_DISK_ATA_DAT) 从 $3 扇区开始长 $4 扇区的数据到 $2 地址
     static u16 i;
@@ -54,6 +57,7 @@ void ins_disk_ata_read48(struct INS_DISK_ATA_DAT *dp, void *buf, u64 lba, u64 cn
             ((u16*)buf)[i]=_in16(ATA_DATA_REG(dp->port));
     }
 }
+
 void ins_disk_ata_init (struct INS_DISK_ATA_DAT *dp){
     // 初始化磁盘 $1 (INS_DISK_ATA_DAT)
     static u16 i;

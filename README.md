@@ -1,22 +1,17 @@
 # 思博作業系統（$Symbol~OS$）
-
 [ 簡化字 ](README_zh-cn.md)
 
 ## 介紹
-
 一個簡單的 __IA-32e__ 作業系統，由思博開發團隊提供支援。
 
 ## 支援致謝（按照字典序排列）
-
 - $CLydq$（Symbol D.T.）
 - CW（Feynco）
 - DiannaoJun （Symbol D.T.）
 - XYZ（XYZ）
 
 ## 使用
-
 ### 對於版本中的 `.vmdk` 檔案
-
 由於目前系統甚至無法控制，所以我們僅為每個版本提供了 `.vmdk` 檔案。
 您可以下載該檔案，然後按照下圖創建虛擬機器：
 [![pkxS12V.png](https://s21.ax1x.com/2024/08/06/pkxS12V.png)](https://imgse.com/i/pkxS12V) 

@@ -11,8 +11,6 @@
 #define _SYM_FILESYS_FILEC_SYS 0x04
 #define _SYM_FILESYS_FILEC_DIR 0x10
 
-static u8 bufr[512];
-
 #pragma pack(1)
 struct SMYFS{
     // SFS 分区头基本结构
@@ -46,5 +44,7 @@ struct PATH_ENTR{
     u64 LBA;                // 地址
     void* INSP;             // 設備指針
 };
+
+static u8 bufr[512];
     
 #endif //_SYM_KERNEL_FILESYS_H_

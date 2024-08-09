@@ -2,8 +2,8 @@
 ; SymOS
 ; DiannaoJun
 ; 2024-03-31
-ORG 0x7c00                      ; 程序开始地址
-BITS 16                         ; CPU 位宽
+org 0x7c00                      ; 程序开始地址
+[bits 16]                       ; CPU 位宽
 ; %define dbg
 jmp START                       ; 跳转到 START
 
@@ -66,10 +66,12 @@ ENTRY:
     call SAVE_SCN_INFO
     call 0x7e00
     jmp FINAL
+
 ERR:; 输出失败信息
     mov si,ERR_MESSAGE
     call PUTS
     ret
+
 PUTS:
     mov al,[si]
     inc si
@@ -81,10 +83,12 @@ PUTS:
         mov bx,0x0f
         int 0x10
     jmp PUTS
+
 READ_LBA:
     mov ah,0x42
     int 0x13
     ret
+
 START_SCN_INFO:
     xor bx,bx
     xor dx,dx
@@ -97,12 +101,14 @@ START_SCN_INFO:
     mov bh,0x07
     int 0x10
     ret
+
 SAVE_SCN_INFO:
     mov ah,2
     xor bx,bx
     xor dx,dx
     int 0x10
     ret
+
 FINAL:
     jmp $
 
@@ -111,6 +117,7 @@ HEX_MESSAGE:
     DB "0x##",0x00
 HEX_TABLE:
     db "0123456789ABCDEF"
+
 PUT_HEX:
     mov bl,al
     shr bl,4

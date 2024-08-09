@@ -2,9 +2,12 @@
 ; Sym C Lib
 ; DiannaoJun
 ; 2024-04-30
-BITS 32
-GLOBAL memcpy,memset
+
+global memcpy,memset
+
+[bits 32]
 [section .text]
+
 memcpy:
     push ebp
     mov ebp,esp
@@ -18,6 +21,7 @@ memcpy:
     pop esi
     pop ebp
     ret
+
 memset:
     push ebp
     mov ebp,esp

@@ -32,6 +32,7 @@ void SMYFS_INS_LOAD(insp, fsp, u64 ip, void* buf){
         ip = SMYFS_INS_GET_FAT(dp, sp, ip, buf);
     }
 }
+
 #undef insp
 #undef fsp
 

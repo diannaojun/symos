@@ -1,3 +1,8 @@
+; Symbol DT
+; Sym SFS Sys
+; DiannaoJun
+; 2024-08-09
+
 ; SELF:
 	DB ".              "
 	DB 00010000b

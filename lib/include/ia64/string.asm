@@ -2,8 +2,26 @@
 ; Sym C Lib
 ; DiannaoJun
 ; 2024-04-30
-BITS 32
-GLOBAL memcpy,memset,strlen,strset
+
+; rcx rdx r8 r9 rdi rsi xmm0-xmm3 rax(xmm0)
+; rdi rsi rdx rcx r8 r9 xmm0-xmm7 rax
+; 前六個參數以rdi,rsi,rdx,rcx,r8,r9傳遞
+; 其他參數從rsp+8*6+8開始
+
+%define argd0 rdi
+%define argd1 rsi
+%define argd2 rdx
+%define argd3 rcx
+%define argd4 r8
+%define argd5 r9
+%define argf0 xmm0
+%define argf1 xmm1
+%define argf2 xmm2
+%define argf3 xmm3
+
+global memcpy,memset,strlen,strset
+
+[bits 64]
 [section .text]
 
 strlen:
@@ -16,6 +34,7 @@ strlen:
 		inc rax
 		inc argd0
 		jmp strlen_loop
+
 strset:
 	push argd0
 	call strlen
@@ -23,6 +42,7 @@ strset:
 	mov argd2,rax
 	call memset
 	ret
+
 memset:
 	mov rax,argd1
 	call _raxfull
@@ -40,6 +60,7 @@ memset:
 	dec argd2
 	inc argd0
 	jmp memset_lloop
+
 memcpy:
 	mov r10,argd0
 	mov r11,argd1
@@ -48,6 +69,7 @@ memcpy:
     mov rcx,argd2
     rep movsb
     ret
+
 _raxfull:
 	xor r11,r11
 	or r11,rax
@@ -66,5 +88,6 @@ _raxfull:
 	shl r11,8
 	or r11,rax
 	mov rax,r11
+
 _ret:
 	ret

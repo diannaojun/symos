@@ -27,20 +27,25 @@ static void ins_scrn_txt_mov_cur(struct INS_SCRN_TXT* ts) {
     _out8(0x03d5,cl);
     return ;
 }
+
 inline static char* ins_scrn_txt_get_chr_addr(struct INS_SCRN_TXT* ts,u16 x,u16 y) {
     x%=ts->w,y%=ts->h;
     return (char*)(ts->vm+((y*ts->w+x)<<1));
 }
+
 inline static u8* ins_scrn_txt_get_sty_addr(struct INS_SCRN_TXT* ts,u16 x,u16 y) {
     return (u8*)(ins_scrn_txt_get_chr_addr(ts,x,y)+1);
 }
+
 void ins_scrn_txt_swp(u8 id) {
     return ;
 }
+
 void ins_scrn_txt_clr(struct INS_SCRN_TXT* ts) {
     memset(ts->vm,0,(u32)(ts->h*ts->w)<<1);
     return ;
 }
+
 void ins_scrn_txt_scr(struct INS_SCRN_TXT* ts,u16 lines) {
     static u32 i,e,s,k;
     s=(u32)ts->w<<1,k=s*lines;
@@ -50,6 +55,7 @@ void ins_scrn_txt_scr(struct INS_SCRN_TXT* ts,u16 lines) {
     memset((void*)e,0,k);
     return ;
 }
+
 void ins_scrn_txt_putc(struct INS_SCRN_TXT* ts,char c) {
     if(ts->seting) {
         switch(ts->opt) {
@@ -91,6 +97,7 @@ void ins_scrn_txt_putc(struct INS_SCRN_TXT* ts,char c) {
     ins_scrn_txt_mov_cur(ts);
     return ;
 }
+
 void ins_scrn_txt_puts(struct INS_SCRN_TXT* ts,const char* s) {
     while(*s)
         ins_scrn_txt_putc(ts,*(s++));

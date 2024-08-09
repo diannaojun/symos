@@ -27,20 +27,25 @@ static void moveCursorTextScreen(struct TextScreen* ts) {
     _out8(0x03d5,cl);
     return ;
 }
+
 inline static char* TSgetAddrC(struct TextScreen* ts,u16 x,u16 y) {
     x%=ts->w,y%=ts->h;
     return (char*)(ts->vm+((y*ts->w+x)<<1));
 }
+
 inline static u8* TSgetAddrS(struct TextScreen* ts,u16 x,u16 y) {
     return (u8*)(TSgetAddrC(ts,x,y)+1);
 }
+
 void swapTextScreen(u8 id) {
     return ;
 }
+
 void clearTextScreen(struct TextScreen* ts) {
     memset(ts->vm,0,(u32)(ts->h*ts->w)<<1);
     return ;
 }
+
 void scrollTextScreen(struct TextScreen* ts,u16 lines) {
     static u32 i,e,s,k;
     s=(u32)ts->w<<1,k=s*lines;
@@ -50,6 +55,7 @@ void scrollTextScreen(struct TextScreen* ts,u16 lines) {
     memset((void*)e,0,k);
     return ;
 }
+
 void TSputc(struct TextScreen* ts,char c) {
     if(ts->seting) {
         switch(ts->opt) {
@@ -91,6 +97,7 @@ void TSputc(struct TextScreen* ts,char c) {
     moveCursorTextScreen(ts);
     return ;
 }
+
 void TSputs(struct TextScreen* ts,const char* s) {
     while(*s)
         TSputc(ts,*(s++));

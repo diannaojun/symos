@@ -25,21 +25,25 @@ struct ATA_DISK{
     u16 port;
     u8 PS:1,IN:1;
 };
+
 #pragma pack(1)
 struct DiskInfo{
     u16 secSiz;
     u64 secCnt;
 };
+
 #pragma pack(4)
 struct DiskOpt{
     void (*readSec)(void*,void*,u64,u16);
     void (*writeSec)(void*,void*,u64,u16);
 };
+
 typedef void (*_SEC_IO_T)(void*,void*,u64,u16);
 
 void ATA_WAIT(struct ATA_DISK *dp){
     while(_in8(ATA_STATUS_REG(dp->port))&0x80);
 }
+
 void ATA_WAIT2(struct ATA_DISK *dp){
     while(!(_in8(ATA_STATUS_REG(dp->port))&0x80) || (_in8(ATA_STATUS_REG(dp->port))&0x01));
     //!(inb(ATA_PORT_STATUS(base_port)) & 0x80) || inb(ATA_PORT_STATUS(base_port)) & 0x01
@@ -76,6 +80,7 @@ void ATA_INIT (struct ATA_DISK *dp){
     for(i=0; i<256;++i)
       _in16(ATA_DATA_REG(dp->port));
 }
+
 struct Instrument ATA[4];
 static struct ATA_DISK ATA_rel[4];
 static struct DiskOpt ATAOpt;

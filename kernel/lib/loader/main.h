@@ -22,9 +22,7 @@ void _out32(u32,u32);
 void memcpy(void*dect,void*src,u32 len);
 void memset(void*dect,u32 value,u32 len);
 void delay(u32 tim);
-int chkSupCPUID(void);
-int chkSup64(void);
-void Enter();
+
 int strcmpn(const char *str1, const char *str2, size_t n) {
     for (size_t i = 0; i < n; ++i) {
         if (str1[i] != str2[i]) {

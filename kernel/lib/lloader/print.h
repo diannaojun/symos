@@ -11,10 +11,6 @@
 #include <lib/lloader/instrument.h>
 #include <lib/lloader/screen_text.h>
 
-static char str_buffer[128]="";
-static struct Instrument *StdCon;
-static struct Instrument *ErrCon;
-
 #pragma pack(4)
 struct INS_CONSOLE_OPT{
     void (*clear)(void*);
@@ -26,6 +22,10 @@ struct INS_CONSOLE_OPT{
 void printsi(const char*,struct Instrument*);
 void printsl(const char*);
 void printel(const char*,u16);
+
+static char str_buffer[128]="";
+static struct Instrument *StdCon;
+static struct Instrument *ErrCon;
 
 void ins_print_init(struct Instrument *Console, 
     struct INS_CONSOLE_OPT *tso,
@@ -55,18 +55,22 @@ void ins_print_init(struct Instrument *Console,
 void printsi(const char*s, struct Instrument*ins){
     ((struct INS_CONSOLE_OPT*)(ins->ins_operation))->putstr(ins->ins_data, s);
 }
+
 void printsl(const char*s){
     printsi(s, StdCon);
 }
+
 void printsni(const char*s, u64 n, struct Instrument*ins){
     static u64 i;
     for(i=0; i<n; ++i){
         ((struct INS_CONSOLE_OPT*)(ins->ins_operation))->putchar(ins->ins_data, s[i]);
     }
 }
+
 void printsnl(const char*s, u64 n){
     printsni(s, n, StdCon);
 }
+
 void printel(const char*description,u16 code){
     static u16 i;
     for(i=0;i<4;++i,code<<=4)
@@ -78,6 +82,7 @@ void printel(const char*description,u16 code){
     printsi(description,ErrCon);
     printsi("\e0",ErrCon);
 }
+
 void printdi (u64 num,struct Instrument *ins){
     static u16 i;
     for(i=0;i<8;++i,num<<=4)
@@ -87,6 +92,7 @@ void printdi (u64 num,struct Instrument *ins){
     str_buffer[0]='0',str_buffer[1]='x',str_buffer[10]='_',str_buffer[19]=0;
     printsi(str_buffer,ins);
 }
+
 void printdl (u64 num){
     printdi(num,StdCon);
 }
