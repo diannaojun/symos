@@ -29,10 +29,6 @@ CLEAN:										# 清理
 	$(RM) $(BDPATH)/*
 	$(RM) ./*.lock
 
-IMG_CLEAN:
-	$(RM) ./*.vmdk
-	$(RM) ./*.img
-
 BUILD: IPL FAT LOADER LLOADER DISK			# 构建
 
 DISK:										# 写入原始文件

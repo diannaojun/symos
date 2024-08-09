@@ -20,13 +20,9 @@ CLEAN:
 
 IMG_CLEAN:
 	$(RM) ./*.vmdk
-	$(RM) ./*.img
-	cd kernel && $(MAKE) IMG_CLEAN
+	$(RM) ../*.img
+	cd kernel && $(MAKE) CLEAN
 
-VM_IMAGE: BUILD
-	rm -rf ./OS.vmdk
-	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
-	$(MAKE) CLEAN
 VM_IMAGE: BUILD
 	rm -rf ./OS.vmdk
 	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
