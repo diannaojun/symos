@@ -3,6 +3,8 @@
 # DiannaoJun
 # 2024-04-05
 
+RM  :=  rm -rf
+
 DEFAULT: BUILD CLEAN
 
 BUILD:
@@ -16,6 +18,11 @@ CLEAN:
 	cd kernel && $(MAKE) CLEAN
 	# 清理
 
-VM_IMAGE: DEFAULT
+IMG_CLEAN:
+	$(RM) ./*.vmdk
+	$(RM) ./*.img
+
+VM_IMAGE: BUILD
 	rm -rf ./OS.vmdk
 	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
+	$(MAKE) CLEAN
