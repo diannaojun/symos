@@ -5,7 +5,7 @@
 
 RM  :=  rm -rf
 
-DEFAULT: BUILD CLEAN
+DEFAULT: BUILD #CLEAN
 
 BUILD:
 	cd lib && $(MAKE)

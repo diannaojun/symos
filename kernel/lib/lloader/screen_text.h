@@ -42,15 +42,18 @@ void ins_scrn_txt_swp(u8 id) {
 }
 
 void ins_scrn_txt_clr(struct INS_SCRN_TXT* ts) {
-    memset(ts->vm,0,(u32)(ts->h*ts->w)<<1);
+    *((char*)0xb8000)='@';
+    *((char*)0xb8001)=0x0f;
+    //memset(ts->vm,0,(u64)(ts->h*ts->w)<<1);
     return ;
 }
 
 void ins_scrn_txt_scr(struct INS_SCRN_TXT* ts,u16 lines) {
-    static u32 i,e,s,k;
-    s=(u32)ts->w<<1,k=s*lines;
-    e=(u32)ts->vm+(ts->h-1)*k;
-    for(i=(u32)ts->vm; i<e; i+=s)
+    static u64 i,e,s,k;
+    s=ts->w<<1;
+    k=s*lines;
+    e=(u64)ts->vm+(ts->h-1)*k;
+    for(i=(u64)ts->vm; i<e; i+=s)
         memcpy((void*)i,(void*)i+k,s);
     memset((void*)e,0,k);
     return ;

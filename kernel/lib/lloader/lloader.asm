@@ -10,7 +10,7 @@
 
 %define argd0 rdi
 %define argd1 rsi
-%define argd2 rdx
+%define rdx rdx
 %define argd3 rcx
 %define argd4 r8
 %define argd5 r9
@@ -100,55 +100,48 @@ strset:
 	push argd0
 	call strlen
 	pop argd0
-	mov argd2,rax
+	mov rdx,rax
 	call memset
 	ret
 
 memset:
-	mov rax,argd1
-	call _raxfull
-		memset_loop:
-	cmp argd2,8
-	jl memset_lloop
-	mov [argd0],rax
-	sub argd2,8
-	add argd0,8
-	jmp memset_loop
-		memset_lloop:
-	test argd2,argd2
+	test rdx, rdx
 	jz _ret
-	mov [argd0],al
-	dec argd2
-	inc argd0
-	jmp memset_lloop
+
+	and rsi, 0x0ff
+	xor rax, rax
+	or rax, rsi
+	shl rsi, 8
+	or rax, rsi
+	mov rsi, rax
+	shl rsi, 16
+	or rax, rsi
+	mov rsi, rax
+	shl rsi, 32
+	or rax, rsi
+
+	_memset_loop8:
+		cmp rdx, 8
+		jl _memset_loop
+		mov [rdi], rax
+		add rdi, 8
+		sub rdx, 8
+		jmp _memset_loop8
+	_memset_loop:
+		test rdx, rdx
+		jz _ret
+		mov [rdi], al
+		dec rdx
+		inc rdi
+		jmp _memset_loop
+	ret
 
 memcpy:
-	mov r10,argd0
-	mov r11,argd1
-	mov rdi,r10
-	mov rsi,r11
-    mov rcx,argd2
+	mov r10,rdi
+	mov r11,rsi
+    mov rcx,rdx
     rep movsb
     ret
-
-_raxfull:
-	xor r11,r11
-	or r11,rax
-	shl r11,8
-	or r11,rax
-	shl r11,8
-	or r11,rax
-	shl r11,8
-	or r11,rax
-	shl r11,8
-	or r11,rax
-	shl r11,8
-	or r11,rax
-	shl r11,8
-	or r11,rax
-	shl r11,8
-	or r11,rax
-	mov rax,r11
 
 _ret:
 	ret
