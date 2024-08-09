@@ -13,6 +13,7 @@
 #include <lib/lloader/file.h>           // 文件支持
 #include <lib/lloader/disk.h>           // 硬盤支持
 #include <lib/filesys.h>                // SFS文件系統支持
+#include <lib/lloader/print.h>
 
 struct Instrument ins[16];
 struct INS_DISK_OPT ins_disk_ata_opt[4];
