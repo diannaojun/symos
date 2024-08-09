@@ -17,5 +17,4 @@ DQ (($-$$)/8)+1
 DQ (($-$$)/8)+1
 DQ (($-$$)/8)+1
 DQ (($-$$)/8)+1
-DQ 0xffffffffffffffff								; IDK
-DQ 0xffffffffffffffff								; L64
+DQ 0xfffffffffffffff0								; L64
