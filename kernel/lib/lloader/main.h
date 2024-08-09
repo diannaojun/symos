@@ -17,6 +17,8 @@
 struct Instrument ins[16];
 struct INS_DISK_OPT ins_disk_ata_opt[4];
 struct INS_DISK_ATA_DAT ins_disk_ata_dat[2];
+struct INS_CONSOLE_OPT ins_con_opt;
+struct INS_SCRN_TXT ins_scrn_txt;
 
 void ins_init(void){
     // 0x1f0 0x170 ATA磁盘设备初始化
@@ -32,6 +34,8 @@ void ins_init(void){
     ins[0].ins_type=ins[1].ins_type=0x0001;
     ins[0].ins_uuid=0,ins[1].ins_uuid=1;
     ins_disk_ata_init(&ins_disk_ata_dat[0]);
+    // 文本荧幕设备初始化
+    ins_print_init(&ins[2], &ins_con_opt, &ins_scrn_txt);
 }
 
 #endif //_SYM_KERNEL_MAIN_H_
