@@ -2,7 +2,7 @@
  * SymOS
  * DiannaoJun
  * 2024-04-29
- */
+*/
 #ifndef _SYM_KERNEL_SCREEN_TEXT_H_
 #define _SYM_KERNEL_SCREEN_TEXT_H_
 
