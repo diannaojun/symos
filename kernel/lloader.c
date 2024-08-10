@@ -5,11 +5,10 @@
  */
 
 #include <lib/lloader/main.h>
-const static char _t[]="0123456789ABCDEF";
 void show(u64 x, void* s){
-    u64 i,j;
-    for(i=0;i<16;++i){
-        *((char*)(s+i+i))=_t[2];
+    u64 i;
+    for(i=0;i<16;++i, x<<=4){
+        *((char*)(s+i+i))=_CONST_NUM_TBL[(x&0xf000000000000000ull)>>60];
         *((u8*)(s+i+i+1))=0x0f;
     }
 }
@@ -21,7 +20,7 @@ int main (void){
     void *secbuf2 = (void*)0x0022400ull;
     ins_init();
     show((u64)(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear),0xb8000);
-    show(ins_scrn_txt_clr,0xb8040);
+    show((u64)ins_scrn_txt_clr,0xb8040);
     // (*(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear))(ins[2].ins_data);
     // (((struct INS_DISK_OPT*)(ins[0].ins_operation))->read)(ins[0].ins_data, secbuf0, 0, 1);
     // SMYFS_INS_LOAD(&ins[0], secbuf0, ((struct SMYFS*)secbuf0)->root_start, secbuf2);
