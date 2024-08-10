@@ -11,7 +11,6 @@
 #include <lib/lloader/instrument.h>
 #include <lib/lloader/screen_text.h>
 
-#pragma pack(4)
 struct INS_CONSOLE_OPT{
     void (*clear)(void*);
     void (*scroll)(void*,u16);

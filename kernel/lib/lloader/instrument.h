@@ -8,7 +8,6 @@
 
 #include <ia64/stddef.h>
 
-#pragma pack(8)
 struct Instrument{
 	// “设备” 结构
 	void* ins_data;			// 设备数据指针
