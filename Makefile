@@ -5,25 +5,28 @@
 
 RM  :=  rm -rf
 
-DEFAULT: BUILD #CLEAN
+DEFAULT: IMG
 
 BUILD:
 	cd lib && $(MAKE)
 	cd kernel && $(MAKE)
-	# 生成系统原始镜像
-	# 要生成 '.vmdk' 格式的虚拟机文件使用参数 'VM_IMAGE'
+	# 生成系统原始镜像（.img） 不清理
 
 CLEAN:
 	# cd lib && $(MAKE) CLEAN
 	cd kernel && $(MAKE) CLEAN
 	# 清理
 
-IMG_CLEAN:
-	$(RM) ./*.vmdk
-	$(RM) ./kernel/*.img
-	cd kernel && $(MAKE) CLEAN
+IMG: BUILD CLEAN
+	# 生成系统原始镜像（.img） 清理
 
-VM_IMAGE: BUILD
-	rm -rf ./OS.vmdk
+VM_IMG: BUILD
+	rm -rf ./*.vmdk
 	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
 	$(MAKE) CLEAN
+	# 生成系统镜像（.vmdk） 清理
+
+DEBUG: BUILD 
+	rm -rf ./*.vmdk
+	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
+	# 生成系统镜像（.vmdk） 不清理
