@@ -36,15 +36,15 @@ void ins_init(void){
     ins[0].ins_uuid=0,ins[1].ins_uuid=1;
     ins_disk_ata_init(&ins_disk_ata_dat[0]);
     // 文本荧幕设备初始化
-    ins_con_opt.clear=(void*)ins_scrn_txt_clr;
-    ins_con_opt.scroll=(void*)ins_scrn_txt_scr;
-    ins_con_opt.putstr=(void*)ins_scrn_txt_puts;
-    ins_con_opt.putchar=(void*)ins_scrn_txt_putc;
-    ins_scrn_txt.h = 25;
-    ins_scrn_txt.w = 80;
-    ins_scrn_txt.cx = 0;
-    ins_scrn_txt.cy = 0;
-    ins_scrn_txt.vm = (void*)0xb8000;
+    ins_con_opt[0].clear=(void*)ins_scrn_txt_clr;
+    ins_con_opt[0].scroll=(void*)ins_scrn_txt_scr;
+    ins_con_opt[0].putstr=(void*)ins_scrn_txt_puts;
+    ins_con_opt[0].putchar=(void*)ins_scrn_txt_putc;
+    ins_scrn_txt[0].h = 25;
+    ins_scrn_txt[0].w = 80;
+    ins_scrn_txt[0].cx = 0;
+    ins_scrn_txt[0].cy = 0;
+    ins_scrn_txt[0].vm = (void*)0xb8000;
     ins[2].ins_class=0x0001;
     ins[2].ins_type=0x0001;
     ins[2].ins_data=(void*)&ins_scrn_txt[0];
