@@ -7,9 +7,10 @@
 #include <lib/lloader/main.h>
 
 void show(u64 x, void* s){
+    const char KKKSC03[]="0123456789ABCDEF";
     u64 i;
     for(i=0;i<16;++i, x<<=4){
-        *(((char*)s)+(i+i))=_CONST_NUM_TBL[(u64)((x&0xf000000000000000ull)>>60)];
+        *(((char*)s)+(i+i))=KKKSC03[(u64)((x&0xf000000000000000ull)>>60)];
         *(((u8*)s)+(i+i+1))=0x0fu;
     }
 }
