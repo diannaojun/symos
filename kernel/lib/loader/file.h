@@ -15,9 +15,7 @@
 
 u64 SMYFS_INS_GET_FAT(insp, fsp, u64 ip, void* buf){
     static struct FIO_BLK blk;
-    printsl("GET FAT ");
-    printdl(ip);
-    printsl(" -> ");
+    //printsl("GET FAT "),printdl(ip),printsl(" -> ");
     blk.SIZE = 9;
     blk.LBA = sp->resSec+(ip>>6);
     blk.BP = buf;
@@ -25,8 +23,7 @@ u64 SMYFS_INS_GET_FAT(insp, fsp, u64 ip, void* buf){
         (dp->object, buf, blk.LBA, 1);
     ip &= (1<<9)-1;
     ip=((u64*)blk.BP)[ip];
-    printdl(ip);
-    printsl("\n\r");
+    //printdl(ip),printsl("\n\r");
     return ip;
 }
 

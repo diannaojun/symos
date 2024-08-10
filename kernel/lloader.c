@@ -9,18 +9,16 @@ const static char _t[]="0123456789ABCDEF";
 void show(u64 x, void* s){
     u64 i,j;
     for(i=0;i<16;++i){
-        j=x&0xf000000000000000;
-        j>>=60, x<<=4;
-        *((char*)(s+i+i))=_t[j];
+        *((char*)(s+i+i))=_t[2];
         *((u8*)(s+i+i+1))=0x0f;
     }
 }
 
 int main (void){
     size_t itr;
-    void *secbuf0 = (void*)0x0202000ull;
-    void *secbuf1 = (void*)0x0202200ull;
-    void *secbuf2 = (void*)0x0202400ull;
+    void *secbuf0 = (void*)0x0022000ull;
+    void *secbuf1 = (void*)0x0022200ull;
+    void *secbuf2 = (void*)0x0022400ull;
     ins_init();
     show((u64)(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear),0xb8000);
     show(ins_scrn_txt_clr,0xb8040);

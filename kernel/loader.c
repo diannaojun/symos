@@ -6,8 +6,8 @@
 #include <lib/loader/loader.h>
 
 void main (void){
-    void*tempa=(void*)0x010000;
-    void*tempb=(void*)0x020000;
+    void*tempa=(void*)0x00010000;
+    void*tempb=(void*)0x00020000;
     int i,j,k;
     initPrint();
     printsl("SymbolZsueySystom Loader.             \n\r");

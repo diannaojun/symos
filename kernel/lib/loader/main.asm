@@ -256,4 +256,4 @@ enter_long_mode:
 [bits 64]
 
 MODE64:
-    jmp 0x020000
+    call 0x00020000
