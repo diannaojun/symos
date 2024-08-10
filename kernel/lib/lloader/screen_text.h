@@ -17,7 +17,12 @@ struct INS_SCRN_TXT{
     u8 opt:4,seting:1;
     void*vm;
 };
-
+/*
+1->Lightening
+2~4->BackgroundColor
+5->Flashing
+6~8->FrontColor
+*/
 static void ins_scrn_txt_mov_cur(struct INS_SCRN_TXT* ts) {
     static u16 cl;
     cl=ts->cy*80+ts->cx;
