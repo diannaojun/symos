@@ -5,12 +5,14 @@
  */
 
 #include <lib/lloader/main.h>
-
+const static char _t[]="0123456789ABCDEF";
 void show(u64 x, void* s){
-    static char _t[]="0123456789ABCDEF",i;
-    for(i=0;i<16;++i,x>>=4){
-        *((char*)(s+(i<<1)))=_t[x&15];
-        *((char*)(s+(i<<1)+1))=0x0f;
+    u64 i,j;
+    for(i=0;i<16;++i){
+        j=x&0xf000000000000000;
+        j>>=60, x<<=4;
+        *((char*)(s+i+i))=_t[j];
+        *((u8*)(s+i+i+1))=0x0f;
     }
 }
 
