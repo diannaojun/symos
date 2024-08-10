@@ -23,12 +23,8 @@ int main (void){
     ins_init();
     show((u64)(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear),0xb8000ull);
     show((u64)ins_scrn_txt_clr,0xb8040ull);
-<<<<<<< HEAD
-    show((u64)(((struct INS_SCRN_TXT *)ins[2].ins_data)->vm),0xb8080ull);
-=======
     show((u64)0x114514ull,0xb8080ull);
     ins_scrn_txt_clr(ins[2].ins_data);
->>>>>>> 9b9e99191384c266fdaab4f7d9d47e16593a56f9
     // (*(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear))(ins[2].ins_data);
     // (((struct INS_DISK_OPT*)(ins[0].ins_operation))->read)(ins[0].ins_data, secbuf0, 0, 1);
     // SMYFS_INS_LOAD(&ins[0], secbuf0, ((struct SMYFS*)secbuf0)->root_start, secbuf2);
