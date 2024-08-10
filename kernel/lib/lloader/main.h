@@ -36,7 +36,20 @@ void ins_init(void){
     ins[0].ins_uuid=0,ins[1].ins_uuid=1;
     ins_disk_ata_init(&ins_disk_ata_dat[0]);
     // 文本荧幕设备初始化
-    ins_print_init(&ins[2], &ins_con_opt, &ins_scrn_txt);
+    ins_con_opt.clear=(void*)ins_scrn_txt_clr;
+    ins_con_opt.scroll=(void*)ins_scrn_txt_scr;
+    ins_con_opt.putstr=(void*)ins_scrn_txt_puts;
+    ins_con_opt.putchar=(void*)ins_scrn_txt_putc;
+    ins_scrn_txt.h = 25;
+    ins_scrn_txt.w = 80;
+    ins_scrn_txt.cx = 0;
+    ins_scrn_txt.cy = 0;
+    ins_scrn_txt.vm = (void*)0xb8000;
+    ins[2].ins_class=0x0001;
+    ins[2].ins_type=0x0001;
+    ins[2].ins_data=(void*)&ins_scrn_txt;
+    ins[2].ins_operation=(void*)&ins_con_opt;
+    ins_print_init(&ins[2]);
 }
 
 #endif //_SYM_KERNEL_MAIN_H_

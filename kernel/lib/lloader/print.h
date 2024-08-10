@@ -27,25 +27,7 @@ static char str_buffer[128]="";
 static struct Instrument *StdCon;
 static struct Instrument *ErrCon;
 
-void ins_print_init(struct Instrument *Console, 
-    struct INS_CONSOLE_OPT *tso,
-    struct INS_SCRN_TXT *ts){
-    static int i;
-
-    ts->h = 25, ts->w = 80;
-    ts->cx = ts->cy = 0;
-    ts->vm = (void*)0xb8000;
-
-    tso->clear=(void*)ins_scrn_txt_clr;
-    tso->scroll=(void*)ins_scrn_txt_scr;
-    tso->putstr=(void*)ins_scrn_txt_puts;
-    tso->putchar=(void*)ins_scrn_txt_putc;
-
-    Console->ins_class=0x0001;
-    Console->ins_type=0x0001;
-    Console->ins_data=(void*)ts;
-    Console->ins_operation=(void*)tso;
-
+void ins_print_init(struct Instrument *Console){
     StdCon = Console;
     ErrCon = StdCon;
     return ;
