@@ -23,7 +23,7 @@ IMG: BUILD CLEAN
 DEBUG: BUILD 
 	rm -rf ./*.vmdk
 	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
-	# 生成系统镜像（.vmdk） 不清理
+	# 清除已有虚拟机硬盘文件（.vmdk） 并生成新的
 
 VM_IMG: DEBUG CLEAN
 	# 生成系统镜像（.vmdk） 清理
