@@ -21,7 +21,7 @@ int main (void){
     void *secbuf2 = (void*)0x0202400ull;
     ins_init();
     show((u64)(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear),0xb8000);
-    show((u64)(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear),0xb8040);
+    show(ins_scrn_txt_clr,0xb8040);
     // (*(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear))(ins[2].ins_data);
     // (((struct INS_DISK_OPT*)(ins[0].ins_operation))->read)(ins[0].ins_data, secbuf0, 0, 1);
     // SMYFS_INS_LOAD(&ins[0], secbuf0, ((struct SMYFS*)secbuf0)->root_start, secbuf2);
