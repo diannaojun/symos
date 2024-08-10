@@ -43,8 +43,8 @@ void ins_print_init(struct Instrument *Console,
 
     Console->ins_class=0x0001;
     Console->ins_type=0x0001;
-    Console->ins_data=ts;
-    Console->ins_operation=tso;
+    Console->ins_data=(void*)ts;
+    Console->ins_operation=(void*)tso;
 
     StdCon = Console;
     ErrCon = StdCon;
