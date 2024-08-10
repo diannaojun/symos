@@ -27,7 +27,7 @@ typedef u32 ptrdiff_t;
 
 #ifndef BOOL
 #define BOOL unsigned char
-#define TRUE 0xff
+#define TRUE 0x01
 #define FALSE 0x00
 #endif
 

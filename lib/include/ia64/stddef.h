@@ -26,8 +26,8 @@ typedef u64 ptrdiff_t;
 #endif
 
 #ifndef BOOL
-#define BOOL unsigned char
-#define TRUE 0xff
+#define BOOL u8
+#define TRUE 0x01
 #define FALSE 0x00
 #endif
 
