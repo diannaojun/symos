@@ -20,13 +20,10 @@ CLEAN:
 IMG: BUILD CLEAN
 	# 生成系统原始镜像（.img） 清理
 
-VM_IMG: BUILD
-	rm -rf ./*.vmdk
-	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
-	$(MAKE) CLEAN
-	# 生成系统镜像（.vmdk） 清理
-
 DEBUG: BUILD 
 	rm -rf ./*.vmdk
 	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
 	# 生成系统镜像（.vmdk） 不清理
+
+VM_IMG: DEBUG CLEAN
+	# 生成系统镜像（.vmdk） 清理
