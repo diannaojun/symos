@@ -13,7 +13,7 @@ int main (void){
     ins_init();
     *((char*)0xb8000)='0'+((u64)(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear))&7;
     *((char*)0xb8001)=0x0f;
-    *((char*)0xb8002)='0'+((u64)(ins_scrn_txt_clr))&7;
+    *((char*)0xb8002)='0'+((u64)(*ins_scrn_txt_clr))&7;
     *((char*)0xb8003)=0x0f;
     // (*(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear))(ins[2].ins_data);
     // (((struct INS_DISK_OPT*)(ins[0].ins_operation))->read)(ins[0].ins_data, secbuf0, 0, 1);
