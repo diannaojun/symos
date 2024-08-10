@@ -27,7 +27,7 @@ int main (void){
 
     show((u64)(((struct INS_SCRN_TXT *)ins[2].ins_data)->vm),(void*)0xb80A0ull);
     show((u64)(&((struct INS_SCRN_TXT *)ins[2].ins_data)[0].h),(void*)0xb80F0ull);
-    show((u64)(&(ins_scrn_txt[0].h)),(void*)0xb8140ull);
+    show((u64)((ins_scrn_txt[0].h)),(void*)0xb8140ull);
 
     show((u64)(((struct INS_CONSOLE_OPT *)ins[2].ins_operation)[0].clear),(void*)0xb81E0ull);
     show((u64)((ins_con_opt[0].clear)),(void*)0xb8230ull);
