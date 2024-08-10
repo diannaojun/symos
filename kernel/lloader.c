@@ -24,8 +24,8 @@ int main (void){
     show((u64)(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear),(void*)0xb8000ull);
     show((u64)ins_scrn_txt_clr,(void*)0xb80A0ull);
     show((u64)(((struct INS_SCRN_TXT *)ins[2].ins_data)->vm),(void*)0xb8140ull);
-    show((u64)(ins[2].ins_data),(void*)0xb81E0ull);
-    show((u64)(&ins_scrn_txt),(void*)0xb8230ull);
+    show((u64)(&((struct INS_SCRN_TXT)ins[2].ins_data)[0].h),(void*)0xb81E0ull);
+    show((u64)(&(ins_scrn_txt[0].h)),(void*)0xb8280ull);
     // ins_scrn_txt_clr(ins[2].ins_data);
     // (*(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear))(ins[2].ins_data);
     // (((struct INS_DISK_OPT*)(ins[0].ins_operation))->read)(ins[0].ins_data, secbuf0, 0, 1);
