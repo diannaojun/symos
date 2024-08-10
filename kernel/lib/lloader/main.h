@@ -15,11 +15,11 @@
 #include <lib/filesys.h>                // SFS文件系統支持
 #include <lib/lloader/print.h>
 
-static struct Instrument ins[16];
-static struct INS_DISK_OPT ins_disk_ata_opt[4];
-static struct INS_DISK_ATA_DAT ins_disk_ata_dat[2];
-static struct INS_CONSOLE_OPT ins_con_opt;
-static struct INS_SCRN_TXT ins_scrn_txt;
+struct Instrument ins[16];
+struct INS_DISK_OPT ins_disk_ata_opt[4];
+struct INS_DISK_ATA_DAT ins_disk_ata_dat[2];
+struct INS_CONSOLE_OPT ins_con_opt;
+struct INS_SCRN_TXT ins_scrn_txt;
 
 void ins_init(void){
     // 0x1f0 0x170 ATA磁盘设备初始化
