@@ -23,6 +23,8 @@ typedef u64 type;
 #ifndef _PTRDIFF_T
 #define _PTRDIFF_T
 typedef u64 ptrdiff_t;
+typedef u64 uintptr_t;
+typedef i64 intptr_t;
 #endif
 
 #ifndef BOOL

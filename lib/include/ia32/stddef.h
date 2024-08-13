@@ -23,6 +23,8 @@ typedef u32 type;
 #ifndef _PTRDIFF_T
 #define _PTRDIFF_T
 typedef u32 ptrdiff_t;
+typedef u32 uintptr_t;
+typedef i32 intptr_t;
 #endif
 
 #ifndef BOOL

@@ -21,18 +21,21 @@ int main (void){
     void *secbuf1 = (void*)0x0022200ull;
     void *secbuf2 = (void*)0x0022400ull;
     ins_init();
+    // memset(0xb8000ull,0,80*2*25);
+    // show((u64)(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear),(void*)0xb8000ull);
+    // show((u64)ins_scrn_txt_clr,(void*)0xb8050ull);
 
-    show((u64)(*((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear),(void*)0xb8000ull);
-    show((u64)ins_scrn_txt_clr,(void*)0xb8050ull);
+    show((u64)ins_scrn_txt[0].vm,(void*)0xb80A0ull);
+    show((u64)ins_scrn_txt[0].w,(void*)0xb80F0ull);
+    show((u64)ins_scrn_txt[0].h,(void*)0xb8140ull);
 
-    show((u64)(((struct INS_SCRN_TXT *)ins[2].ins_data)->vm),(void*)0xb80A0ull);
-    show((u64)(&((struct INS_SCRN_TXT *)ins[2].ins_data)[0].h),(void*)0xb80F0ull);
-    show((u64)((ins_scrn_txt[0].h)),(void*)0xb8140ull);
-
-    show((u64)(((struct INS_CONSOLE_OPT *)ins[2].ins_operation)[0].clear),(void*)0xb81E0ull);
-    show((u64)((ins_con_opt[0].clear)),(void*)0xb8230ull);
-    show((u64)(ins_scrn_txt_clr),(void*)0xb8280ull);
-    // ins_scrn_txt_clr(ins[2].ins_data);
+    show((u64)sizeof((struct INS_CONSOLE_OPT *)ins[2].ins_operation),(void*)0xb81E0ull);
+    // show((u64)((ins_con_opt[0].clear)),(void*)0xb8230ull);
+    // show((u64)(ins_scrn_txt_clr),(void*)0xb8280ull);
+    
+    ins_scrn_txt_clr(&ins_scrn_txt[0]);
+    for(;;);
+    //ins_scrn_txt_clr(ins_scrn_txt);
     // (*(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear))(ins[2].ins_data);
     // (((struct INS_DISK_OPT*)(ins[0].ins_operation))->read)(ins[0].ins_data, secbuf0, 0, 1);
     // SMYFS_INS_LOAD(&ins[0], secbuf0, ((struct SMYFS*)secbuf0)->root_start, secbuf2);
