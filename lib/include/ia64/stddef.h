@@ -16,7 +16,6 @@ typedef signed char i8;
 typedef signed short i16;
 typedef signed int i32;
 typedef signed long long i64;
-typedef void* pointer;
 typedef u64 type;
 #endif
 
@@ -25,6 +24,7 @@ typedef u64 type;
 typedef u64 ptrdiff_t;
 typedef u64 uintptr_t;
 typedef i64 intptr_t;
+typedef uintptr_t pointer;
 #endif
 
 #ifndef BOOL

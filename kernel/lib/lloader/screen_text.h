@@ -47,8 +47,7 @@ void ins_scrn_txt_swp(u8 id) {
 }
 
 void ins_scrn_txt_clr(struct INS_SCRN_TXT* ts) {
-    show((u64)ts->vm,(void*)0xb80A0ull);
-    //memset(ts->vm,0,(u64)(ts->h*ts->w)<<1);
+    memset(ts->vm,0,(u64)(ts->h*ts->w)<<1);
     return ;
 }
 

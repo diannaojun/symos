@@ -56,7 +56,7 @@ LOADER: loader.asm loader.c					# 加载程序编译
 		$(BDPATH)/loader.c.obj $(BDPATH)/loader.asm.obj
 
 LLOADER: lloader.c 							# 加载程序编译
-	$(CC) -c lloader.c -o $(BDPATH)/lloader.c.obj $(CCFLAGS) -I./ -m64
+	$(CC) -c lloader.c -o $(BDPATH)/lloader.c.obj $(CCFLAGS) -I./ -m64 -fpic
 	$(AS) ./lib/lloader/lloader.asm -o $(BDPATH)/lloader.asm.obj -f elf64
 	$(LD) -m elf_x86_64 --oformat binary -o $(BDPATH)/lloader.c.bin -T ./loader.lds \
 		$(BDPATH)/lloader.c.obj $(BDPATH)/lloader.asm.obj

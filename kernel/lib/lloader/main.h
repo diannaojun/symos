@@ -36,20 +36,20 @@ void ins_init(void){
     ins[0].ins_uuid=0,ins[1].ins_uuid=1;
     ins_disk_ata_init(&ins_disk_ata_dat[0]);
     // 文本荧幕设备初始化
-    ins_con_opt[0].clear=(void*)ins_scrn_txt_clr;
-    ins_con_opt[0].scroll=(void*)ins_scrn_txt_scr;
-    ins_con_opt[0].putstr=(void*)ins_scrn_txt_puts;
-    ins_con_opt[0].putchar=(void*)ins_scrn_txt_putc;
+    ins_con_opt[0].clear=(pointer)ins_scrn_txt_clr;
+    ins_con_opt[0].scroll=(pointer)ins_scrn_txt_scr;
+    ins_con_opt[0].putstr=(pointer)ins_scrn_txt_puts;
+    ins_con_opt[0].putchar=(pointer)ins_scrn_txt_putc;
     ins_scrn_txt[0].h = 25;
     ins_scrn_txt[0].w = 80;
     ins_scrn_txt[0].cx = 0;
     ins_scrn_txt[0].cy = 0;
-    ins_scrn_txt[0].vm = (void*)0xb8000;
+    ins_scrn_txt[0].vm = (pointer)0xb8000;
     ins[2].ins_class=0x0001;
     ins[2].ins_type=0x0001;
-    ins[2].ins_data=(void*)&ins_scrn_txt[0];
-    ins[2].ins_operation=(void*)&ins_con_opt[0];
-    //ins_print_init(&ins[2]);
+    ins[2].ins_data=(pointer)&ins_scrn_txt[0];
+    ins[2].ins_operation=(pointer)&ins_con_opt[0];
+    ins_print_init(&ins[2]);
     //while(((struct INS_CONSOLE_OPT*)(ins[2].ins_operation))->clear == ins_con_opt[0].clear);
     // 相等則卡死，不等則顯示數字界面
 }
