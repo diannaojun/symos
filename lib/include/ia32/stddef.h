@@ -24,7 +24,7 @@ typedef u32 type;
 typedef u32 ptrdiff_t;
 typedef u32 uintptr_t;
 typedef i32 intptr_t;
-typedef void* pointer;
+typedef void *pointer;
 #endif
 
 #ifndef BOOL
