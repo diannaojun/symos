@@ -35,7 +35,10 @@
 
 编译环境需要您具备：
 - NASM（可通过 `sudo apt install nasm -y` 来安装）
-- GCC（可通过 `sudo apt install build-essential` 来安装）
+- GCC（可通过 `sudo apt install build-essential -y` 来安装）
+
+如果您需要虚拟机镜像，您需要额外具备：
+- bximage（可通过 `sudo apt install bximage -y` 来安装）
 
 在控制台切换到源码根目录，输入 `make` 即可编译得到镜像。
 
