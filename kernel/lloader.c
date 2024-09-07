@@ -51,7 +51,7 @@ int main (void){
     to->puts=&puts;
     putd((u64)(((struct opt*)ins->ins_operation)->puts),0xb8000+4*80*2);
     putd((u64)(((struct opt*)ins[0].ins_operation)->puts),0xb8000+4*80*2+2*32);
-    (*to->puts)("ALRIGHT",0xb8000+2*80*5);
+    (to->puts)("ALRIGHT",0xb8000+2*80*5);
     _fin();
     return 0;
 }
