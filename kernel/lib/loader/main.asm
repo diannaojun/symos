@@ -3,19 +3,24 @@
 ; DiannaoJun
 ; 2024-04-27
 
-BITS 32
-GLOBAL memcpy,memset,delay
-GLOBAL chkSupCPUID,chkSup64,Enter
-GLOBAL _hlt,_sti,_cli,_fin,_nop
-GLOBAL _in8,_in16,_in32
-GLOBAL _out8,_out16,_out32
+global memcpy,memset,delay
+global _hlt,_sti,_cli,_fin,_nop
+global _in8,_in16,_in32
+global _out8,_out16,_out32
+global support_CPUID
+global support_long_mode,enter_long_mode
+
+[bits 32]
 [section .data]
+
 REG_TEMP:
     .ESI    DD 0
     .EBX    DD 0
     .ECX    DD 0
     .EDX    DD 0
+
 [section .text]
+
 memcpy:
     push ebp
     mov ebp,esp
@@ -29,6 +34,7 @@ memcpy:
     pop esi
     pop ebp
     ret
+
 memset:
     push ebp
     mov ebp,esp
@@ -62,6 +68,7 @@ memset:
     pop esi
     pop ebp
     ret
+
 delay:
     push ebp
     mov ebp,esp
@@ -75,24 +82,29 @@ delay:
     .RET:
     pop ebp
     ret
-    
+
 _hlt:
     hlt
     ret
+
 _sti:
     sti
     ret
+
 _cli:
     cli
     ret
+
 _nop:
     nop
     ret
+
 _fin:
     hlt
     nop
     jmp _fin
     ret
+
 _in8:
     push ebp
     mov ebp,esp
@@ -102,6 +114,7 @@ _in8:
     in al,dx
     pop ebp
     ret
+
 _in16:
     push ebp
     mov ebp,esp
@@ -111,6 +124,7 @@ _in16:
     in ax,dx
     pop ebp
     ret
+
 _in32:
     push ebp
     mov ebp,esp
@@ -120,6 +134,7 @@ _in32:
     in eax,dx
     pop ebp
     ret
+
 _out8:
     push ebp
     mov ebp,esp
@@ -129,6 +144,7 @@ _out8:
     out dx,al
     pop ebp
     ret
+
 _out16:
     push ebp
     mov ebp,esp
@@ -138,6 +154,7 @@ _out16:
     out dx,ax
     pop ebp
     ret
+
 _out32:
     push ebp
     mov ebp,esp
@@ -161,7 +178,8 @@ GDT64_INFO:
     dd GDT64_BGN
 
 [section .text]
-chkSupCPUID:
+
+support_CPUID:
     push ebx
     push ecx
     push edx
@@ -184,20 +202,21 @@ chkSupCPUID:
     pop ecx
     pop ebx
     ret
-chkSup64:
+
+support_long_mode:
     mov eax,0x80000000
     cpuid
     cmp eax,0x80000001
-    setnb al  
-    jb supportLongModeRet
+    setnb al
+    jb support_long_mode
     mov eax,0x80000001
     cpuid
     bt edx,29
     setc al
-    supportLongModeRet:
-    movzx   eax,    al
+    movzx eax,al
     ret
-Enter:
+
+enter_long_mode:
     lgdt [GDT64_INFO]
     mov ax,0x10
     mov ds,ax
@@ -220,7 +239,7 @@ Enter:
     bts eax,8
     wrmsr
     ; 设置页面地址
-    mov eax,0x90000
+    mov eax,0x00d000
     mov cr3,eax
     ; 启用分页
     mov eax,cr0
@@ -231,8 +250,10 @@ Enter:
     mov es,ax
     mov fs,ax
     mov gs,ax
-    jmp dword 0x08:MODE64
+    jmp dword 0x0008:MODE64
     ret
-BITS 64
+
+[bits 64]
+
 MODE64:
-    jmp 0x100000
+    call 0x00020000

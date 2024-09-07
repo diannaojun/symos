@@ -2,18 +2,18 @@
 ; SymOS
 ; DiannaoJun
 ; 2024-03-31
-ORG 0x7c00
-BITS 16
+org 0x7c00                      ; 程序开始地址
+[bits 16]                       ; CPU 位宽
 ; %define dbg
-jmp START
+jmp START                       ; 跳转到 START
 
 DAT_OEM     DB "SYMOS1.0"
 DAT_DL      DB "SYMOS1.0"
 DAT_UUID    DD 0xffffffff
 DAT_RS      DW 16
-DAT_SNO     DQ 64
+DAT_SNO     DQ 16*1024*2
 DAT_SYS     DB 0x01
-ROT_STR		DQ 529
+ROT_STR		DQ 528
 
 TIMES 64-($-$$) DB 0x00
 
@@ -49,7 +49,7 @@ PACKET:
 ENTRY:
     ; 清屏
     call START_SCN_INFO
-    ; 输出IPL信息
+    ; 输出 IPL 信息
     mov si,IPL_MESSAGE
     call PUTS
     ; 读磁盘
@@ -66,10 +66,12 @@ ENTRY:
     call SAVE_SCN_INFO
     call 0x7e00
     jmp FINAL
+
 ERR:; 输出失败信息
     mov si,ERR_MESSAGE
     call PUTS
     ret
+
 PUTS:
     mov al,[si]
     inc si
@@ -81,10 +83,12 @@ PUTS:
         mov bx,0x0f
         int 0x10
     jmp PUTS
+
 READ_LBA:
     mov ah,0x42
     int 0x13
     ret
+
 START_SCN_INFO:
     xor bx,bx
     xor dx,dx
@@ -97,12 +101,14 @@ START_SCN_INFO:
     mov bh,0x07
     int 0x10
     ret
+
 SAVE_SCN_INFO:
     mov ah,2
     xor bx,bx
     xor dx,dx
     int 0x10
     ret
+
 FINAL:
     jmp $
 
@@ -111,6 +117,7 @@ HEX_MESSAGE:
     DB "0x##",0x00
 HEX_TABLE:
     db "0123456789ABCDEF"
+
 PUT_HEX:
     mov bl,al
     shr bl,4

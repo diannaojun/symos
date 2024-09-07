@@ -3,15 +3,15 @@
 ; DiannaoJun
 ; 2024-04-04
 
-ORG 0x7e00
-BITS 16
+org 0x7e00
+[bits 16]
 
 ; %define dbg
 %include "./lib/loader/xdt.inc"
 
 DRIVER_NUMBER   EQU 0x7c20
 
-JMP ENTRY
+jmp ENTRY
 
 GDT_BGN:
     SEG_NULL                                ; #0 空段
@@ -38,6 +38,7 @@ ENTRY:
     mov gs,ax
     call START
     ret
+
 START:
     MODE16:
         ; 打开A20
@@ -91,7 +92,7 @@ START:
             jz WAIT8042OBE
             ret
 
-BITS 32
+[bits 32]
 MODE32: ; 进入32位保护模式
     mov ax,0x10
     mov ds,ax

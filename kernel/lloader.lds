@@ -6,7 +6,7 @@
 ENTRY (main)
 
 SECTIONS {
-    . = 0x00100000;
+    . = 0x00020000;
     .text : {
         *(.text.main);
         *(.text);
