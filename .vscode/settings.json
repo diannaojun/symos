@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "instrument.h": "c",
+        "stddef.h": "c"
+    }
+}
