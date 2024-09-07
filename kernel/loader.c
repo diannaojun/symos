@@ -46,6 +46,7 @@ void main (void){
     }
     printsl("Found L64.SYS At "),printdl(j),printsl("\n\r");
     SMYFS_INS_LOAD(ATA+0,tempa,j,tempb);
+    printsl("Loading L64.SYS\n\r");
     enter64();
     _fin();
     return ;
