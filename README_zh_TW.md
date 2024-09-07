@@ -35,9 +35,14 @@
 
 編譯環境需要您具備：
 - NASM（可通過 `sudo apt install nasm -y` 來安裝）
-- GCC（可通過 `sudo apt install build-essential` 來安裝）
+- GCC（可通過 `sudo apt install build-essential -y` 來安裝）
 
 在終端切換到源碼根目錄，輸入 `make` 即可編譯得到鏡像。
+
+如果您需要虛擬機鏡像，您需要額外具備：
+
+- bximage（可透過 `sudo apt install bximage -y` 來安裝）
+
 
 如果需要虛擬檔案，可以輸入 `make VM_IMAGE`。
 

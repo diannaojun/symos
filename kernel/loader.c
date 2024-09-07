@@ -51,53 +51,53 @@ void main (void){
     _fin();
     return ;
 errLabel:
-    printsl("HLT\n\r");
-    _fin();
-    return ;
-    /*
-    if(TRUE){
-        for(i=0;i<512;++i){
-            ((long long*)tempa)[i]=0;
-        }
-        printdl(sizeof(struct SMYFS_FILE));
-        (((struct DiskOpt*)(ATA[0].operation))->readSec)(ATA[0].object,tempa,0,1);
-        printsl("\n\rUUID: "),printdl(((struct SMYFS*)tempa)->uuid);
-        printsl("\n\rOEM: "),printsl(((struct SMYFS*)tempa)->oemName);
-        printsl("\n\rLABEL: "),printsl(((struct SMYFS*)tempa)->label);
-        printsl("\n\rreservedSec: "),printdl(((struct SMYFS*)tempa)->resSec);
-        printsl("\n\rSecs: "),printdl(((struct SMYFS*)tempa)->noS);
-        printsl("\n\rSymbol?: "),printdl(((struct SMYFS*)tempa)->haveSys);
-        printsl("\n\rroot_start: "),printdl(((struct SMYFS*)tempa)->root_start);
-        for(i=0;i<0;++i){
-        
-            printsl("\n\r");
-            printdl(((u64*)tempa)[i<<1]);
-            printsl(" ");
-            printdl(((u64*)tempa)[(i<<1)|1]);
-        }
-        SMYFS_INS_LIST(ATA+0,tempa,529,tempb);
-        printsl("\n\r\n\r LIST_ROOT (/) \n\r");
-        for(i=0;;++i){
-            j=0;
-            if(((struct SMYFS_FILE*)tempb)[i].name[0]==0)
-                break;
-            printsnl(((struct SMYFS_FILE*)tempb)[i].name, 15);
-            printsl("\e0 | ");
-            printdl(((struct SMYFS_FILE*)tempb)[i].length);
-            printsl("B\n\r");
-        }
-        
-        SMYFS_INS_LIST(ATA+0,tempa,530,tempb);
-        printsl("\n\r\n\r LIST_SYS (/SYS/) \n\r");
-        for(i=0;;++i){
-            j=0;
-            if(((struct SMYFS_FILE*)tempb)[i].name[0]==0)
-                break;
-            printsnl(((struct SMYFS_FILE*)tempb)[i].name, 15);
-            printsl("\e0 | ");
-            printdl(((struct SMYFS_FILE*)tempb)[i].length);
-            printsl("B\n\r");`
-        }
-    }*/
-    //enter64();
+	printsl("HLT\n\r");
+	_fin();
+	return ;
+	/*
+	if(TRUE){
+	    for(i=0;i<512;++i){
+	        ((long long*)tempa)[i]=0;
+	    }
+	    printdl(sizeof(struct SMYFS_FILE));
+	    (((struct DiskOpt*)(ATA[0].operation))->readSec)(ATA[0].object,tempa,0,1);
+	    printsl("\n\rUUID: "),printdl(((struct SMYFS*)tempa)->uuid);
+	    printsl("\n\rOEM: "),printsl(((struct SMYFS*)tempa)->oemName);
+	    printsl("\n\rLABEL: "),printsl(((struct SMYFS*)tempa)->label);
+	    printsl("\n\rreservedSec: "),printdl(((struct SMYFS*)tempa)->resSec);
+	    printsl("\n\rSecs: "),printdl(((struct SMYFS*)tempa)->noS);
+	    printsl("\n\rSymbol?: "),printdl(((struct SMYFS*)tempa)->haveSys);
+	    printsl("\n\rroot_start: "),printdl(((struct SMYFS*)tempa)->root_start);
+	    for(i=0;i<0;++i){
+
+	        printsl("\n\r");
+	        printdl(((u64*)tempa)[i<<1]);
+	        printsl(" ");
+	        printdl(((u64*)tempa)[(i<<1)|1]);
+	    }
+	    SMYFS_INS_LIST(ATA+0,tempa,529,tempb);
+	    printsl("\n\r\n\r LIST_ROOT (/) \n\r");
+	    for(i=0;;++i){
+	        j=0;
+	        if(((struct SMYFS_FILE*)tempb)[i].name[0]==0)
+	            break;
+	        printsnl(((struct SMYFS_FILE*)tempb)[i].name, 15);
+	        printsl("\e0 | ");
+	        printdl(((struct SMYFS_FILE*)tempb)[i].length);
+	        printsl("B\n\r");
+	    }
+
+	    SMYFS_INS_LIST(ATA+0,tempa,530,tempb);
+	    printsl("\n\r\n\r LIST_SYS (/SYS/) \n\r");
+	    for(i=0;;++i){
+	        j=0;
+	        if(((struct SMYFS_FILE*)tempb)[i].name[0]==0)
+	            break;
+	        printsnl(((struct SMYFS_FILE*)tempb)[i].name, 15);
+	        printsl("\e0 | ");
+	        printdl(((struct SMYFS_FILE*)tempb)[i].length);
+	        printsl("B\n\r");`
+	    }
+	}*/
+	//enter64();
 }

@@ -8,9 +8,9 @@
 
 #include <ia64/stddef.h>
 
-void memcpy(void*dect,void*src,size_t len);
-void memset(void*dect,u32 value,size_t len);
-size_t strlen(void*s);
-void strset(void*dect,u32 value,size_t len);
+void memcpy(void *dect, void *src, size_t len);
+void memset(void *dect, u32 value, size_t len);
+size_t strlen(void *s);
+void strset(void *dect, u32 value, size_t len);
 
 #endif
