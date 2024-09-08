@@ -1,6 +1,6 @@
 # 思博操作系统（$SymOS$）
 
-[ 繁體中文 ](README.md)
+[ 繁體中文 ](README_zh_TW.md)
 
 ## 介绍
 
