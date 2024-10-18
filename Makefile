@@ -5,25 +5,31 @@
 
 RM  :=  rm -rf
 
-DEFAULT: IMG
+.silent:
 
-BUILD:
+default: image
+
+help:
+	# help              Show this
+	# build             Generate raw image
+	# clean             Clean
+	# image(default)    build & clean
+	# debug             Generate a .vmdk file
+	# vm_image          debug & clean
+
+build:
 	cd lib && $(MAKE)
 	cd kernel && $(MAKE)
-	# 生成系统原始镜像（.img） 不清理
 
-CLEAN:
-	# cd lib && $(MAKE) CLEAN
-	cd kernel && $(MAKE) CLEAN
-	# 清理
+clean:
+	# cd lib && $(MAKE) clean
+	cd kernel && $(MAKE) clean
 
-IMG: BUILD CLEAN
-	# 生成系统原始镜像（.img） 清理
+image: build
 
-DEBUG: BUILD 
+debug: build 
 	rm -rf ./*.vmdk
 	bximage -func=convert -imgmode=vmware4 ./kernel/kernel.img ./OS.vmdk
-	# 清除已有虚拟机硬盘文件（.vmdk） 并生成新的
 
-VM_IMG: DEBUG CLEAN
-	# 生成系统镜像（.vmdk） 清理
+vm_image: build clean
+

@@ -33,11 +33,11 @@ START:
     call ENTRY
     jmp FINAL
 IPL_MESSAGE:
-    DB "SZS deno Symbol Devep Gtem Zce.",0x0a,0x0d,0x00
+    DB "[Loader16] Symbol OS.",0x0a,0x0d,0x00
 ERR_MESSAGE:
-    DB "ZukXitiatdo nas! Ylom-L01",0x0a,0x0d,0x00
+    DB "[Loader16] [#01] Initialization failed.",0x0a,0x0d,0x00
 SCS_MESSAGE:
-    DB "ZukXitiatdo hos!",0x0a,0x0d,0x00
+    DB "[Loader16] Initialization successfully.",0x0a,0x0d,0x00
 PACKET:
     DB 0x10,0x00
     PACKET_BLKCNT   DW 42

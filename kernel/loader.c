@@ -10,16 +10,13 @@ void main (void){
     void*tempb=(void*)0x00020000;
     int i,j,k;
     initPrint();
-    printsl("SymbolZsueySystom Loader.             \n\r");
-    printsl("dee DiannaoJun, Symbol Devep Gtem Zce\n\r");
-    printsl("PanS Uaotym Cian: Sy6.\n\r");
-    printsl("Nambi Uaotym Cian: "),printdl(0x0123456789abcdefll),printsl("\n\r");
+    printsl("[Loader32] Symbol OS system loader\n\r");
     if(!support_CPUID()){
-        printel("la IMK yanien net la CPUID Linda! Titizt xyd decoze "
-            "Ini no CLK izt az glaista deno I486.\n\r",0x02);
+        printel("The computer does not support the CPUID instruction, "
+			"which may be due to the CPU version you are using being lower than the i486.\n\r",0x02);
         goto errLabel;
     }else if(!support_long_mode()){
-        printel("la IMK yanien net la IA-32e Mokziy!\n\r",0x03);
+        printel("The computer does not support IA-32e mode.\n\r",0x03);
         goto errLabel;
     }
     DISK_INIT();
@@ -31,7 +28,7 @@ void main (void){
             break;
         }
     if(!j){
-        printel("la SYS_ROOT szsa ('/SYS/') izt paipibe!\n\r",0x04);
+        printel("The path '/root/SYS/' does not exist.\n\r",0x04);
         goto errLabel;
     }
     SMYFS_INS_LOAD(ATA+0,tempa,j,tempb);
@@ -41,17 +38,17 @@ void main (void){
             break;
         }
     if(!j){
-        printel("la L64.SYS szsa ('/SYS/L64.SYS') izt paipibe!\n\r",0x05);
+        printel("The file '/root/SYS/L64.SYS' does not exist.\n\r",0x05);
         goto errLabel;
     }
-    printsl("Found L64.SYS At "),printdl(j),printsl("\n\r");
+    printsl("[Loader32] Found L64.SYS at "),printdl(j),printsl("\n\r");
     SMYFS_INS_LOAD(ATA+0,tempa,j,tempb);
-    printsl("Loading L64.SYS\n\r");
+    printsl("[Loader32] Loading L64.SYS\n\r");
     enter64();
     _fin();
     return ;
 errLabel:
-	printsl("HLT\n\r");
+	printsl("[Loader32] HLT\n\r");
 	_fin();
 	return ;
 	/*
