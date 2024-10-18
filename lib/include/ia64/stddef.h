@@ -6,6 +6,8 @@
 #ifndef _STDDEF_H_
 #define _STDDEF_H_
 
+#define _symbol_os
+
 #ifndef _TYPEFLAGES_
 #define _TYPEFLAGES_
 typedef unsigned char u8;

@@ -23,6 +23,7 @@ global _hlt, _sti, _cli, _nop, _fin
 global _in8,_in16,_in32
 global _out8,_out16,_out32
 global memcpy,memset,strlen,strset
+global set_page
 
 [bits 64]
 [section .text]
@@ -144,4 +145,9 @@ memcpy:
     ret
 
 _ret:
+	ret
+
+set_page:
+	mov rax,argd0
+    mov cr3,rax
 	ret

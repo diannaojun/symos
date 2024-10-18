@@ -6,7 +6,8 @@
 #ifndef _SYM_KERNEL_PAGING_INIT_H_
 #define _SYM_KERNEL_PAGING_INIT_H_
 
-#include <lib/loader/main.h>
+#include <lib/lloader/main.h>
+#include <lib/lloader/const.h>
 
 #define PAGE_UA 0x000  // 禁用
 #define PAGE_AB 0x001  // 启用
@@ -27,30 +28,13 @@ struct PAGE_ITEM {
 	u64 flag: 12, addr: 52;
 };
 
-void setPageItem(struct PAGE_ITEM *p, u64 base, u16 flag) {
+void set_PAGE_ITEM(struct PAGE_ITEM *p, u64 base, u16 flag) {
 	p->addr = (base >> 12);
 	p->flag = flag & 0x0fff;
 	return;
 }
-
-void buildPageTable(void) {
-	void *addr = (void *)0xD000;
-}
-
-void buildTempPages(void) {
-	static int i;
-	struct PAGE_ITEM *pml4 = (struct PAGE_ITEM *)0xD000;
-	struct PAGE_ITEM *pml42 = (struct PAGE_ITEM *)0xE000;
-	struct PAGE_ITEM *pdpt = (struct PAGE_ITEM *)0xF000;
-	struct PAGE_ITEM *pdt = (struct PAGE_ITEM *)0x10000;
-	memset((void *)0xD000, 0x00, 0x4000);
-	setPageItem(pml4, (u64)(u32)pdpt, PAGE_US | PAGE_RW | PAGE_AB);
-	setPageItem(pml42, (u64)(u32)pdpt, PAGE_US | PAGE_RW | PAGE_AB);
-	setPageItem(pdpt, (u64)(u32)pdt, PAGE_US | PAGE_RW | PAGE_AB);
-	for (i = 0; i < 16; i++) {
-		pdt = (struct PAGE_ITEM *)0x10000 + (i << 3);
-		setPageItem(pdt, 0x0000 + (i << 21), PAGE_US | PAGE_RL | PAGE_RW | PAGE_AB);
-	}
+void k_build_page(void) {
+	// set_page(pml4);
 	return ;
 }
 

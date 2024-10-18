@@ -26,6 +26,8 @@ extern void memcpy (void *, void *, size_t); // 将 $2 复制到 $1 ，长度是
 extern void strset (void *, u64);           // 将从 $1 开始的字符串全部置为 $2 的低 8 位
 extern size_t strlen (void *);              // 获取 $1 的字符串长度
 
+extern void set_page(void*);                // set page
+
 const char _CONST_NUM_TBL[] = "0123456789ABCDEF";
 
 #endif //_SYM_KERNEL_ASM_H_
