@@ -17,7 +17,7 @@ void enter_long_mode(void);
 
 void enter64(void) {
 	buildTempPages();
-	printsl("PAGE BUILT\n\r");
+	printsl("[Loader32] Temporary page successfully built\n\r");
 	enter_long_mode();
 	return ;
 }

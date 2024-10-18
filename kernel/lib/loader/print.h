@@ -80,6 +80,7 @@ void printel(const char *description, u16 code) {
 	for (i = 0; i < 4; ++i, code <<= 4)
 		bufer[i + 1] = NumTable[(code & 0xf000) >> 12];
 	bufer[0] = '#', bufer[5] = 0;
+	printsi("[Loader32] ", ErrCon);
 	printsi("\es\x07[\es\x0d", ErrCon);
 	printsi(bufer, ErrCon);
 	printsi("\es\x07]\es\x0c", ErrCon);
