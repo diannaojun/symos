@@ -186,7 +186,7 @@ support_CPUID:
     pushfd
     pop eax
     mov ebx,eax
-    xor eax,0x200000
+    xor eax,1 << 21
     push eax
     popfd
     pushfd
@@ -207,17 +207,18 @@ support_long_mode:
     mov eax,0x80000000
     cpuid
     cmp eax,0x80000001
-    setnb al
-    jb support_long_mode
+    jb .no_long_mode
     mov eax,0x80000001
     cpuid
-    bt edx,29
-    setc al
-    movzx eax,al
+    test edx, 1 << 29
+    jz .no_long_mode
+    mov eax, 1
+    ret
+    .no_long_mode:
+    xor eax,eax
     ret
 
 enter_long_mode:
-    lgdt [GDT64_INFO]
     mov ax,0x10
     mov ds,ax
     mov es,ax
@@ -227,7 +228,7 @@ enter_long_mode:
     mov esp,0x7c00
     ; 禁用分页
     mov eax,cr0
-    btr eax,31
+    and eax,01111111111111111111111111111111b
     mov cr0,eax
     ; 开启“物理地址扩展”
     mov eax,cr4
@@ -236,24 +237,27 @@ enter_long_mode:
     ; 开启 Long-Mode
     mov ecx,0xc0000080
     rdmsr
-    bts eax,8
+    or eax, 1 << 8
     wrmsr
     ; 设置页面地址
     mov eax,0x00d000
     mov cr3,eax
     ; 启用分页
     mov eax,cr0
-    bts eax,31
+    or eax, 1 << 31 | 1 << 0
     mov cr0,eax
+    lgdt [GDT64_INFO]
+    jmp dword 0x0008:MODE64
+    ret
+
+[bits 64]
+MODE64:
+    cli
     mov ax,0x10
     mov ds,ax
     mov es,ax
     mov fs,ax
     mov gs,ax
-    jmp dword 0x0008:MODE64
-    ret
-
-[bits 64]
-
-MODE64:
+    mov ss,ax
     call 0x00020000
+    hlt
