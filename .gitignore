@@ -6,10 +6,21 @@
 
 # binaray
 *.bin
+*.img
+
 *.obj
 *.o
+
 *.a
 *.lib
-*.img
+
+*.so
+*.dll
+
 *.iso
 *.vmdk
+
+*.elf
+*.out
+*.exe
+*.cmd
