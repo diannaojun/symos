@@ -3,6 +3,11 @@
         "stddef.h": "c",
         "main.h": "c",
         "asm.h": "c",
-        "memory.h": "c"
+        "memory.h": "c",
+        "loader.h": "c",
+        "enter64.h": "c",
+        "file.h": "c",
+        "disks.h": "c",
+        "filesys.h": "c"
     }
 }
