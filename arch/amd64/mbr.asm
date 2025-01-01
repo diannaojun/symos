@@ -1,18 +1,16 @@
 org 0x7c00
 bits 16
 
-DATA_LEN_OF_SETUP   equ 3
-ADDR_SEG_MBR_PROG   equ 0x07c0
-ADDR_SEG_SET_PROG   equ 0x9f00
-ADDR_SEG_INI_PROG   equ 0x9000
-ADDR_SEG_SYS_PROG   equ 0x1000
+%include "config.inc"
 
 jmp _start
 
 ident:
-    db "SYMBOL OS", 0
+    db "symbol-os", 0
     db 3, 0
     .magic  db 0x55, 0xaa
+
+align 16
 
 _start:
     mov ax, cs
@@ -36,30 +34,31 @@ _start:
     mov si, packet
     call read_lba
     jc error
-    ; call 0x7e00
+    call ADDR_SEG_SET_PROG:0
     jmp dead
-puts:
-    mov al, [si]
-    inc si
-    test al, al
-    jnz .puts_loop
-    ret
+
+align 16
+
+puts:               ; void puts (si)
     .puts_loop:
+        mov al, [si]
+        inc si
+        test al, al
+        jz .puts_ret
         mov ah, 14
         mov bx, 15
         int 16
-    jmp puts
-putx:
-    mov bl, al
-    shr bl, 4
-    and ax, 0x000f
-    and bx, 0x000f
-    add ax, messages.hex_head
-    add bx, messages.hex_head
-    mov si, ax
-    mov al, [si]
-    mov si, bx
-    mov ah, [si]
+        jmp .puts_loop
+    .puts_ret:
+        ret
+putx:               ; void puts (al)
+    mov ah, al
+    shr al, 4
+    and ah, 15
+    movzx si, al
+    mov al, [si + messages.hex_table]
+    movzx si, ah
+    mov ah, [si + messages.hex_table]
     mov [messages.hex_head], ax
     mov si, messages.hex_head
     call puts
@@ -95,6 +94,9 @@ error:
     call puts
 dead:
     jmp $
+
+align 16
+
 packet:
     db 0x10, 0x00
     .blocks     dw 0
@@ -102,23 +104,25 @@ packet:
     .segment    dw 0
     .address    dq 0
     .bufferl    dq 0
+
+align 16
+
 messages:
     .log_head:
-        db "[l16::log] ", 0
+        db "[L16::log] ", 0
     .err_head:
-        db "[l16::err(", 0
+        db "[L16::err(", 0
     .err_foot:
         db ")] ", 0
     .endl:
         db 10, 13, 0
     .io_error:
-        db "IO ERROR", 0
+        db "I/O Error", 0
     .hex_head:
         db "##", 0
+    align 16
     .hex_table:
         db "0123456789abcdef"
 
-times 16-(($-$$)&15) db 0xff
 times 510-($-$$) db 0x00
 db 0x55, 0xaa
-times 4096 db 0x00

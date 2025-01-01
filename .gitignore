@@ -1,8 +1,11 @@
 # workspace
-/.vscode
-/.vscode/*
+.vscode
+.vscode/*
+.old
+.old/*
 
 # temp
+*.tags
 
 # binaray
 *.bin
