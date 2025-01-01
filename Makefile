@@ -1,11 +1,16 @@
 AS		:=	nasm
-PRJ		:=	./build
-TEMP	:=	$(PRJ)/temp
+PRJ		:=	$(CURDIR)
+TEMP	:=	$(PRJ)/build
 
-build:
-	- mkdir $(PRJ)
-	- mkdir $(TEMP)
-	$(MAKE) ./arch
+default: build
+
+build: clean
+	$(MAKE) -C ./arch build_all AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
+	dd if=$(TEMP)/boot.bin of=kernel/kernel.img
 
 clean:
-	$(MAKE) ./arch clean_all
+ifeq ($(wildcard $(TEMP)), )
+	- mkdir $(TEMP)
+else
+	$(MAKE) -C ./arch clean_all AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
+endif
