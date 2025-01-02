@@ -3,6 +3,8 @@
 org ADDR_SEG_MBR_PROG<<4
 bits 16
 
+%include "config.inc"
+
 jmp _start
 
 ident:
@@ -12,6 +14,7 @@ ident:
 
 align 16
 
+align 16
 _start:
     mov ax, ADDR_SEG_MBR_PROG << 4
     mov sp, ax
@@ -95,9 +98,17 @@ putc:               ; void putc (al)
     int 0x10
     ret
 read_lba:
+    pusha
+    pushf
     mov ah, 0x42
     int 0x13
-    ret
+    xor ax, ax
+    jnc .ret
+    mov ax, -1
+    .ret:
+        popf
+        popa
+        ret
 clean_screen:
     mov ah, 0x06
     xor cx, cx
@@ -157,3 +168,4 @@ info:
 
 times 510-($-$$) db 0x00
 db 0x55, 0xaa
+
