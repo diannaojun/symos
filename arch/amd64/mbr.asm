@@ -29,16 +29,6 @@ _start:
 log_out:
     call lost_screen
     call clean_screen
-    mov si, messages.log_head
-    call puts
-    mov si, ident
-    call puts
-    mov al, ' '
-    call putc
-    mov ax, [ident.version]
-    call putx
-    mov si, messages.endline
-    call puts
 read_mem:
     mov ah, 0x88
     int 0x15
@@ -56,15 +46,24 @@ read_video:
     mov [info.v_data1], bx
     mov [info.v_data2], cx
 read_setup:
-    mov word [packet.offset], 0x0500
-    mov word [packet.segment], 0x0000
+    mov word [packet.offset], 0
+    mov word [packet.segment], ADDR_SEG_SET_PROG
     mov word [packet.blocks], DATA_LEN_OF_SETUP
+    mov byte [packet.address], 0x01
     mov dl, [info.drive]
     mov si, packet
     call read_lba
-    jc error
-    call ADDR_SEG_SET_PROG : 0
-    jmp dead
+    mov si, messages.log_head
+    call puts
+    mov si, ident
+    call puts
+    mov al, ' '
+    call putc
+    mov ax, [ident.version]
+    call putx
+    mov si, messages.endline
+    call puts
+    jmp ADDR_SEG_SET_PROG : 0
 
 align 16
 puts:               ; void puts (si)
@@ -91,24 +90,16 @@ putx:               ; void putx (ax)
         shl ax, 4
     loop .putx_loop
     ret
-
 putc:               ; void putc (al)
     mov ah, 0x0e
     mov bx, 0x0f
     int 0x10
     ret
 read_lba:
-    pusha
-    pushf
     mov ah, 0x42
     int 0x13
-    xor ax, ax
-    jnc .ret
-    mov ax, -1
-    .ret:
-        popf
-        popa
-        ret
+    jc error
+    ret
 clean_screen:
     mov ah, 0x06
     xor cx, cx
@@ -139,7 +130,7 @@ dead:
 
 align 16
 packet:
-    db 0x10, 0x00
+    dw 0x10
     .blocks     dw 0
     .offset     dw 0
     .segment    dw 0

@@ -8,8 +8,9 @@ clean:
 	- rm $(TEMP)/boot.bin
 
 boot: mbr.bin setup.bin
+	dd if=/dev/zero of=$(TEMP)/boot.bin bs=512 count=1024
 	dd if=$(TEMP)/mbr.bin of=$(TEMP)/boot.bin seek=0 bs=512 count=1 conv=notrunc
-	dd if=$(TEMP)/setup.bin of=$(TEMP)/boot.bin seek=2 bs=512 count=3 conv=notrunc
+	dd if=$(TEMP)/setup.bin of=$(TEMP)/boot.bin seek=1 bs=512 count=3 conv=notrunc
 
 setup.bin: setup.asm
 	$(AS) setup.asm -o $(TEMP)/setup.bin -f bin
