@@ -1,6 +1,6 @@
 %include "config.inc"
 
-org ADDR_SEG_MBR_PROG<<4
+org ADDR_SEG_MBR_PROG << 4
 bits 16
 
 %include "config.inc"
@@ -63,7 +63,7 @@ read_setup:
     mov si, packet
     call read_lba
     jc error
-    call ADDR_SEG_SET_PROG:0
+    call ADDR_SEG_SET_PROG : 0
     jmp dead
 
 align 16
