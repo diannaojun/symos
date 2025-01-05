@@ -1,219 +1,220 @@
      1                                  %include "config.inc"
-     1                              <1> %define DATA_LEN_OF_SETUP 3
-     2                              <1> %define ADDR_SEG_MBR_PROG 0x07c0
-     3                              <1> %define ADDR_SEG_SET_PROG 0x9f00
-     4                              <1> %define ADDR_SEG_INI_PROG 0x9000
-     5                              <1> %define ADDR_SEG_SYS_PROG 0x1000
-     6                              <1> 
-     7                              <1> %macro gdt_null 0
-     8                              <1>     dw 0, 0
-     9                              <1>     db 0
-    10                              <1>     dw 0
-    11                              <1>     db 0
-    12                              <1> %endmacro
-    13                              <1> 
-    14                              <1> %macro gdt_segment 4
-    15                              <1>     ; seg (base, limit, attribute, type)
-    16                              <1>     dw ((%2) & 0xffff), ((%1) & 0xffff)
-    17                              <1>     db ((%1) >> 16) & 0xff
-    18                              <1>     dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    19                              <1>     db ((%1) >> 24) & 0xff
-    20                              <1> %endmacro
-    21                              <1> 
-    22                              <1> ; program segment
-    23                              <1> %define sta_prog_d          0x80     ; 数据段
-    24                              <1> %define sta_prog_x          0x88     ; 可执行段
-    25                              <1> %define sta_prog_xc         0x04     ; 符合要求的代码段(仅可执行)
-    26                              <1> %define sta_prog_gd         0x04     ; 向下展开(不可执行的段), 栈
-    27                              <1> %define sta_prog_xr         0x02     ; 可读(可执行段)
-    28                              <1> %define sta_prog_wr         0x02     ; 可写(不可执行段)
-    29                              <1> %define sta_prog_dt         0x01     ; 已访问(脏)
-    30                              <1> ; program segment
-    31                              <1> %define sta_sys_tss16       0x01     ; 可用的16位TSS
-    32                              <1> %define sta_sys_ldt         0x02     ; 本地描述符表LDT
-    33                              <1> %define sta_sys_tss16_buzy  0x03     ; 繁忙的16位TSS
-    34                              <1> %define sta_sys_callgate16  0x04     ; 16位呼叫门
-    35                              <1> %define sta_sys_taskgate    0x05     ; 任务门/Coum传输
-    36                              <1> %define sta_sys_intgate16   0x06     ; 16位中断门
-    37                              <1> %define sta_sys_trapgate16  0x07     ; 16位陷阱门
-    38                              <1> %define sta_sys_tss32       0x09     ; 可用的32位TSS
-    39                              <1> %define sta_sys_tss32_buzy  0x0b     ; 繁忙的32位TSS
-    40                              <1> %define sta_sys_callgate32  0x0c     ; 32位调用门
-    41                              <1> %define sta_sys_intgate32   0x0e     ; 32位中断门
-    42                              <1> %define sta_sys_trapgate32  0x0f     ; 32位陷阱门
-    43                              <1> ; other attribute
-    44                              <1> %define sta_level0          0x00
-    45                              <1> %define sta_level1          0x20
-    46                              <1> %define sta_level2          0x40
-    47                              <1> %define sta_level3          0x60
-    48                              <1> %define sta_existent        0x10
-    49                              <1> %define sta_non_existent    0x00
-    50                              <1> ; other type
-    51                              <1> %define stt_32def           0x04
-    52                              <1> %define stt_32c16           0x00
-    53                              <1> %define stt_64def           0x02
-    54                              <1> %define stt_val             0x01
-    55                              <1> %define stt_limitalign4kb   0x08
-    56                              <1> 
-    57                              <1> ; MBR struction
-    58                              <1> %macro mbr_null 0
-    59                              <1>     db 0x00, 0x00
-    60                              <1>     dw 0x02
-    61                              <1>     db 0x5b, 0xff
-    62                              <1>     dw 0xffff
-    63                              <1>     dd 0x00000001
-    64                              <1>     dd 0xffffffff
-    65                              <1> %endmacro
+     1                              <1> %define ADDR_SEG_MBR_PROG 0x07c0
+     2                              <1> %define ADDR_SEG_SET_PROG 0x9f00
+     3                              <1> %define ADDR_SEG_INI_PROG 0x9000
+     4                              <1> %define ADDR_SEG_SYS_PROG 0x1000
+     5                              <1> 
+     6                              <1> %macro gdt_null 0
+     7                              <1>     dw 0, 0
+     8                              <1>     db 0
+     9                              <1>     dw 0
+    10                              <1>     db 0
+    11                              <1> %endmacro
+    12                              <1> 
+    13                              <1> %macro gdt_segment 4
+    14                              <1>     ; seg (base, limit, attribute, type)
+    15                              <1>     dw ((%2) & 0xffff), ((%1) & 0xffff)
+    16                              <1>     db ((%1) >> 16) & 0xff
+    17                              <1>     dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
+    18                              <1>     db ((%1) >> 24) & 0xff
+    19                              <1> %endmacro
+    20                              <1> 
+    21                              <1> ; program segment
+    22                              <1> %define sta_prog_d          0x80     ; 数据段
+    23                              <1> %define sta_prog_x          0x88     ; 可执行段
+    24                              <1> %define sta_prog_xc         0x04     ; 符合要求的代码段(仅可执行)
+    25                              <1> %define sta_prog_gd         0x04     ; 向下展开(不可执行的段), 栈
+    26                              <1> %define sta_prog_xr         0x02     ; 可读(可执行段)
+    27                              <1> %define sta_prog_wr         0x02     ; 可写(不可执行段)
+    28                              <1> %define sta_prog_dt         0x01     ; 已访问(脏)
+    29                              <1> ; program segment
+    30                              <1> %define sta_sys_tss16       0x01     ; 可用的16位TSS
+    31                              <1> %define sta_sys_ldt         0x02     ; 本地描述符表LDT
+    32                              <1> %define sta_sys_tss16_buzy  0x03     ; 繁忙的16位TSS
+    33                              <1> %define sta_sys_callgate16  0x04     ; 16位呼叫门
+    34                              <1> %define sta_sys_taskgate    0x05     ; 任务门/Coum传输
+    35                              <1> %define sta_sys_intgate16   0x06     ; 16位中断门
+    36                              <1> %define sta_sys_trapgate16  0x07     ; 16位陷阱门
+    37                              <1> %define sta_sys_tss32       0x09     ; 可用的32位TSS
+    38                              <1> %define sta_sys_tss32_buzy  0x0b     ; 繁忙的32位TSS
+    39                              <1> %define sta_sys_callgate32  0x0c     ; 32位调用门
+    40                              <1> %define sta_sys_intgate32   0x0e     ; 32位中断门
+    41                              <1> %define sta_sys_trapgate32  0x0f     ; 32位陷阱门
+    42                              <1> ; other attribute
+    43                              <1> %define sta_level0          0x00
+    44                              <1> %define sta_level1          0x20
+    45                              <1> %define sta_level2          0x40
+    46                              <1> %define sta_level3          0x60
+    47                              <1> %define sta_existent        0x10
+    48                              <1> %define sta_non_existent    0x00
+    49                              <1> ; other type
+    50                              <1> %define stt_32def           0x04
+    51                              <1> %define stt_32c16           0x00
+    52                              <1> %define stt_64def           0x02
+    53                              <1> %define stt_val             0x01
+    54                              <1> %define stt_limitalign4kb   0x08
+    55                              <1> 
+    56                              <1> ; MBR struction
+    57                              <1> %macro mbr_null 0
+    58                              <1>     db 0x00, 0x00
+    59                              <1>     dw 0x02
+    60                              <1>     db 0x5b, 0xff
+    61                              <1>     dw 0xffff
+    62                              <1>     dd 0x00000001
+    63                              <1>     dd 0xffffffff
+    64                              <1> %endmacro
      2                                  
      3 00000000 53444D2050415254        db "SDM PART"               ; SDM头符号
      4 00000008 0200                    dw 0x0002                   ; 版本 0.2
      5 0000000A 4000                    dw 0x0040                   ; 头长度 64 扇区
      6 0000000C 03000000                dd 0x00000003               ; 分区总数 3
-     7 00000010 00<rep 1F0h>            times 512-($-$$) db 0
-     8                                  
-     9                                  align 64
-    10 00000200 2020202020202020        db "        "               ; 分区名称
-    11 00000208 FFFF                    dw 0xffff                   ; 分区类型
-    12 0000020A FF00                    db 0xff, 0x00               ; 分区状态
-    13 0000020C 00000000                dd 0x00000000               ; 分区标识
-    14 00000210 0000000000000000        dq 0x0000000000000000       ; 分区起始扇区
-    15 00000218 4000000000000000        dq 0x0000000000000040       ; 分区扇区长度
-    16                                  
-    17 00000220 90<rep 20h>             align 64
-    18 00000240 53594D204B4E4C20        db "SYM KNL "
-    19 00000248 5A00                    dw 0x005a
-    20 0000024A 5A00                    db 0x5a, 0x00
-    21 0000024C 5A448336                dd 0x3683445a
-    22 00000250 4000000000000000        dq 0x0000000000000040
-    23 00000258 4000000000000000        dq 0x0000000000000040
-    24                                  
-    25 00000260 00<rep 7BA0h>           times (63*512)-($-$$) db 0
+     7 00000010 4000000000000000        dq 0x00000040               ; 可引导扇区号
+     8 00000018 0400                    dw 0x0004                   ; 可引导扇区数
+     9 0000001A 00<rep 1E6h>            times 512-($-$$) db 0
+    10                                  
+    11                                  align 64
+    12 00000200 2020202020202020        db "        "               ; 分区名称
+    13 00000208 FFFF                    dw 0xffff                   ; 分区类型
+    14 0000020A FF00                    db 0xff, 0x00               ; 分区状态
+    15 0000020C 00000000                dd 0x00000000               ; 分区标识
+    16 00000210 0000000000000000        dq 0x0000000000000000       ; 分区起始扇区
+    17 00000218 4000000000000000        dq 0x0000000000000040       ; 分区扇区长度
+    18                                  
+    19 00000220 90<rep 20h>             align 64
+    20 00000240 53594D204B4E4C20        db "SYM KNL "
+    21 00000248 5A00                    dw 0x005a
+    22 0000024A 5A00                    db 0x5a, 0x00
+    23 0000024C 5A448336                dd 0x3683445a
+    24 00000250 4000000000000000        dq 0x0000000000000040
+    25 00000258 4000000000000000        dq 0x0000000000000040
     26                                  
-    27                                  ; 分区类型
-    28                                  ;   0000 未知
-    29                                  ;   0001 FAT12
-    30                                  ;   0002 XENIX /
-    31                                  ;   0003 XENIX /usr/
-    32                                  ;   0004 FAT16 (小于32MB)
-    33                                  ;   0005 DOS Extended
-    34                                  ;   0006 FAT16
-    35                                  ;   0007 HPFS/NTFS/ExFAT
-    36                                  ;   0008 AIX
-    37                                  ;   0009 AIX Boot
-    38                                  ;   000a OS/2 Boot
-    39                                  ;   000b Windows 95 FAT32
-    40                                  ;   000c Windows 95 FAT32 LBA
-    41                                  ;   000e Windows 95 FAT16
-    42                                  ;   000f Windows 95(DOS) Extended LBA (大于 8GB)
-    43                                  ;   0010 OPUS
-    44                                  ;   0011 Hidden FAT12
-    45                                  ;   0012 EISA隐藏分区 (Compaq Diagonstics使用)
-    46                                  ;   0014 Hidden FAT16 (小于32MB) or Maverick OS Omega FS
-    47                                  ;   0016 Hidden FAT16
-    48                                  ;   0017 Hidden HPFS/NTFS
-    49                                  ;   0018 AST Windows Swap
-    50                                  ;   001b Hidden FAT32
-    51                                  ;   001c Hidden FAT32 LBA
-    52                                  ;   001e Hidden LBA VFAT
-    53                                  ;   0024 NEC MS-DOS 3.x
-    54                                  ;   0027 Mcrosoft recovery partition
-    55                                  ;   0035 OS/2 JFS
-    56                                  ;   0038 THEOS V3 2GB
-    57                                  ;   0039 THEOS V4 spanned
-    58                                  ;   003a THEOS V4 4GB
-    59                                  ;   003b THEOS V4 extended
-    60                                  ;   003c PartitionMagic recovery
-    61                                  ;   003d Novell Netware(Hidden)
-    62                                  ;   0040 VENIX 286
-    63                                  ;   0041 PPC PreP Boot or Linux/MINIX (sharing with DRDOS)
-    64                                  ;   0042 SFS or RAID
-    65                                  ;   0043 Linux native (sharing with DRDOS)
-    66                                  ;   0045 Boot-US
-    67                                  ;   004c Oberon
-    68                                  ;   004d QNX 4.2 Primary
-    69                                  ;   004e QNX 4.2 Secondary
-    70                                  ;   004f QNX 4.2 Tertiary
-    71                                  ;   0050 DM (Disk Danager)
-    72                                  ;   0051 Novell (or DM6 Aux1)
-    73                                  ;   0052 CP/M or Microport SysV/AT
-    74                                  ;   0053 DM6 Aux3 (Disk Danager)
-    75                                  ;   0054 DM6 Aux3 (Disk Danager)
-    76                                  ;   0055 EZ-Drive (Disk Manager)
-    77                                  ;   0056 Golden Bow (Disk Manager)
-    78                                  ;   0057 DrivePro
-    79                                  ;   005a Symbol FS
-    80                                  ;   005b Symbol Disk Manager Part
-    81                                  ;   005c Priam Edisk (DiskManager)
-    82                                  ;   0061 SpeedStor
-    83                                  ;   0063 Unix, System V/386, GNU HURD or Mach
-    84                                  ;   0064 Novell Netware/286 2.xx
-    85                                  ;   0065 Novell Netware/386 3.xx
-    86                                  ;   0066 Novell Netware/286 2.xx
-    87                                  ;   0067 Novell Netware/286 2.xx
-    88                                  ;   0068 Novell Netware/286 2.xx
-    89                                  ;   0069 Novell Netware/286 2.xx
-    90                                  ;   0070 DiskSecure Multi-Boot
-    91                                  ;   0074 Scramdisk
-    92                                  ;   0075 PC/IX
-    93                                  ;   0077 QNX 4.x
-    94                                  ;   0078 QNX 4.x 2nd
-    95                                  ;   0079 QNX 4.x 3rd
-    96                                  ;   0080 Minix until 1.4a
-    97                                  ;   0081 Early Linux, or Minix since 1.4b
-    98                                  ;   0082 Linux swap
-    99                                  ;   0083 Linux
-   100                                  ;   0084 OS/2 Hidden C:
-   101                                  ;   0085 Linux Extended
-   102                                  ;   0086 FAT16 Volume
-   103                                  ;   0087 NTFS Volume
-   104                                  ;   008b FAT32 Volume
-   105                                  ;   008c FAT32 LBA Volume
-   106                                  ;   0093 Amoeda
-   107                                  ;   0094 Amoeda Bad Blocks Table
-   108                                  ;   009f BSD/OS
-   109                                  ;   00a0 Hibernation
-   110                                  ;   00a1 Hibernation
-   111                                  ;   00a0 IBM Thinkpad Hidden
-   112                                  ;   00a5 FreeBSD/NetBSD/386BSD
-   113                                  ;   00a6 OpenBSD
-   114                                  ;   00a7 NextStep
-   115                                  ;   00a9 NetBSD
-   116                                  ;   00aa Olivetti FAT12
-   117                                  ;   00ac IBM JFS
-   118                                  ;   00b7 BSDI BSD/386
-   119                                  ;   00b8 BSDI BSD/386 swap
-   120                                  ;   00be Solaris Boot
-   121                                  ;   00c0 DR-DOS/Novell DOS Secured
-   122                                  ;   00c1 DRDOS/sec FAT12
-   123                                  ;   00c4 DRDOS/sec FAT16
-   124                                  ;   00c6 Corrupted FAT16
-   125                                  ;   00c7 Corrupted NTFS
-   126                                  ;   00d8 CP/M-86
-   127                                  ;   00db CP/M, Concurrent DOS or CTOS
-   128                                  ;   00df BootIt
-   129                                  ;   00e1 DOS access FAT12
-   130                                  ;   00e3 DOS R/0 or SpeedStor
-   131                                  ;   00e4 SpeedStor FAT16
-   132                                  ;   00eb BeOS FS
-   133                                  ;   00ee Protected MBR
-   134                                  ;   00ef EFI System Partition
-   135                                  ;   00f1 SpeedStor
-   136                                  ;   00f2 DOS 3.3+ 2nd
-   137                                  ;   00f4 SpeedStor Large
-   138                                  ;   00fb VMware VMFS
-   139                                  ;   00fc VMware swap
-   140                                  ;   00fd Linux RAID
-   141                                  ;   00fe LAN STEP
-   142                                  ;   00ff Bad Blocks Table
-   143                                  ;   ff?? 保留
-   144                                  ;   fffd MBR扇区
-   145                                  ;   fffe GPT扇区
-   146                                  ;   ffff 磁盘头
-   147                                  
-   148                                  ; 分区状态
-   149                                  ;   00 空的
-   150                                  ;   5a 可引导的
-   151                                  ;   80 正常的
-   152                                  ;   fd 坏的
-   153                                  ;   fe 保留
-   154                                  ;   ff 保护
+    27 00000260 00<rep 7BA0h>           times (63*512)-($-$$) db 0
+    28                                  
+    29                                  ; 分区类型
+    30                                  ;   0000 未知
+    31                                  ;   0001 FAT12
+    32                                  ;   0002 XENIX /
+    33                                  ;   0003 XENIX /usr/
+    34                                  ;   0004 FAT16 (小于32MB)
+    35                                  ;   0005 DOS Extended
+    36                                  ;   0006 FAT16
+    37                                  ;   0007 HPFS/NTFS/ExFAT
+    38                                  ;   0008 AIX
+    39                                  ;   0009 AIX Boot
+    40                                  ;   000a OS/2 Boot
+    41                                  ;   000b Windows 95 FAT32
+    42                                  ;   000c Windows 95 FAT32 LBA
+    43                                  ;   000e Windows 95 FAT16
+    44                                  ;   000f Windows 95(DOS) Extended LBA (大于 8GB)
+    45                                  ;   0010 OPUS
+    46                                  ;   0011 Hidden FAT12
+    47                                  ;   0012 EISA隐藏分区 (Compaq Diagonstics使用)
+    48                                  ;   0014 Hidden FAT16 (小于32MB) or Maverick OS Omega FS
+    49                                  ;   0016 Hidden FAT16
+    50                                  ;   0017 Hidden HPFS/NTFS
+    51                                  ;   0018 AST Windows Swap
+    52                                  ;   001b Hidden FAT32
+    53                                  ;   001c Hidden FAT32 LBA
+    54                                  ;   001e Hidden LBA VFAT
+    55                                  ;   0024 NEC MS-DOS 3.x
+    56                                  ;   0027 Mcrosoft recovery partition
+    57                                  ;   0035 OS/2 JFS
+    58                                  ;   0038 THEOS V3 2GB
+    59                                  ;   0039 THEOS V4 spanned
+    60                                  ;   003a THEOS V4 4GB
+    61                                  ;   003b THEOS V4 extended
+    62                                  ;   003c PartitionMagic recovery
+    63                                  ;   003d Novell Netware(Hidden)
+    64                                  ;   0040 VENIX 286
+    65                                  ;   0041 PPC PreP Boot or Linux/MINIX (sharing with DRDOS)
+    66                                  ;   0042 SFS or RAID
+    67                                  ;   0043 Linux native (sharing with DRDOS)
+    68                                  ;   0045 Boot-US
+    69                                  ;   004c Oberon
+    70                                  ;   004d QNX 4.2 Primary
+    71                                  ;   004e QNX 4.2 Secondary
+    72                                  ;   004f QNX 4.2 Tertiary
+    73                                  ;   0050 DM (Disk Danager)
+    74                                  ;   0051 Novell (or DM6 Aux1)
+    75                                  ;   0052 CP/M or Microport SysV/AT
+    76                                  ;   0053 DM6 Aux3 (Disk Danager)
+    77                                  ;   0054 DM6 Aux3 (Disk Danager)
+    78                                  ;   0055 EZ-Drive (Disk Manager)
+    79                                  ;   0056 Golden Bow (Disk Manager)
+    80                                  ;   0057 DrivePro
+    81                                  ;   005a Symbol FS
+    82                                  ;   005b Symbol Disk Manager Part
+    83                                  ;   005c Priam Edisk (DiskManager)
+    84                                  ;   0061 SpeedStor
+    85                                  ;   0063 Unix, System V/386, GNU HURD or Mach
+    86                                  ;   0064 Novell Netware/286 2.xx
+    87                                  ;   0065 Novell Netware/386 3.xx
+    88                                  ;   0066 Novell Netware/286 2.xx
+    89                                  ;   0067 Novell Netware/286 2.xx
+    90                                  ;   0068 Novell Netware/286 2.xx
+    91                                  ;   0069 Novell Netware/286 2.xx
+    92                                  ;   0070 DiskSecure Multi-Boot
+    93                                  ;   0074 Scramdisk
+    94                                  ;   0075 PC/IX
+    95                                  ;   0077 QNX 4.x
+    96                                  ;   0078 QNX 4.x 2nd
+    97                                  ;   0079 QNX 4.x 3rd
+    98                                  ;   0080 Minix until 1.4a
+    99                                  ;   0081 Early Linux, or Minix since 1.4b
+   100                                  ;   0082 Linux swap
+   101                                  ;   0083 Linux
+   102                                  ;   0084 OS/2 Hidden C:
+   103                                  ;   0085 Linux Extended
+   104                                  ;   0086 FAT16 Volume
+   105                                  ;   0087 NTFS Volume
+   106                                  ;   008b FAT32 Volume
+   107                                  ;   008c FAT32 LBA Volume
+   108                                  ;   0093 Amoeda
+   109                                  ;   0094 Amoeda Bad Blocks Table
+   110                                  ;   009f BSD/OS
+   111                                  ;   00a0 Hibernation
+   112                                  ;   00a1 Hibernation
+   113                                  ;   00a0 IBM Thinkpad Hidden
+   114                                  ;   00a5 FreeBSD/NetBSD/386BSD
+   115                                  ;   00a6 OpenBSD
+   116                                  ;   00a7 NextStep
+   117                                  ;   00a9 NetBSD
+   118                                  ;   00aa Olivetti FAT12
+   119                                  ;   00ac IBM JFS
+   120                                  ;   00b7 BSDI BSD/386
+   121                                  ;   00b8 BSDI BSD/386 swap
+   122                                  ;   00be Solaris Boot
+   123                                  ;   00c0 DR-DOS/Novell DOS Secured
+   124                                  ;   00c1 DRDOS/sec FAT12
+   125                                  ;   00c4 DRDOS/sec FAT16
+   126                                  ;   00c6 Corrupted FAT16
+   127                                  ;   00c7 Corrupted NTFS
+   128                                  ;   00d8 CP/M-86
+   129                                  ;   00db CP/M, Concurrent DOS or CTOS
+   130                                  ;   00df BootIt
+   131                                  ;   00e1 DOS access FAT12
+   132                                  ;   00e3 DOS R/0 or SpeedStor
+   133                                  ;   00e4 SpeedStor FAT16
+   134                                  ;   00eb BeOS FS
+   135                                  ;   00ee Protected MBR
+   136                                  ;   00ef EFI System Partition
+   137                                  ;   00f1 SpeedStor
+   138                                  ;   00f2 DOS 3.3+ 2nd
+   139                                  ;   00f4 SpeedStor Large
+   140                                  ;   00fb VMware VMFS
+   141                                  ;   00fc VMware swap
+   142                                  ;   00fd Linux RAID
+   143                                  ;   00fe LAN STEP
+   144                                  ;   00ff Bad Blocks Table
+   145                                  ;   ff?? 保留
+   146                                  ;   fffd MBR扇区
+   147                                  ;   fffe GPT扇区
+   148                                  ;   ffff 磁盘头
+   149                                  
+   150                                  ; 分区状态
+   151                                  ;   00 空的
+   152                                  ;   5a 可引导的
+   153                                  ;   80 正常的
+   154                                  ;   fd 坏的
+   155                                  ;   fe 保留
+   156                                  ;   ff 保护

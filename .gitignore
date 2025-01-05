@@ -6,6 +6,8 @@
 
 # temp
 *.tags
+*.lst
+*.lock
 
 # binaray
 *.bin

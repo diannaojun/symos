@@ -1,332 +1,203 @@
      1                                  %include "config.inc"
-     1                              <1> %define DATA_LEN_OF_SETUP 3
-     2                              <1> %define ADDR_SEG_MBR_PROG 0x07c0
-     3                              <1> %define ADDR_SEG_SET_PROG 0x9f00
-     4                              <1> %define ADDR_SEG_INI_PROG 0x9000
-     5                              <1> %define ADDR_SEG_SYS_PROG 0x1000
-     6                              <1> 
-     7                              <1> %macro gdt_null 0
-     8                              <1>     dw 0, 0
-     9                              <1>     db 0
-    10                              <1>     dw 0
-    11                              <1>     db 0
-    12                              <1> %endmacro
-    13                              <1> 
-    14                              <1> %macro gdt_segment 4
-    15                              <1>     ; seg (base, limit, attribute, type)
-    16                              <1>     dw ((%2) & 0xffff), ((%1) & 0xffff)
-    17                              <1>     db ((%1) >> 16) & 0xff
-    18                              <1>     dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    19                              <1>     db ((%1) >> 24) & 0xff
-    20                              <1> %endmacro
-    21                              <1> 
-    22                              <1> ; program segment
-    23                              <1> %define sta_prog_d          0x80     ; 数据段
-    24                              <1> %define sta_prog_x          0x88     ; 可执行段
-    25                              <1> %define sta_prog_xc         0x04     ; 符合要求的代码段(仅可执行)
-    26                              <1> %define sta_prog_gd         0x04     ; 向下展开(不可执行的段), 栈
-    27                              <1> %define sta_prog_xr         0x02     ; 可读(可执行段)
-    28                              <1> %define sta_prog_wr         0x02     ; 可写(不可执行段)
-    29                              <1> %define sta_prog_dt         0x01     ; 已访问(脏)
-    30                              <1> ; program segment
-    31                              <1> %define sta_sys_tss16       0x01     ; 可用的16位TSS
-    32                              <1> %define sta_sys_ldt         0x02     ; 本地描述符表LDT
-    33                              <1> %define sta_sys_tss16_buzy  0x03     ; 繁忙的16位TSS
-    34                              <1> %define sta_sys_callgate16  0x04     ; 16位呼叫门
-    35                              <1> %define sta_sys_taskgate    0x05     ; 任务门/Coum传输
-    36                              <1> %define sta_sys_intgate16   0x06     ; 16位中断门
-    37                              <1> %define sta_sys_trapgate16  0x07     ; 16位陷阱门
-    38                              <1> %define sta_sys_tss32       0x09     ; 可用的32位TSS
-    39                              <1> %define sta_sys_tss32_buzy  0x0b     ; 繁忙的32位TSS
-    40                              <1> %define sta_sys_callgate32  0x0c     ; 32位调用门
-    41                              <1> %define sta_sys_intgate32   0x0e     ; 32位中断门
-    42                              <1> %define sta_sys_trapgate32  0x0f     ; 32位陷阱门
-    43                              <1> ; other attribute
-    44                              <1> %define sta_level0          0x00
-    45                              <1> %define sta_level1          0x20
-    46                              <1> %define sta_level2          0x40
-    47                              <1> %define sta_level3          0x60
-    48                              <1> %define sta_existent        0x10
-    49                              <1> %define sta_non_existent    0x00
-    50                              <1> ; other type
-    51                              <1> %define stt_32def           0x04
-    52                              <1> %define stt_32c16           0x00
-    53                              <1> %define stt_64def           0x02
-    54                              <1> %define stt_val             0x01
-    55                              <1> %define stt_limitalign4kb   0x08
-    56                              <1> 
-    57                              <1> ; MBR struction
-    58                              <1> %macro mbr_null 0
-    59                              <1>     db 0x00, 0x00
-    60                              <1>     dw 0x02
-    61                              <1>     db 0x5b, 0xff
-    62                              <1>     dw 0xffff
-    63                              <1>     dd 0x00000001
-    64                              <1>     dd 0xffffffff
-    65                              <1> %endmacro
-     2                                  
-     3                                  org ADDR_SEG_MBR_PROG << 4
-     4                                  bits 16
-     5                                  
-     6                                  %include "config.inc"
-     1                              <1> %define DATA_LEN_OF_SETUP 3
-     2                              <1> %define ADDR_SEG_MBR_PROG 0x07c0
-     3                              <1> %define ADDR_SEG_SET_PROG 0x9f00
-     4                              <1> %define ADDR_SEG_INI_PROG 0x9000
-     5                              <1> %define ADDR_SEG_SYS_PROG 0x1000
-     6                              <1> 
-     7                              <1> %macro gdt_null 0
-     7          ******************  <1>  warning: redefining multi-line macro `gdt_null' [-w+pp-macro-redef-multi]
-     8                              <1>     dw 0, 0
-     9                              <1>     db 0
-    10                              <1>     dw 0
-    11                              <1>     db 0
-    12                              <1> %endmacro
-    13                              <1> 
-    14                              <1> %macro gdt_segment 4
-    14          ******************  <1>  warning: redefining multi-line macro `gdt_segment' [-w+pp-macro-redef-multi]
-    15                              <1>     ; seg (base, limit, attribute, type)
-    16                              <1>     dw ((%2) & 0xffff), ((%1) & 0xffff)
-    17                              <1>     db ((%1) >> 16) & 0xff
-    18                              <1>     dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    19                              <1>     db ((%1) >> 24) & 0xff
-    20                              <1> %endmacro
-    21                              <1> 
-    22                              <1> ; program segment
-    23                              <1> %define sta_prog_d          0x80     ; 数据段
-    24                              <1> %define sta_prog_x          0x88     ; 可执行段
-    25                              <1> %define sta_prog_xc         0x04     ; 符合要求的代码段(仅可执行)
-    26                              <1> %define sta_prog_gd         0x04     ; 向下展开(不可执行的段), 栈
-    27                              <1> %define sta_prog_xr         0x02     ; 可读(可执行段)
-    28                              <1> %define sta_prog_wr         0x02     ; 可写(不可执行段)
-    29                              <1> %define sta_prog_dt         0x01     ; 已访问(脏)
-    30                              <1> ; program segment
-    31                              <1> %define sta_sys_tss16       0x01     ; 可用的16位TSS
-    32                              <1> %define sta_sys_ldt         0x02     ; 本地描述符表LDT
-    33                              <1> %define sta_sys_tss16_buzy  0x03     ; 繁忙的16位TSS
-    34                              <1> %define sta_sys_callgate16  0x04     ; 16位呼叫门
-    35                              <1> %define sta_sys_taskgate    0x05     ; 任务门/Coum传输
-    36                              <1> %define sta_sys_intgate16   0x06     ; 16位中断门
-    37                              <1> %define sta_sys_trapgate16  0x07     ; 16位陷阱门
-    38                              <1> %define sta_sys_tss32       0x09     ; 可用的32位TSS
-    39                              <1> %define sta_sys_tss32_buzy  0x0b     ; 繁忙的32位TSS
-    40                              <1> %define sta_sys_callgate32  0x0c     ; 32位调用门
-    41                              <1> %define sta_sys_intgate32   0x0e     ; 32位中断门
-    42                              <1> %define sta_sys_trapgate32  0x0f     ; 32位陷阱门
-    43                              <1> ; other attribute
-    44                              <1> %define sta_level0          0x00
-    45                              <1> %define sta_level1          0x20
-    46                              <1> %define sta_level2          0x40
-    47                              <1> %define sta_level3          0x60
-    48                              <1> %define sta_existent        0x10
-    49                              <1> %define sta_non_existent    0x00
-    50                              <1> ; other type
-    51                              <1> %define stt_32def           0x04
-    52                              <1> %define stt_32c16           0x00
-    53                              <1> %define stt_64def           0x02
-    54                              <1> %define stt_val             0x01
-    55                              <1> %define stt_limitalign4kb   0x08
-    56                              <1> 
-    57                              <1> ; MBR struction
-    58                              <1> %macro mbr_null 0
-    58          ******************  <1>  warning: redefining multi-line macro `mbr_null' [-w+pp-macro-redef-multi]
-    59                              <1>     db 0x00, 0x00
-    60                              <1>     dw 0x02
-    61                              <1>     db 0x5b, 0xff
-    62                              <1>     dw 0xffff
-    63                              <1>     dd 0x00000001
-    64                              <1>     dd 0xffffffff
-    65                              <1> %endmacro
-     7                                  
-     8 00000000 EB0E                    jmp _start
-     9                                  
-    10                                  ident:
-    11 00000002 73796D626F6C2D6F73-         .flag       db "symbol-os", 0
-    11 0000000B 00                 
-    12 0000000C 0003                        .version    dw 0x0300
-    13 0000000E 55AA                        .magic      db 0x55, 0xaa
-    14                                  
-    15                                  align 16
-    16                                  _start:
-    17 00000010 8CC8                        mov ax, cs
-    18 00000012 8ED0                        mov ss, ax
-    19 00000014 8EC0                        mov es, ax
-    20 00000016 8ED8                        mov ds, ax
-    21 00000018 31E4                        xor sp, sp
-    22 0000001A 31E5                        xor bp, sp
-    23 0000001C 31F6                        xor si, si
-    24 0000001E 31FF                        xor di, di
-    25 00000020 8816[0E00]                  mov [ident.magic], dl
-    26                                  ; log_out:
-    27                                  ;     call lost_screen
-    28                                  ;     call clean_screen
-    29                                  ; read_mem:
-    30                                  ;     mov ah, 0x88
-    31                                  ;     int 0x15
-    32                                  ;     mov [info.memory], ax
-    33                                  ; read_video:
-    34                                  ;     mov ah, 0x0f
-    35                                  ;     int 0x10
-    36                                  ;     mov [info.v_page], bh
-    37                                  ;     mov [info.v_mode], al
-    38                                  ;     mov [info.v_width], ah
-    39                                  ;     mov ah, 0x12
-    40                                  ;     mov bl, 0x10
-    41                                  ;     int 0x10
-    42                                  ;     mov [info.v_data0], ax
-    43                                  ;     mov [info.v_data1], bx
-    44                                  ;     mov [info.v_data2], cx
-    45                                  read_setup:
-    46 00000024 C706[5700]0000              mov word [packet.offset], 0
-    47 0000002A C706[5900]009F              mov word [packet.segment], ADDR_SEG_SET_PROG
-    48 00000030 C706[5500]0300              mov word [packet.blocks], DATA_LEN_OF_SETUP
-    49 00000036 C606[5B00]40                mov byte [packet.address], 0x40
-    50 0000003B 8A16[0E00]                  mov dl, [ident.magic]
-    51 0000003F BE[5300]                    mov si, packet
-    52 00000042 E80500                      call read_lba
-    53                                      ; mov si, messages.log_head
-    54                                      ; call puts
-    55                                      ; mov si, ident
-    56                                      ; call puts
-    57                                      ; mov al, ' '
-    58                                      ; call putc
-    59                                      ; mov ax, [ident.version]
-    60                                      ; call putx
-    61                                      ; mov si, messages.endline
-    62                                      ; call puts
-    63 00000045 EA0000009F                  jmp ADDR_SEG_SET_PROG : 0
-    64                                  ; puts:               ; void puts (si)
-    65                                  ;     .puts_loop:
-    66                                  ;         mov al, [si]
-    67                                  ;         inc si
-    68                                  ;         test al, al
-    69                                  ;         jz .puts_ret
-    70                                  ;         call putc
-    71                                  ;         jmp .puts_loop
-    72                                  ;     .puts_ret:
-    73                                  ;         ret
-    74                                  ; putx:               ; void putx (ax)
-    75                                  ;     mov cx, 4
-    76                                  ;     .putx_loop:
-    77                                  ;         push ax
-    78                                  ;         shr ax, 12
-    79                                  ;         mov si, ax
-    80                                  ;         cmp al, 0x0a
-    81                                  ;         jge .big10
-    82                                  ;             add al, '0'
-    83                                  ;             jmp .show
-    84                                  ;         .big10:
-    85                                  ;             add al, 'a'-10
-    86                                  ;         .show:
-    87                                  ;         push cx
-    88                                  ;         call putc
-    89                                  ;         pop cx
-    90                                  ;         pop ax
-    91                                  ;         shl ax, 4
-    92                                  ;     loop .putx_loop
-    93                                  ;     ret
-    94                                  ; putc:               ; void putc (al)
-    95                                  ;     mov ah, 0x0e
-    96                                  ;     mov bx, 0x0f
-    97                                  ;     int 0x10
-    98                                  ;     ret
-    99                                  read_lba:
-   100 0000004A B442                        mov ah, 0x42
-   101 0000004C CD13                        int 0x13
-   102 0000004E 7201                        jc error
-   103 00000050 C3                          ret
-   104                                  ; clean_screen:
-   105                                  ;     mov ah, 0x06
-   106                                  ;     xor cx, cx
-   107                                  ;     mov al, cl
-   108                                  ;     mov dx, 0xffff
-   109                                  ;     mov bh, 0x07
-   110                                  ;     int 0x10
-   111                                  ;     ret
-   112                                  ; lost_screen:
-   113                                  ;     mov ah, 0x02
-   114                                  ;     xor bx, bx
-   115                                  ;     xor dx, dx
-   116                                  ;     int 0x10
-   117                                  ;     ret
-   118                                  error:
-   119                                      ; mov si, messages.err_head
-   120                                      ; call puts
-   121                                      ; mov ax, 0x0001
-   122                                      ; call putx
-   123                                      ; mov si, messages.err_foot
-   124                                      ; call puts
-   125                                      ; mov si, messages.io_error
-   126                                      ; call puts
-   127                                      ; mov si, messages.endline
-   128                                      ; call puts
-   129                                  dead:
-   130 00000051 EBFE                        jmp $
-   131                                  packet:
-   132 00000053 1000                        dw 0x10
-   133 00000055 0000                        .blocks     dw 0
-   134 00000057 0000                        .offset     dw 0
-   135 00000059 0000                        .segment    dw 0
-   136 0000005B 0000000000000000            .address    dq 0
-   137 00000063 0000000000000000            .bufferl    dq 0
-   138                                  messages:
-   139 0000006B 0A0D00                      .endline    db 10, 13, 0
-   140 0000006E 5B4C31363A3A6C6F67-         .log_head   db "[L16::log] ", 0
-   140 00000077 5D2000             
-   141 0000007A 5B4C31363A3A657272-         .err_head   db "[L16::err(", 0
-   141 00000083 2800               
-   142 00000085 295D2000                    .err_foot   db ")] ", 0
-   143 00000089 492F4F204572726F72-         .io_error   db "I/O Error", 0
-   143 00000092 00                 
-   144                                  
-   145 00000093 00<rep BDh>             times 0x150-($-$$) db 0x00
-   146                                  
-   147                                  gdt_info:
-   148 00000150 2000                        dw gdt.end - gdt
-   149 00000152 [5C010000]                  dd gdt
-   150                                  idt_info:
-   151 00000156 0000<rep 3h>                times 3 dw 0
-   152                                  
-   153                                  gdt:
-   154                                      .null   gdt_null
-   154                              <1>  .null :
-     8 0000015C 00000000            <1>  dw 0, 0
-     9 00000160 00                  <1>  db 0
-    10 00000161 0000                <1>  dw 0
-    11 00000163 00                  <1>  db 0
-   155                                      .code   gdt_segment 0x00000000, 0xffffffff, sta_prog_x | sta_prog_xr, stt_32def | stt_limitalign4kb
-   155                              <1>  .code :
-    15                              <1> 
-    16 00000164 FFFF0000            <1>  dw ((%2) & 0xffff), ((%1) & 0xffff)
-    17 00000168 00                  <1>  db ((%1) >> 16) & 0xff
-    18 00000169 8ACF                <1>  dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    19 0000016B 00                  <1>  db ((%1) >> 24) & 0xff
-   156                                      .data   gdt_segment 0x00000000, 0xffffffff, sta_prog_d | sta_prog_wr, stt_32def | stt_limitalign4kb
-   156                              <1>  .data :
-    15                              <1> 
-    16 0000016C FFFF0000            <1>  dw ((%2) & 0xffff), ((%1) & 0xffff)
-    17 00000170 00                  <1>  db ((%1) >> 16) & 0xff
-    18 00000171 82CF                <1>  dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    19 00000173 00                  <1>  db ((%1) >> 24) & 0xff
-   157                                      .stack  gdt_segment 0x00008000, 0x08000 - 0x00500, sta_prog_d | sta_prog_wr | sta_prog_gd, stt_32def
-   157                              <1>  .stack :
-    15                              <1> 
-    16 00000174 007B0080            <1>  dw ((%2) & 0xffff), ((%1) & 0xffff)
-    17 00000178 00                  <1>  db ((%1) >> 16) & 0xff
-    18 00000179 8640                <1>  dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    19 0000017B 00                  <1>  db ((%1) >> 24) & 0xff
-   158                                      .end:
-   159                                  
-   160 0000017C 00<rep 42h>             times (510-64)-($-$$) db 0x00
-   161                                  
-   162                                  mbr_null
-    59 000001BE 0000                <1>  db 0x00, 0x00
-    60 000001C0 0200                <1>  dw 0x02
-    61 000001C2 5BFF                <1>  db 0x5b, 0xff
-    62 000001C4 FFFF                <1>  dw 0xffff
-    63 000001C6 01000000            <1>  dd 0x00000001
-    64 000001CA FFFFFFFF            <1>  dd 0xffffffff
-   163                                  
-   164 000001CE 00<rep 30h>             times (512-2)-($-$$) db 0x00
-   165 000001FE 55AA                    db 0x55, 0xaa
-   166                                  
+     1                              <1> %define ADDR_SEG_MBR_PROG 0x07c0
+     2                              <1> %define ADDR_SEG_SET_PROG 0x9f00
+     3                              <1> %define ADDR_SEG_INI_PROG 0x9000
+     4                              <1> %define ADDR_SEG_SYS_PROG 0x1000
+     5                              <1> 
+     6                              <1> %macro gdt_null 0
+     7                              <1>     dw 0, 0
+     8                              <1>     db 0
+     9                              <1>     dw 0
+    10                              <1>     db 0
+    11                              <1> %endmacro
+    12                              <1> 
+    13                              <1> %macro gdt_segment 4
+    14                              <1>     ; seg (base, limit, attribute, type)
+    15                              <1>     dw ((%2) & 0xffff), ((%1) & 0xffff)
+    16                              <1>     db ((%1) >> 16) & 0xff
+    17                              <1>     dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
+    18                              <1>     db ((%1) >> 24) & 0xff
+    19                              <1> %endmacro
+    20                              <1> 
+    21                              <1> ; program segment
+    22                              <1> %define sta_prog_d          0x80     ; 数据段
+    23                              <1> %define sta_prog_x          0x88     ; 可执行段
+    24                              <1> %define sta_prog_xc         0x04     ; 符合要求的代码段(仅可执行)
+    25                              <1> %define sta_prog_gd         0x04     ; 向下展开(不可执行的段), 栈
+    26                              <1> %define sta_prog_xr         0x02     ; 可读(可执行段)
+    27                              <1> %define sta_prog_wr         0x02     ; 可写(不可执行段)
+    28                              <1> %define sta_prog_dt         0x01     ; 已访问(脏)
+    29                              <1> ; program segment
+    30                              <1> %define sta_sys_tss16       0x01     ; 可用的16位TSS
+    31                              <1> %define sta_sys_ldt         0x02     ; 本地描述符表LDT
+    32                              <1> %define sta_sys_tss16_buzy  0x03     ; 繁忙的16位TSS
+    33                              <1> %define sta_sys_callgate16  0x04     ; 16位呼叫门
+    34                              <1> %define sta_sys_taskgate    0x05     ; 任务门/Coum传输
+    35                              <1> %define sta_sys_intgate16   0x06     ; 16位中断门
+    36                              <1> %define sta_sys_trapgate16  0x07     ; 16位陷阱门
+    37                              <1> %define sta_sys_tss32       0x09     ; 可用的32位TSS
+    38                              <1> %define sta_sys_tss32_buzy  0x0b     ; 繁忙的32位TSS
+    39                              <1> %define sta_sys_callgate32  0x0c     ; 32位调用门
+    40                              <1> %define sta_sys_intgate32   0x0e     ; 32位中断门
+    41                              <1> %define sta_sys_trapgate32  0x0f     ; 32位陷阱门
+    42                              <1> ; other attribute
+    43                              <1> %define sta_level0          0x00
+    44                              <1> %define sta_level1          0x20
+    45                              <1> %define sta_level2          0x40
+    46                              <1> %define sta_level3          0x60
+    47                              <1> %define sta_existent        0x10
+    48                              <1> %define sta_non_existent    0x00
+    49                              <1> ; other type
+    50                              <1> %define stt_32def           0x04
+    51                              <1> %define stt_32c16           0x00
+    52                              <1> %define stt_64def           0x02
+    53                              <1> %define stt_val             0x01
+    54                              <1> %define stt_limitalign4kb   0x08
+    55                              <1> 
+    56                              <1> ; MBR struction
+    57                              <1> %macro mbr_null 0
+    58                              <1>     db 0x00, 0x00
+    59                              <1>     dw 0x02
+    60                              <1>     db 0x5b, 0xff
+    61                              <1>     dw 0xffff
+    62                              <1>     dd 0x00000001
+    63                              <1>     dd 0xffffffff
+    64                              <1> %endmacro
+     2                                  org ADDR_SEG_MBR_PROG << 4
+     3                                  bits 16
+     4                                  
+     5 00000000 EB35                    jmp _start
+     6                                  
+     7                                  ident:
+     8 00000002 73796D626F6C2D6F73-         .flag       db "symbol-os", 0
+     8 0000000B 00                 
+     9 0000000C 0003                        .version    dw 0x0300
+    10 0000000E 55AA                        .magic      db 0x55, 0xaa
+    11                                  packet:
+    12 00000010 1000                        .size       dw 0x0010
+    13 00000012 0100                        .count      dw 0x0001
+    14 00000014 007E                        .offset     dw 0x7e00
+    15 00000016 0000                        .segment    dw 0x0000
+    16 00000018 0100000000000000            .address    dq 0x0000000000000001
+    17 00000020 0000000000000000            .ptr        dq 0x0000000000000000
+    18                                  messages:
+    19 00000028 5B4C31363A3A657272-         .err_head       db "[L16::err(", 0
+    19 00000031 2800               
+    20 00000033 295D2000                    .err_foot       db ")] ", 0
+    21                                  _start:
+    22 00000037 31C0                        xor ax, ax
+    23 00000039 8ED0                        mov ss, ax
+    24 0000003B 8EC0                        mov es, ax
+    25 0000003D 8ED8                        mov ds, ax
+    26 0000003F B8007C                      mov ax, ADDR_SEG_MBR_PROG << 4
+    27 00000042 89C4                        mov sp, ax
+    28 00000044 89C5                        mov bp, ax
+    29 00000046 89C6                        mov si, ax
+    30 00000048 89C7                        mov di, ax
+    31 0000004A 8816[0E00]                  mov [ident.magic], dl
+    32                                  check_int13hx:
+    33 0000004E B441                        mov ah, 0x41
+    34 00000050 BBAA55                      mov bx, 0x55aa
+    35 00000053 CD13                        int 0x13
+    36 00000055 B80100                      mov ax, 0x0001
+    37 00000058 7251                        jc errors
+    38 0000005A 81FB55AA                    cmp bx, 0xaa55
+    39 0000005E 754B                        jne errors
+    40                                  read_sdmpart:
+    41 00000060 B442                        mov ah, 0x42
+    42 00000062 8A16[0E00]                  mov dl, [ident.magic]
+    43 00000066 BE[1000]                    mov si, packet
+    44 00000069 CD13                        int 0x13
+    45 0000006B B80200                      mov ax, 0x0002
+    46 0000006E 723B                        jc errors
+    47 00000070 B90400                      mov cx, 0x04
+    48 00000073 BE107E                      mov si, 0x7e10
+    49 00000076 BF[1800]                    mov di, packet.address
+    50                                      .loop:
+    51 00000079 8B04                            mov ax, [si]
+    52 0000007B 8905                            mov [di], ax
+    53 0000007D 83C602                          add si, 0x02
+    54 00000080 83C702                          add di, 0x02
+    55 00000083 E2F4                            loop .loop
+    56 00000085 8B04                        mov ax, [si]
+    57 00000087 A3[1200]                    mov [packet.count], ax
+    58                                  read_bootsect:
+    59 0000008A C706[1400]0000              mov word [packet.offset], 0x0000
+    60 00000090 C706[1600]009F              mov word [packet.segment], ADDR_SEG_SET_PROG
+    61 00000096 B442                        mov ah, 0x42
+    62 00000098 8A16[0E00]                  mov dl, [ident.magic]
+    63 0000009C BE[1000]                    mov si, packet
+    64 0000009F CD13                        int 0x13
+    65 000000A1 B80300                      mov ax, 0x0003
+    66 000000A4 7205                        jc errors
+    67 000000A6 EA0000009F                  jmp ADDR_SEG_SET_PROG:0
+    68                                  errors:
+    69 000000AB 50                          push ax
+    70 000000AC B402                        mov ah, 0x02
+    71 000000AE 31DB                        xor bx, bx
+    72 000000B0 31D2                        xor dx, dx
+    73 000000B2 CD10                        int 0x10
+    74 000000B4 B406                        mov ah, 0x06
+    75 000000B6 31C9                        xor cx, cx
+    76 000000B8 88C8                        mov al, cl
+    77 000000BA BAFFFF                      mov dx, 0xffff
+    78 000000BD B707                        mov bh, 0x07
+    79 000000BF CD10                        int 0x10
+    80 000000C1 BE[2800]                    mov si, messages.err_head
+    81 000000C4 E80D00                      call puts
+    82 000000C7 58                          pop ax
+    83 000000C8 50                          push ax
+    84 000000C9 E81500                      call putx
+    85 000000CC BE[3300]                    mov si, messages.err_foot
+    86 000000CF E80200                      call puts
+    87                                  dead:
+    88 000000D2 EBFE                        jmp $
+    89                                  puts:               ; void puts (si)
+    90                                      .puts_loop:
+    91 000000D4 8A04                            mov al, [si]
+    92 000000D6 46                              inc si
+    93 000000D7 84C0                            test al, al
+    94 000000D9 7405                            jz .puts_ret
+    95 000000DB E82200                          call putc
+    96 000000DE EBF4                            jmp .puts_loop
+    97                                      .puts_ret:
+    98 000000E0 C3                              ret
+    99                                  putx:               ; void putx (ax)
+   100 000000E1 B90400                      mov cx, 4
+   101                                      .putx_loop:
+   102 000000E4 50                              push ax
+   103 000000E5 C1E80C                          shr ax, 12
+   104 000000E8 89C6                            mov si, ax
+   105 000000EA 3C0A                            cmp al, 0x0a
+   106 000000EC 7D04                            jge .big10
+   107 000000EE 0430                                add al, '0'
+   108 000000F0 EB02                                jmp .show
+   109                                          .big10:
+   110 000000F2 0457                                add al, 'a'-10
+   111                                          .show:
+   112 000000F4 51                              push cx
+   113 000000F5 E80800                          call putc
+   114 000000F8 59                              pop cx
+   115 000000F9 58                              pop ax
+   116 000000FA C1E004                          shl ax, 4
+   117 000000FD E2E5                        loop .putx_loop
+   118 000000FF C3                          ret
+   119                                  putc:               ; void putc (al)
+   120 00000100 B40E                        mov ah, 0x0e
+   121 00000102 BB0F00                      mov bx, 0x0f
+   122 00000105 CD10                        int 0x10
+   123 00000107 C3                          ret
+   124                                  
+   125 00000108 00<rep B6h>             times (510-64)-($-$$) db 0x00
+   126                                  
+   127                                  mbr_null
+    58 000001BE 0000                <1>  db 0x00, 0x00
+    59 000001C0 0200                <1>  dw 0x02
+    60 000001C2 5BFF                <1>  db 0x5b, 0xff
+    61 000001C4 FFFF                <1>  dw 0xffff
+    62 000001C6 01000000            <1>  dd 0x00000001
+    63 000001CA FFFFFFFF            <1>  dd 0xffffffff
+   128                                  
+   129 000001CE 00<rep 30h>             times (512-2)-($-$$) db 0x00
+   130 000001FE 55AA                    db 0x55, 0xaa
+   131                                  
