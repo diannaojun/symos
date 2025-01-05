@@ -25,16 +25,9 @@ idt_info:
 
 align 16
 _start:
-    mov ax, ADDR_SEG_SET_PROG
+    mov ax, cs
     mov ds, ax
     mov es, ax
-    mov ax, ADDR_SEG_MBR_PROG
-    mov ss, ax
-    xor ax, ax
-    mov sp, ax
-    mov bp, ax
-    xor si, si
-    xor di, di
 mode16:
     mov ax, 0x0124
     int 0x15

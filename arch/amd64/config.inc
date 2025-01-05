@@ -53,3 +53,13 @@
 %define stt_64def           0x02
 %define stt_val             0x01
 %define stt_limitalign4kb   0x08
+
+; MBR struction
+%macro mbr_null 0
+    db 0x00, 0x00
+    dw 0x02
+    db 0x5b, 0xff
+    dw 0xffff
+    dd 0x00000001
+    dd 0xffffffff
+%endmacro
