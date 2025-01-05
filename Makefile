@@ -11,8 +11,6 @@ build: clean
 
 debug: build
 	dd if=$(TEMP)/boot.bin of=$(PRJ)/kernel/kernel.img
-	gcc $(PRJ)/tool/vmdk.c -o $(TEMP)/vmdk.exe
-	$(TEMP)/vmdk.exe $(FLATS) $(PRJ)/kernel/kernel kernel
 
 clean:
 ifeq ($(wildcard $(TEMP)), )
