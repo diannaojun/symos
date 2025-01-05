@@ -5,7 +5,7 @@
 %define ADDR_SEG_SYS_PROG 0x1000
 
 %macro gdt_null 0
-    dw 0
+    dw 0, 0
     db 0
     dw 0
     db 0

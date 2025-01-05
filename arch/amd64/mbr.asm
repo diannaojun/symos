@@ -144,6 +144,19 @@ messages:
 
 times 0x150-($-$$) db 0x00
 
+gdt_info:
+    dw gdt.end - gdt
+    dd gdt
+idt_info:
+    times 3 dw 0
+
+gdt:
+    .null   gdt_null
+    .code   gdt_segment 0x00000000, 0xffffffff, sta_prog_x | sta_prog_xr, stt_32def | stt_limitalign4kb
+    .data   gdt_segment 0x00000000, 0xffffffff, sta_prog_d | sta_prog_wr, stt_32def | stt_limitalign4kb
+    .stack  gdt_segment 0x00008000, 0x08000 - 0x00500, sta_prog_d | sta_prog_wr | sta_prog_gd, stt_32def
+    .end:
+
 times (510-64)-($-$$) db 0x00
 
 mbr_null
