@@ -70,74 +70,54 @@
      6                                  ; STACK
      7                                  ; ------ 08000
      8                                  
-     9 00000000 EB2C                    jmp _start
+     9 00000000 EB00                    jmp _start
     10                                  
-    11                                  gdt:
-    12                                      .null   gdt_null
-    12                              <1>  .null :
-     7 00000002 00000000            <1>  dw 0, 0
-     8 00000006 00                  <1>  db 0
-     9 00000007 0000                <1>  dw 0
-    10 00000009 00                  <1>  db 0
-    13                                      .code   gdt_segment 0x00000000, 0xffffffff, sta_prog_x | sta_prog_xr, stt_32def | stt_limitalign4kb
-    13                              <1>  .code :
-    14                              <1> 
-    15 0000000A FFFF0000            <1>  dw ((%2) & 0xffff), ((%1) & 0xffff)
-    16 0000000E 00                  <1>  db ((%1) >> 16) & 0xff
-    17 0000000F 8ACF                <1>  dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    18 00000011 00                  <1>  db ((%1) >> 24) & 0xff
-    14                                      .data   gdt_segment 0x00000000, 0xffffffff, sta_prog_d | sta_prog_wr, stt_32def | stt_limitalign4kb
-    14                              <1>  .data :
-    14                              <1> 
-    15 00000012 FFFF0000            <1>  dw ((%2) & 0xffff), ((%1) & 0xffff)
-    16 00000016 00                  <1>  db ((%1) >> 16) & 0xff
-    17 00000017 82CF                <1>  dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    18 00000019 00                  <1>  db ((%1) >> 24) & 0xff
-    15                                      .stack  gdt_segment 0x00008000, 0x08000 - 0x00500, sta_prog_d | sta_prog_wr | sta_prog_gd, stt_32def
-    15                              <1>  .stack :
-    14                              <1> 
-    15 0000001A 007B0080            <1>  dw ((%2) & 0xffff), ((%1) & 0xffff)
-    16 0000001E 00                  <1>  db ((%1) >> 16) & 0xff
-    17 0000001F 8640                <1>  dw (((%2) >> 8) & 0xf00) | ((%3) & 0xff) | (((%4) & 0xf) << 12)
-    18 00000021 00                  <1>  db ((%1) >> 24) & 0xff
-    16                                      .end:
-    17                                  gdt_info:
-    18 00000022 2000                        dw gdt.end - gdt
-    19 00000024 [02000000]                  dd gdt
-    20                                  idt_info:
-    21 00000028 0000<rep 3h>                times 3 dw 0
-    22                                  
-    23                                  _start:
-    24                                  mode16:
-    25 0000002E 8CC8                        mov ax, cs
-    26 00000030 8ED8                        mov ds, ax
-    27 00000032 3E0F0116[2200]              lgdt [ds:gdt_info]
-    28 00000038 3E0F011E[2200]              lidt [ds:gdt_info]
-    29 0000003E E492                        in al, 0x92
-    30 00000040 0C02                        or al, 0x02
-    31 00000042 E692                        out 0x92, al
-    32 00000044 FA                          cli
-    33 00000045 0F20C0                      mov eax, cr0
-    34 00000048 6683C801                    or eax, 0x00000001
-    35 0000004C 0F22C0                      mov cr0, eax
-    36 0000004F 66EA[60000000]0800          jmp dword 0x0008:mode32
-    37                                  
-    38                                  bits 32
-    39 00000057 90<rep 9h>              align 32
-    40                                  mode32:
-    41 00000060 66B81000                    mov ax, 0x0010
-    42 00000064 8ED8                        mov ds, ax
-    43 00000066 8EC0                        mov es, ax
-    44 00000068 8EE0                        mov fs, ax
-    45 0000006A 8EE8                        mov gs, ax
-    46 0000006C 66B81800                    mov ax, 0x0018
-    47 00000070 8ED0                        mov ss, ax
-    48 00000072 BC007B0000                  mov esp, 0x08000 - 0x00500
-    49 00000077 89E5                        mov ebp, esp
-    50 00000079 31FF                        xor edi, edi
-    51 0000007B 31F6                        xor esi, esi
-    52                                  test_print:
-    53 0000007D F4                          hlt
-    54 0000007E EBFE                        jmp $
-    55                                  
-    56 00000080 00<rep F80h>            times 4096 -($ - $$) db 0
+    11                                  _start:
+    12 00000002 31C0                        xor ax, ax
+    13 00000004 8ED8                        mov ds, ax
+    14 00000006 FA                          cli
+    15                                  setA20e:
+    16 00000007 E83400                      call wait8064
+    17 0000000A B0D1                        mov al, 0xd1
+    18 0000000C E664                        out 0x64, al
+    19 0000000E E82D00                      call wait8064
+    20 00000011 B0DF                        mov al, 0xdf
+    21 00000013 E660                        out 0x60, al
+    22 00000015 E82600                      call wait8064
+    23 00000018 E492                        in al, 0x92
+    24 0000001A 0C02                        or al, 0x02
+    25 0000001C E692                        out 0x92, al
+    26                                  setXDT:
+    27 0000001E 3E0F0116487C                lgdt [ds:0x7c48]
+    28 00000024 3E0F011E4E7C                lidt [ds:0x7c4e]
+    29                                  setCR0PE:
+    30 0000002A 87DB                        xchg bx, bx
+    31 0000002C 0F20C0                      mov eax, cr0
+    32 0000002F 6683C801                    or eax, 0x00000001
+    33 00000033 0F22C0                      mov cr0, eax
+    34 00000036 66EA[60000000]0800          jmp dword 0x0008:mode32
+    35                                  wait8064:
+    36 0000003E E464                        in al, 0x64
+    37 00000040 A802                        test al, 0x02
+    38 00000042 75FA                        jnz wait8064
+    39 00000044 C3                          ret
+    40                                  
+    41                                  bits 32
+    42 00000045 90<rep 1Bh>             align 32
+    43                                  mode32:
+    44 00000060 66B81000                    mov ax, 0x0010
+    45 00000064 8ED8                        mov ds, ax
+    46 00000066 8EC0                        mov es, ax
+    47 00000068 8EE0                        mov fs, ax
+    48 0000006A 8EE8                        mov gs, ax
+    49 0000006C 66B81800                    mov ax, 0x0018
+    50 00000070 8ED0                        mov ss, ax
+    51 00000072 BC007B0000                  mov esp, 0x08000 - 0x00500
+    52 00000077 89E5                        mov ebp, esp
+    53 00000079 31FF                        xor edi, edi
+    54 0000007B 31F6                        xor esi, esi
+    55                                  test_print:
+    56 0000007D F4                          hlt
+    57 0000007E EBFE                        jmp $
+    58                                  
+    59 00000080 00<rep F80h>            times 4096 -($ - $$) db 0

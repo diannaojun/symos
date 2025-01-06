@@ -8,32 +8,35 @@ bits 16
 
 jmp _start
 
-gdt:
-    .null   gdt_null
-    .code   gdt_segment 0x00000000, 0xffffffff, sta_prog_x | sta_prog_xr, stt_32def | stt_limitalign4kb
-    .data   gdt_segment 0x00000000, 0xffffffff, sta_prog_d | sta_prog_wr, stt_32def | stt_limitalign4kb
-    .stack  gdt_segment 0x00008000, 0x08000 - 0x00500, sta_prog_d | sta_prog_wr | sta_prog_gd, stt_32def
-    .end:
-gdt_info:
-    dw gdt.end - gdt
-    dd gdt
-idt_info:
-    times 3 dw 0
-
 _start:
-mode16:
-    mov ax, cs
+    xor ax, ax
     mov ds, ax
-    lgdt [ds:gdt_info]
-    lidt [ds:gdt_info]
+    cli
+setA20e:
+    call wait8064
+    mov al, 0xd1
+    out 0x64, al
+    call wait8064
+    mov al, 0xdf
+    out 0x60, al
+    call wait8064
     in al, 0x92
     or al, 0x02
     out 0x92, al
-    cli
+setXDT:
+    lgdt [ds:0x7c48]
+    lidt [ds:0x7c4e]
+setCR0PE:
+    xchg bx, bx
     mov eax, cr0
     or eax, 0x00000001
     mov cr0, eax
     jmp dword 0x0008:mode32
+wait8064:
+    in al, 0x64
+    test al, 0x02
+    jnz wait8064
+    ret
 
 bits 32
 align 32
