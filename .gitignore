@@ -1,30 +1,25 @@
-# workspace
+# 工作区文件夹
 .vscode
 .vscode/*
 .old
 .old/*
 
-# temp
+# 调试文件
 *.tags
 *.lst
 *.lock
 
-# binaray
+# 二进制文件
 *.bin
 *.img
-
 *.obj
 *.o
-
 *.a
 *.lib
-
 *.so
 *.dll
-
 *.iso
 *.vmdk
-
 *.elf
 *.out
 *.exe
