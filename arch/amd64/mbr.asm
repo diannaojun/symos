@@ -15,17 +15,16 @@ packet:
     .segment    dw 0x0000
     .address    dq 0x0000000000000001
     .ptr        dq 0x0000000000000000
-gdt:
-    .null   gdt_null
-    .code   gdt_segment 0x00000000, 0xffffffff, sta_prog_x | sta_prog_xr, stt_32def | stt_limitalign4kb
-    .data   gdt_segment 0x00000000, 0xffffffff, sta_prog_d | sta_prog_wr, stt_32def | stt_limitalign4kb
-    .stack  gdt_segment 0x00008000, 0x08000 - 0x00500, sta_prog_d | sta_prog_wr | sta_prog_gd, stt_32def
-    .end:
 gdt_info:
     dw gdt.end - gdt
     dd gdt
 idt_info:
     times 3 dw 0
+gdt:
+    .null   gdt_null
+    .code   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_existent, stt_32def | stt_limitalign4kb
+    .data   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_existent, stt_32def | stt_limitalign4kb
+    .end:
 messages:
     .err_head       db "[L16::err(", 0
     .err_foot       db ")] ", 0

@@ -24,8 +24,8 @@ setA20e:
     or al, 0x02
     out 0x92, al
 setXDT:
-    lgdt [ds:0x7c48]
-    lidt [ds:0x7c4e]
+    lgdt [ds:0x7c28]
+    lidt [ds:0x7c2e]
 setCR0PE:
     xchg bx, bx
     mov eax, cr0
@@ -46,9 +46,8 @@ mode32:
     mov es, ax
     mov fs, ax
     mov gs, ax
-    mov ax, 0x0018
     mov ss, ax
-    mov esp, 0x08000 - 0x00500
+    mov esp, 0x7c00
     mov ebp, esp
     xor edi, edi
     xor esi, esi
