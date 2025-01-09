@@ -1,33 +1,30 @@
 %include "config.inc"
 org ADDR_SEG_MBR_PROG << 4
 bits 16
+; ------ 00500
+; STACK
+; ------ 07c00
+; MBR
+; ------ 07e00
+; BUFFER
+; ------ 08000
 
 jmp _start
 
 ident:
     .flag       db "symbol-os", 0
-    .version    dw 0x0300
-    .magic      db 0x55, 0xaa
+    .version    dd 0x00030001
+    .magic      dq 0, 0
 packet:
     .size       dw 0x0010
     .count      dw 0x0001
     .offset     dw 0x7e00
     .segment    dw 0x0000
     .address    dq 0x0000000000000001
-    .ptr        dq 0x0000000000000000
-gdt_info:
-    dw gdt.end - gdt
-    dd gdt
-idt_info:
-    times 3 dw 0
-gdt:
-    .null   gdt_null
-    .code   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_existent, stt_32def | stt_limitalign4kb
-    .data   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_existent, stt_32def | stt_limitalign4kb
-    .end:
 messages:
-    .err_head       db "[L16::err(", 0
+    .err_head       db "[MBR::err(", 0
     .err_foot       db ")] ", 0
+
 _start:
     xor ax, ax
     mov ss, ax
@@ -49,7 +46,7 @@ check_int13hx:
     jne errors
 read_sdmpart:
     mov ah, 0x42
-    mov dl, [ident.magic]
+    mov dl, [ident.magic + 0]
     mov si, packet
     int 0x13
     mov ax, 0x0002
@@ -63,18 +60,24 @@ read_sdmpart:
         add si, 0x02
         add di, 0x02
         loop .loop
-    mov ax, [si]
+    mov ax, [0x7e0a]
+    mov bx, [0x7e0c]
+    mov cx, [0x7e0e]
+    and cx, 0x000f
+    shl cx, 12
     mov [packet.count], ax
+    mov [packet.offset], bx
+    mov [packet.segment], cx
 read_bootsect:
-    mov word [packet.offset], 0x0000
-    mov word [packet.segment], ADDR_SEG_SET_PROG
     mov ah, 0x42
     mov dl, [ident.magic]
     mov si, packet
     int 0x13
     mov ax, 0x0003
     jc errors
-    jmp ADDR_SEG_SET_PROG:0
+    push word [packet.segment]
+    push word [packet.offset]
+    retf
 errors:
     push ax
     mov ah, 0x02
