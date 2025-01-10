@@ -12,6 +12,7 @@ build: clean
 debug:
 	$(MAKE) build
 	dd if=$(TEMP)/boot.bin of=$(PRJ)/kernel/kernel.img
+	- bochsdbg
 
 clean:
 ifeq ($(wildcard $(TEMP)), )
