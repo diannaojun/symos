@@ -4,7 +4,13 @@ bits 16
 
 ; ------ 00500
 ; STACK
+; ------ 07c00
+; BOOT INFORMATINS
 ; ------ 08000
+; EMPTY
+; ------ 9f000
+; SETUP
+; ------ a0000
 
 jmp _start
 
@@ -13,14 +19,21 @@ gdt:
     .code   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_existent, stt_32def | stt_limitalign4kb
     .data   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_existent, stt_32def | stt_limitalign4kb
     .end:
+gdt64:
+    .null   gdt_null
+    .code   gdt_segment 0, 0, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_existent, stt_64def
+    .end:
 gdt_info:
     dw gdt.end - gdt
     dd gdt
+gdt64_info:
+    dw gdt64.end - gdt64
+    dd gdt64
 idt_info:
     times 3 dw 0
 screan:
     .pos    dw 0
-    .texta  db "[SETUP32::err(", 0
+    .texta  db "[Setup32::err(", 0
     .textb  db ")] ", 0
     .textc  db "0000", 0
     .textd  db "OK!!!", 0
@@ -41,7 +54,6 @@ setA20e:
     or al, 0x02
     out 0x92, al
 setXDT:
-    xchg bx, bx
     mov ax, ADDR_SEG_SET_PROG
     mov ds, ax
     lgdt [ds:gdt_info - $$]
@@ -87,17 +99,35 @@ check_cpuid:
 check_long_mode:
     mov eax, 0x80000000
     cpuid
-    cmp eax, 0x80000001
+    cmp eax, 0x80000002
     mov ax, 0x0005
     jb errors
-    cmp eax, 0x80000001
+    cmp eax, 0x80000002
     cpuid
     test edx, 1 << 29
+    xchg bx, bx
     mov ax, 0x0006
     jz errors
     mov esi, screan.textd
     call puts
-jmp $
+set_page_gdt:
+    lgdt [gdt64_info]
+    jmp 0x0008:_try64
+_try64:
+    mov eax, 1010_0000b
+    mov cr4, eax
+    mov eax, 0x00000000 ; addr of page4
+    mov cr3, eax
+    mov ecx, 0xc0000080
+    rdmsr
+    or eax, 0x00000100
+    wrmsr
+    mov eax, cr0
+    or eax, 0x80000001
+    mov cr0, eax
+    jmp _start64
+_start64:
+    jmp $
 errors:
     push ax
     mov esi, screan.texta
