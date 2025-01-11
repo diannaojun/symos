@@ -208,21 +208,23 @@ check_cpuid:
     popfd
     test eax, ecx
     mov ax, 0x0004
-    jz errors32
+    jz errors
 check_long_mode:
     mov eax, 0x80000000
     cpuid
-    cmp eax, 0x80000002
+    cmp eax, 0x80000001
     mov ax, 0x0005
-    jb errors32
-    cmp eax, 0x80000002
+    jb errors
+    cmp eax, 0x80000001
     cpuid
     test edx, 1 << 29
     xchg bx, bx
     mov ax, 0x0006
-    jz errors32
+    jz errors
     mov esi, message.texte
-    call puts32
+    call puts
+    xchg bx, bx
+    jmp $
 set_page_gdt:
     lgdt [gdt64_info]
     jmp 0x0008:_try64
@@ -241,16 +243,16 @@ _try64:
     jmp _start64
 _start64:
     jmp $
-errors32:
+errors:
     push ax
     mov esi, message.texta
-    call puts32
+    call puts
     pop ax
     call putx32
     mov esi, message.textb
-    call puts32
+    call puts
     jmp $
-puts32:
+puts:
     .puts_loop:
         mov al, [esi]
         inc esi
