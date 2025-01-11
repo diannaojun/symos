@@ -9,35 +9,54 @@ bits 16
 ; BUFFER
 ; ------ 08000
 
-jmp _start
+header  jmp _start
 
 ident:
     .flag       db "symbol-os", 0
     .version    dd 0x00030001
-    .magic      dq 0, 0
 packet:
     .size       dw 0x0010
     .count      dw 0x0001
     .offset     dw 0x7e00
     .segment    dw 0x0000
     .address    dq 0x0000000000000001
-messages:
-    .err_head       db "[MBR::err(", 0
-    .err_foot       db ")] ", 0
-
+port:
+    .errs_func  dw 0, errors
+    .puts_func  dw 0, puts
+    .putc_func  dw 0, putc
+    .putx_func  dw 0, putx
+message:
+    .texta      db "[MBR::err(", 0
+    .textb      db ")]", 0
+    .textc      db "Loading kernel...", 0x0a, 0x0d, 0
 _start:
     xor ax, ax
-    mov ss, ax
-    mov es, ax
     mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
     mov ax, ADDR_SEG_MBR_PROG << 4
     mov sp, ax
     mov bp, ax
-    mov si, ax
-    mov di, ax
-    mov [ident.magic], dl
+    mov [header], dl
+clear:
+    mov ax, 0x0400
+    int 0x10
+    mov ah, 0x02
+    xor bx, bx
+    xor dx, dx
+    int 0x10
+    mov ax, 0x0600
+    mov dx, 0xffff
+    mov bh, 0x0f
+    xor cx, cx
+    int 0x10
+    mov si, message.textc
+    call puts
 check_int13hx:
     mov ah, 0x41
+    mov dl, [header]
     mov bx, 0x55aa
     int 0x13
     mov ax, 0x0001
@@ -46,7 +65,7 @@ check_int13hx:
     jne errors
 read_sdmpart:
     mov ah, 0x42
-    mov dl, [ident.magic + 0]
+    mov dl, [header]
     mov si, packet
     int 0x13
     mov ax, 0x0002
@@ -70,32 +89,24 @@ read_sdmpart:
     mov [packet.segment], cx
 read_bootsect:
     mov ah, 0x42
-    mov dl, [ident.magic]
+    mov dl, [header]
     mov si, packet
     int 0x13
     mov ax, 0x0003
     jc errors
+    xor ax, ax
+    mov al, [header]
+    mov [0x7e00], ax
     push word [packet.segment]
-    push word [packet.offset]
+    push word [packet.offset] 
     retf
 errors:
     push ax
-    mov ah, 0x02
-    xor bx, bx
-    xor dx, dx
-    int 0x10
-    mov ah, 0x06
-    xor cx, cx
-    mov al, cl
-    mov dx, 0xffff
-    mov bh, 0x07
-    int 0x10
-    mov si, messages.err_head
+    mov si, message.texta
     call puts
     pop ax
-    push ax
     call putx
-    mov si, messages.err_foot
+    mov si, message.textb
     call puts
 dead:
     jmp $
@@ -117,17 +128,16 @@ putx:               ; void putx (ax)
         mov si, ax
         cmp al, 0x0a
         jge .big10
-            add al, '0'
-            jmp .show
-        .big10:
-            add al, 'a'-10
+        add al, '0'
+        jmp .show
+        .big10  add al, 'a'-10
         .show:
-        push cx
-        call putc
-        pop cx
-        pop ax
-        shl ax, 4
-    loop .putx_loop
+            push cx
+            call putc
+            pop cx
+            pop ax
+            shl ax, 4
+        loop .putx_loop
     ret
 putc:               ; void putc (al)
     mov ah, 0x0e

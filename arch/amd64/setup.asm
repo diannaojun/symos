@@ -31,43 +31,156 @@ gdt64_info:
     dd gdt64
 idt_info:
     times 3 dw 0
-screan:
-    .pos    dw 0
+message:
     .texta  db "[Setup32::err(", 0
+    .texte  db "[Setup16::err(", 0
     .textb  db ")] ", 0
-    .textc  db "0000", 0
-    .textd  db "OK!!!", 0
 
 _start:
     xor ax, ax
     mov ds, ax
-    cli
-setA20e:
-    call wait8064
-    mov al, 0xd1
-    out 0x64, al
-    call wait8064
-    mov al, 0xdf
-    out 0x60, al
-    call wait8064
-    in al, 0x92
-    or al, 0x02
-    out 0x92, al
-setXDT:
+    mov es, ax
+    mov [0x7e02], ax
+set_description_table:          ; 設定描述符表
     mov ax, ADDR_SEG_SET_PROG
     mov ds, ax
     lgdt [ds:gdt_info - $$]
     lidt [ds:idt_info - $$]
-setCR0PE:
+set_a20:                        ; 設定 A20
+    call test_A20
+; 方法 1: BIOS 中斷
+    ; 支持 A20 ?
+    mov ax, 0x2403
+    int 0x15
+    jb .A20_ns
+    test ah, ah
+    jnz .A20_ns
+    ; 嘗試開啓 A20
+    mov ax, 0x2402
+    int 0x15
+    jb .A20_failed
+    test ah, ah
+    jnz .A20_failed
+    ; 檢驗是否開啓
+    cmp al, 1
+    jz .A20_activated
+    mov ax, 0x2401
+    int 0x15
+    jb .A20_failed
+    test ah, ah
+    jnz .A20_failed
+    .A20_activated:
+        call test_A20
+    .A20_failed:
+; 方法 2: 鍵盤控制器 8042
+    cli
+    call wait_8042_2
+    mov al, 0xad
+    out 0x64, al
+    call wait_8042_2
+    mov al, 0xd0
+    out 0x64, al
+    call wait_8042_1
+    in al, 0x60
+    push ax
+    call wait_8042_2
+    mov al, 0xd1
+    out 0x64, al
+    call wait_8042_2
+    pop ax
+    or al, 2
+    out 0x60, al
+    call wait_8042_2
+    mov al, 0xae
+    out 0x64, al
+    call wait_8042_2
+    sti
+    call test_A20
+; 方法 3: 0xee 端口
+    in al, 0xee
+    call test_A20
+; 方法 4: 快速 A20 門
+    in al, 0x92
+    test al, 2
+    jnz .skip92
+    or al, 2
+    and al, 0xfe
+    out 0x92, al
+    .skip92:
+        call test_A20
+    .A20_ns:
+        mov ax, 0x0007
+        push word [0x7c24]
+        push word [0x7c26]
+        retf
+wait_8042_1:
+    call step2
+    in al, 0x64
+    test al, 1
+    jnz wait_8042_1
+    ret
+wait_8042_2:
+    call step2
+    in al, 0x64
+    test al, 2
+    jz wait_8042_2
+    ret
+step2:
+    nop
+    jmp $+2
+    nop
+    jmp $+2
+    nop
+    ret
+test_A20:
+    pusha
+    xor ax, ax
+    xor si, si
+    mov ds, ax
+    mov ax, 0xffff
+    mov di, 0x0010
+    mov es, ax
+    mov word [si], 0x0000
+    mov word [di], 0x1145
+    mov ax, [si]
+    test ax, ax
+    popa
+    jz set_8259
+    ret
+set_8259:
+    pop ax
+    mov al, 0x11
+    out 0x20, al
+    call step2
+    out 0xa0, al
+    call step2
+    mov al, 0x20
+    out 0x21, al
+    call step2
+    mov al, 0x28
+    out 0xa1, al
+    call step2
+    mov al, 0x04
+    out 0x21, al
+    call step2
+    mov al, 0x02
+    out 0xa1, al
+    call step2
+    mov al, 0x01
+    out 0x21, al
+    call step2
+    out 0xa1, al
+    call step2
+    mov al, 0xff
+    out 0x21, al
+    call step2
+    out 0xa1, al
+    call step2
+set_cr0_PE:
     mov eax, cr0
     or eax, 0x00000001
     mov cr0, eax
     jmp dword 0x0008:_start32
-wait8064:
-    in al, 0x64
-    test al, 0x02
-    jnz wait8064
-    ret
 
 bits 32
 align 32
@@ -95,21 +208,21 @@ check_cpuid:
     popfd
     test eax, ecx
     mov ax, 0x0004
-    jz errors
+    jz errors32
 check_long_mode:
     mov eax, 0x80000000
     cpuid
     cmp eax, 0x80000002
     mov ax, 0x0005
-    jb errors
+    jb errors32
     cmp eax, 0x80000002
     cpuid
     test edx, 1 << 29
     xchg bx, bx
     mov ax, 0x0006
-    jz errors
-    mov esi, screan.textd
-    call puts
+    jz errors32
+    mov esi, message.texte
+    call puts32
 set_page_gdt:
     lgdt [gdt64_info]
     jmp 0x0008:_try64
@@ -128,50 +241,51 @@ _try64:
     jmp _start64
 _start64:
     jmp $
-errors:
+errors32:
     push ax
-    mov esi, screan.texta
-    call puts
+    mov esi, message.texta
+    call puts32
     pop ax
-    call putx
-    mov esi, screan.textb
-    call puts
+    call putx32
+    mov esi, message.textb
+    call puts32
     jmp $
-puts:
+puts32:
     .puts_loop:
         mov al, [esi]
         inc esi
         test al, al
         jz .puts_ret
-        call putc
+        call putc32
         jmp .puts_loop
     .puts_ret:
         ret
-putc:               ; void putc (al)
-    movzx ecx, word [screan.pos]
+putc32:               ; void putc (al)
+    movzx ecx, word [0x7e02]
     add ecx, 0xb8000
     mov edi, ecx
     mov ah, 0x0f
+    cmp al, 10
     mov [edi], ax
-    movzx ecx, word [screan.pos]
-    add ecx, 2
-    mov [screan.pos], cx
+    sub ecx, 0xb8000 - 2
+    mov [0x7e02], cx
     ret
-putx:               ; void putx (ax)
+putx32:               ; void putx (ax)
     mov cx, 4
     .putx_loop:
         push ax
         shr ax, 12
         mov si, ax
         cmp al, 0x0a
-        jge .big10
-            add al, '0'
-            jmp .show
-        .big10:
-            add al, 'a'-10
-        .show:
+        jge .bigger10
+        mov ah, '0'
+        jmp .less10
+        .bigger10:
+            mov ah, 'a'-10
+        .less10:
+            add al, ah
         push cx
-        call putc
+        call putc32
         pop cx
         pop ax
         shl ax, 4
