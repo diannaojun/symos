@@ -35,6 +35,10 @@ message:
     .texta  db "[Setup32::err(", 0
     .texte  db "[Setup16::err(", 0
     .textb  db ")] ", 0
+    .textrega   db " EAX=", 0
+    .textregc   db " ECX=", 0
+    .textregd   db " EDX=", 0
+    .textregb   db " EBX=", 0
 
 _start:
     xor ax, ax
@@ -207,22 +211,22 @@ check_cpuid:
     push ecx
     popfd
     test eax, ecx
-    mov ax, 0x0004
-    jz errors
+    mov esi, 0x0004
+    jz errors32
 check_long_mode:
     mov eax, 0x80000000
     cpuid
     cmp eax, 0x80000001
-    mov ax, 0x0005
-    jb errors
+    mov esi, 0x0005
+    jb errors32
     cmp eax, 0x80000001
-    cpuid
-    test edx, 1 << 29
-    xchg bx, bx
-    mov ax, 0x0006
-    jz errors
+    and edx, 1 << 29
+    test edx, edx
+    mov esi, 0x0006
+    xchg bx, bx~
+    jz errors32
     mov esi, message.texte
-    call puts
+    call puts32
     xchg bx, bx
     jmp $
 set_page_gdt:
@@ -241,18 +245,38 @@ _try64:
     or eax, 0x80000001
     mov cr0, eax
     jmp _start64
-_start64:
-    jmp $
-errors:
-    push ax
+
+errors32:
+    pushad
+
     mov esi, message.texta
-    call puts
-    pop ax
+    call puts32
+    mov eax, [esp + 4]
     call putx32
     mov esi, message.textb
-    call puts
+    call puts32
+
+    mov esi, message.textrega
+    call puts32
+    mov eax, [esp + 28]
+    call putx32
+    mov esi, message.textregc
+    call puts32
+    mov eax, [esp + 24]
+    call putx32
+    mov esi, message.textregd
+    call puts32
+    mov eax, [esp + 20]
+    call putx32
+    mov esi, message.textregb
+    call puts32
+    mov eax, [esp + 16]
+    call putx32
+    
+    popad
     jmp $
-puts:
+puts32:
+    pushad
     .puts_loop:
         mov al, [esi]
         inc esi
@@ -261,37 +285,41 @@ puts:
         call putc32
         jmp .puts_loop
     .puts_ret:
+        popad
         ret
 putc32:               ; void putc (al)
-    movzx ecx, word [0x7e02]
+    pushad
+    xor ecx, ecx
+    mov cx, [0x7e02]
     add ecx, 0xb8000
     mov edi, ecx
     mov ah, 0x0f
-    cmp al, 10
     mov [edi], ax
     sub ecx, 0xb8000 - 2
     mov [0x7e02], cx
+    popad
     ret
-putx32:               ; void putx (ax)
-    mov cx, 4
+putx32:               ; void putx (eax)
+    pushad
+    mov ecx, 8
     .putx_loop:
-        push ax
-        shr ax, 12
-        mov si, ax
+        push eax
+        shr eax, 28
         cmp al, 0x0a
         jge .bigger10
         mov ah, '0'
         jmp .less10
-        .bigger10:
-            mov ah, 'a'-10
-        .less10:
-            add al, ah
-        push cx
+        .bigger10   mov ah, 'a'-10
+        .less10     add al, ah
         call putc32
-        pop cx
-        pop ax
-        shl ax, 4
+        pop eax
+        shl eax, 4
     loop .putx_loop
+    popad
     ret
+
+bits 64
+_start64:
+    jmp $
 
 times 4096 -($ - $$) db 0

@@ -1,7 +1,6 @@
 %define ADDR_SEG_MBR_PROG 0x07c0
-%define ADDR_SEG_SET_PROG 0x9f00
-%define ADDR_SEG_INI_PROG 0x9000
-%define ADDR_SEG_SYS_PROG 0x1000
+%define ADDR_SEG_SET_PROG 0x9800
+%define ADDR_SEG_SYS_PROG 0x80000000
 
 %macro gdt_segment 4
     ; gdt_segment (base, limit, attribute, type)
