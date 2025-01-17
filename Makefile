@@ -7,6 +7,7 @@ default: build
 
 build: clean
 	dd if=/dev/zero of=$(TEMP)/boot.bin bs=512 count=$(FLATS)
+	$(MAKE) -C ./lib build_all AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
 	$(MAKE) -C ./arch build_all AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
 
 debug:
