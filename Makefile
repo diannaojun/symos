@@ -1,27 +1,20 @@
 AS		:=	nasm
+CC		:=	gcc
 PRJ		:=	$(CURDIR)
-TEMP	:=	$(PRJ)/build
-FLATS   :=  2880
-
-default: build
 
 build: clean
-	dd if=/dev/zero of=$(TEMP)/boot.bin bs=512 count=$(FLATS)
-	$(MAKE) -C ./lib build_all AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
-	$(MAKE) -C ./arch build_all AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
+	$(MAKE) -C ./arch build AS=$(AS) CC=$(CC) PRJ=$(PRJ) AR=$(AR)
 
 debug:
-	$(MAKE) build
-	dd if=$(TEMP)/boot.bin of=$(PRJ)/kernel/kernel.img
+	$(MAKE) -C ./arch debug AS=$(AS) CC=$(CC) PRJ=$(PRJ) AR=$(AR)
 
 run: debug
 	- bochsdbg
 
 clean:
-ifeq ($(wildcard $(TEMP)), )
-	- mkdir $(TEMP)
+ifeq ($(wildcard $(PRJ)/kernel), )
 	- mkdir $(PRJ)/kernel
 else
-	$(MAKE) -C ./arch clean_all AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
 	- rm $(PRJ)/kernel/*
+	$(MAKE) -C ./arch clean AS=$(AS) CC=$(CC) PRJ=$(PRJ) AR=$(AR)
 endif

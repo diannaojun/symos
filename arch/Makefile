@@ -1,11 +1,10 @@
-default: build_all
+build: amd64_build
 
-build_all: amd64_build
+debug:
+	$(MAKE) -C ./amd64 debug AS=$(AS) PRJ=$(PRJ) CC=$(CC) AR=$(AR)
 
-amd64_build: ./amd64/*
-	$(MAKE) -C ./amd64 build AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
+amd64_build:
+	$(MAKE) -C ./amd64 build AS=$(AS) PRJ=$(PRJ) CC=$(CC) AR=$(AR)
 
-clean_all: amd64_clean
-
-amd64_clean:
-	$(MAKE) -C ./amd64 clean AS=$(AS) PRJ=$(PRJ) TEMP=$(TEMP)
+clean:
+	$(MAKE) -C ./amd64 clean AS=$(AS) PRJ=$(PRJ) CC=$(CC) AR=$(AR)

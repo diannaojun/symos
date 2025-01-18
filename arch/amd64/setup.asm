@@ -223,7 +223,7 @@ check_long_mode:
     and edx, 1 << 29
     test edx, edx
     mov esi, 0x0006
-    xchg bx, bx~
+    xchg bx, bx
     jz errors32
     mov esi, message.texte
     call puts32

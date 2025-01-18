@@ -9,7 +9,7 @@ ulint_t hash1(const char *str) {
 }
 
 ulint_t hash2(const char *str) {
-	ulint_t ret = 0, len = 0;
+	ulint_t ret = 0;
 	while (*str)
 		ret = (ret * 331 + *(++str)) % 1000000000000002493ull;
 	return ret;
