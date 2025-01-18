@@ -9,3 +9,6 @@ clean:
 
 %.o: %.c
 	$(CC) -c $< -o $@ $(CFLAG)
+
+%.o: %.asm
+	$(AS) -f elf64 $< -o $@
