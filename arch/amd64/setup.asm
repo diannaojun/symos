@@ -16,12 +16,12 @@ jmp _start
 
 gdt:
     .null   gdt_null
-    .code   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_existent, stt_32def | stt_limitalign4kb
-    .data   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_existent, stt_32def | stt_limitalign4kb
+    .code   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_present, stt_32def | stt_limitalign4kb
+    .data   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_present, stt_32def | stt_limitalign4kb
     .end:
 gdt64:
     .null   gdt_null
-    .code   gdt_segment 0, 0, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_existent, stt_64def
+    .code   gdt_segment 0, 0, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_present, stt_64def
     .end:
 gdt_info:
     dw gdt.end - gdt
@@ -35,6 +35,7 @@ message:
     .texta  db "[Setup32::err(", 0
     .texte  db "[Setup16::err(", 0
     .textb  db ")] ", 0
+    .textc  db "Loading kernel32...", 10, 13, 0
     .textrega   db " EAX=", 0
     .textregc   db " ECX=", 0
     .textregd   db " EDX=", 0
@@ -44,7 +45,7 @@ _start:
     xor ax, ax
     mov ds, ax
     mov es, ax
-    mov [0x7e02], ax
+    mov word [0x7e02], 0x00a0
 set_description_table:          ; 設定描述符表
     mov ax, ADDR_SEG_SET_PROG
     mov ds, ax
@@ -211,24 +212,22 @@ check_cpuid:
     push ecx
     popfd
     test eax, ecx
-    mov esi, 0x0004
+    mov esi, 0x00000004
     jz errors32
 check_long_mode:
     mov eax, 0x80000000
     cpuid
     cmp eax, 0x80000001
-    mov esi, 0x0005
+    mov esi, 0x00000005
     jb errors32
-    cmp eax, 0x80000001
+    mov eax, 0x80000001
+    cpuid
     and edx, 1 << 29
     test edx, edx
-    mov esi, 0x0006
-    xchg bx, bx
+    mov esi, 0x00000006
     jz errors32
-    mov esi, message.texte
+    mov esi, message.textc
     call puts32
-    xchg bx, bx
-    jmp $
 set_page_gdt:
     lgdt [gdt64_info]
     jmp 0x0008:_try64
@@ -245,17 +244,14 @@ _try64:
     or eax, 0x80000001
     mov cr0, eax
     jmp _start64
-
 errors32:
     pushad
-
     mov esi, message.texta
     call puts32
     mov eax, [esp + 4]
     call putx32
     mov esi, message.textb
     call puts32
-
     mov esi, message.textrega
     call puts32
     mov eax, [esp + 28]
@@ -272,7 +268,6 @@ errors32:
     call puts32
     mov eax, [esp + 16]
     call putx32
-    
     popad
     jmp $
 puts32:
@@ -291,14 +286,37 @@ putc32:               ; void putc (al)
     pushad
     xor ecx, ecx
     mov cx, [0x7e02]
+    cmp al, 10
+    je .newline
+    cmp al, 13
+    je .return
+    cmp al, 9
+    je .tab
     add ecx, 0xb8000
     mov edi, ecx
     mov ah, 0x0f
     mov [edi], ax
     sub ecx, 0xb8000 - 2
-    mov [0x7e02], cx
-    popad
-    ret
+        jmp .ret
+    .ret:
+        mov [0x7e02], cx
+        popad
+        ret
+    .newline:
+        add cx, 0xa0
+        jmp .ret
+    .return:
+        mov ax, cx
+        xor dx, dx
+        mov bx, 0xa0
+        div bx
+        sub cx, dx
+        jmp .ret
+    .tab:
+        shr cx, 2
+        inc cx
+        shl cx, 2
+        jmp .ret
 putx32:               ; void putx (eax)
     pushad
     mov ecx, 8

@@ -28,7 +28,7 @@ port:
 message:
     .texta      db "[MBR::err(", 0
     .textb      db ")]", 0
-    .textc      db "Loading kernel...", 0x0a, 0x0d, 0
+    .textc      db "Loading kernel16...", 13, 0
 _start:
     xor ax, ax
     mov ds, ax
@@ -70,6 +70,12 @@ read_sdmpart:
     int 0x13
     mov ax, 0x0002
     jc errors
+    mov cx, [0x7e00]
+    cmp cx, 0x4453
+    jne errors
+    mov cx, [0x7e02]
+    cmp cx, 0x504d
+    jne errors
     mov cx, 0x04
     mov si, 0x7e10
     mov di, packet.address
@@ -98,7 +104,7 @@ read_bootsect:
     mov al, [header]
     mov [0x7e00], ax
     push word [packet.segment]
-    push word [packet.offset] 
+    push word [packet.offset]
     retf
 errors:
     push ax
@@ -108,8 +114,11 @@ errors:
     call putx
     mov si, message.textb
     call puts
-dead:
-    jmp $
+    xor ax, ax
+    int 0x16
+    mov al, 0xfe
+    out 0x64, al
+    jmp 0xffff:0
 puts:               ; void puts (si)
     .puts_loop:
         mov al, [si]
@@ -150,4 +159,4 @@ times (510-64)-($-$$) db 0x00
 mbr_null
 
 times (512-2)-($-$$) db 0x00
-db 0x55, 0xaa
+dw 0xaa55

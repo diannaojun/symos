@@ -1,7 +1,7 @@
 OBJECT	:= ctype.o string.o
 
 archive: $(OBJECT)
-	$(AR) -rcS libc.a $^
+	$(AR) rcS libc.a $^
 
 clean:
 	- rm *.a

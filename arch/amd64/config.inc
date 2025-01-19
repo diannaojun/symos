@@ -42,8 +42,8 @@
 %define sta_level1          0x20
 %define sta_level2          0x40
 %define sta_level3          0x60
-%define sta_existent        0x80
-%define sta_non_existent    0x00
+%define sta_present         0x80
+%define sta_non_present     0x00
 ; other type
 %define stt_32def           0x04
 %define stt_32c16           0x00
@@ -59,4 +59,24 @@
     dw 0xffff
     dd 0x00000001
     dd 0xffffffff
+%endmacro
+
+%define pag_present         0x001
+%define pag_non_present     0x000
+%define pag_writable        0x002
+%define pag_usermode        0x004
+%define pag_caching         0x008
+%define pag_discachable     0x010
+%define pag_accessed        0x020
+%define pag_dirty           0x040
+%define pag_huge            0x080
+%define pag_global          0x100
+%define pag_level           0x0400
+%define pag_noexecute       0x8000
+
+%macro page 3
+    ; page (base, attribute, prot)
+    dw (%2 & 0x0fff) | (%1 & 0xf000)
+    dd (%2 >> 16) & 0xffffffff
+    dw ((%2 >> 48) & 0x0f) | (%3)
 %endmacro

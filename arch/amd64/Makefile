@@ -4,7 +4,8 @@ CFLAG	:= -I$(CURDIR)/include -nostdlib -nostdinc -static -Wall
 build: clean boot
 
 debug: build
-	dd if=$(TEMP)/boot.bin of=$(PRJ)/kernel/kernel.img
+	dd if=/dev/zero of=$(PRJ)/kernel/kernel.img seek=0 bs=512 count=2880
+	dd if=$(TEMP)/boot.bin of=$(PRJ)/kernel/kernel.img seek=0 bs=512 count=2880 conv=notrunc
 
 clean:
 	$(MAKE) -C ./lib clean
