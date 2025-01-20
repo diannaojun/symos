@@ -1,4 +1,4 @@
-OBJECT	:= ctype.o string.o
+OBJECT	:= ctype.o string.o string.s.o math.s.o
 
 archive: $(OBJECT)
 	$(AR) rcS libc.a $^
@@ -10,5 +10,5 @@ clean:
 %.o: %.c
 	$(CC) -c $< -o $@ $(CFLAGS)
 
-%.o: %.asm
+%.s.o: %.asm
 	$(AS) -f elf64 $< -o $@

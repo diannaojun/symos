@@ -63,14 +63,16 @@ strcmp:
     .loop:
         lodsb
         scasb
-        jne .ret
+        jne .retn
         test al, al
         jnz .loop
         xor eax, eax
         ret
-    .ret:
+    .retn:
         mov eax, 1
-        cmovl eax, -1
+        ja .reta
+        neg eax
+    .reta
         ret
 strncmp:
     cld
@@ -88,5 +90,7 @@ strncmp:
         ret
     .retn:
         mov eax, 1
-        cmovl eax, -1
+        ja .reta
+        neg eax
+    .reta
         ret
