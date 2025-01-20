@@ -8,7 +8,7 @@ clean:
 	- rm *.o
 
 %.o: %.c
-	$(CC) -c $< -o $@ $(CFLAG)
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 %.o: %.asm
 	$(AS) -f elf64 $< -o $@

@@ -1,5 +1,5 @@
 TEMP	:= $(CURDIR)/build
-CFLAG	:= -I$(CURDIR)/include -nostdlib -nostdinc -static -Wall
+CFLAGS	:= -I$(CURDIR)/include -nostdlib -nostdinc -static -Wall -fno-builtin
 
 build: clean boot
 
@@ -33,4 +33,4 @@ sdmp.bin: sdmp.asm
 
 archive:
 	$(MAKE) -C ./lib archive AS=$(AS) CC=$(CC) AR=$(AR)\
-		PRJ=$(PRJ) TEMP=$(TEMP) "CFLAG=$(CFLAG)"
+		PRJ=$(PRJ) TEMP=$(TEMP) "CFLAGS=$(CFLAGS)"
