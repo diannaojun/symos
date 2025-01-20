@@ -23,4 +23,4 @@
 
 ## 運行時錯誤
 
-參考 [錯誤文件](./doc/error_ZH_TW.md)。
+參考 [錯誤文件](./document/ERROR_zh-tr.md)。

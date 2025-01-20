@@ -23,4 +23,4 @@
 
 ## 运行时错误
 
-参考 [错误文档](./doc/error_ZH_CN.md)。
+参考 [错误文档](./document/ERROR_zh-sp.md)。

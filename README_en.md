@@ -23,4 +23,4 @@ Note: If you encounter errors when compiling, please solve them yourself.
 
 ## Runtime Error
 
-Please refer to [the error document](./doc/error_EN_US.md).
+Please refer to [the error document](./document/ERROR_en.md).
