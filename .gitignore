@@ -8,6 +8,7 @@
 *.tags
 *.lst
 *.lock
+/kernel
 
 # 二进制文件
 *.bin
