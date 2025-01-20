@@ -9,5 +9,10 @@ float32_t qrsqrtf(float32_t x){
 	x = *(float32_t*)&temp;
 	return x * (threehalfs - (halfx * x * x));
 }
-float64_t qrsqrtlf(float64_t x);
-float128_t qrsqrtllf(float128_t x);
+
+float64_t qrsqrtlf(float64_t x){
+
+}
+float128_t qrsqrtllf(float128_t x){
+	
+}
