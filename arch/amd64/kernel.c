@@ -8,6 +8,8 @@ int main (void);
 int main (void) {
     putsk((char *)0x980c7);
     breakpoint();
+    putsk("Loading Kernel64...\n\r");
+    breakpoint();
     for(; ; );
     return 0;
 }
@@ -37,3 +39,8 @@ void putsk(const char* str){
         putck(str[i]);
     return ;
 }
+
+// int main (void) {
+//     for(int i=0; "fdsahfkjd"[i]; ++i);
+//     return 0;
+// }

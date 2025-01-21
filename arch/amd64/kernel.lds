@@ -1,8 +1,7 @@
 ENTRY (main)
 
 SECTIONS {
-    . = 0x00098800;
-    . = ALIGN(4);
+    . = 0x98800;
     .text : {
         *(.text.main);
         *(.text*);
