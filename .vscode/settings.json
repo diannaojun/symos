@@ -28,7 +28,17 @@
     "__string": "c",
     "algorithm": "c",
     "locale": "c",
-    "utility": "c"
+    "utility": "c",
+    "any": "c",
+    "array": "c",
+    "charconv": "c",
+    "compare": "c",
+    "complex": "c",
+    "functional": "c",
+    "ratio": "c",
+    "scoped_allocator": "c",
+    "tuple": "c",
+    "variant": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
