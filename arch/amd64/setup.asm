@@ -16,20 +16,33 @@ jmp _start
 
 gdt:
     .null   gdt_null
-    .code   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_present, stt_32def | stt_limitalign4kb
-    .data   gdt_segment 0x00000000, 0xffffffff, sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_present, stt_32def | stt_limitalign4kb
+    .code   gdt_segment 0x00000000, 0xffffffff,\
+        sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_present,\
+        stt_32def | stt_limitalign4kb
+    ; 32位程序代码段, 内核级, 平坦模式
+    .data   gdt_segment 0x00000000, 0xffffffff,\
+        sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_present,\
+        stt_32def | stt_limitalign4kb
+    ; 32位程序数据段, 内核级, 平坦模式
     .end:
 gdt64:
     .null   gdt_null
-    .code   gdt_segment 0, 0, sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_present, stt_64def
+    .code   gdt_segment 0, 0,\
+        sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_present,\
+        stt_64def
+    ; 64位程序代码段
+    .data   gdt_segment 0, 0,\
+        sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_present,\
+        stt_64def
+    ; 64位程序数据段
     .end:
-gdt_info:
+gdt_info:   ; 32位全局段描述符表标识
     dw gdt.end - gdt
     dd gdt
-gdt64_info:
+gdt64_info: ; 64位全局段描述符表标识
     dw gdt64.end - gdt64
     dd gdt64
-idt_info:
+idt_info:   ; 32位空中断门描述符表标识
     times 3 dw 0
 message:
     .texta  db "[Setup32::err(", 0
@@ -42,15 +55,11 @@ message:
     .textregb   db " EBX=", 0
 
 _start:
+    cli
     xor ax, ax
     mov ds, ax
     mov es, ax
     mov word [0x7e02], 0x00a0
-set_description_table:          ; 設定描述符表
-    mov ax, ADDR_SEG_SET_PROG
-    mov ds, ax
-    lgdt [ds:gdt_info - $$]
-    lidt [ds:idt_info - $$]
 set_a20:                        ; 設定 A20
     call test_A20
 ; 方法 1: BIOS 中斷
@@ -78,7 +87,6 @@ set_a20:                        ; 設定 A20
         call test_A20
     .A20_failed:
 ; 方法 2: 鍵盤控制器 8042
-    cli
     call wait_8042_2
     mov al, 0xad
     out 0x64, al
@@ -113,31 +121,32 @@ set_a20:                        ; 設定 A20
     out 0x92, al
     .skip92:
         call test_A20
+; 无法开启 A20, 报错
     .A20_ns:
         mov ax, 0x0007
         push word [0x7c24]
         push word [0x7c26]
         retf
-wait_8042_1:
+wait_8042_1:    ; 等待函数 1
     call step2
     in al, 0x64
     test al, 1
     jnz wait_8042_1
     ret
-wait_8042_2:
+wait_8042_2:    ; 等待函数 2
     call step2
     in al, 0x64
     test al, 2
     jz wait_8042_2
     ret
-step2:
+step2:          ; 等待函数 3
     nop
     jmp $+2
     nop
     jmp $+2
     nop
     ret
-test_A20:
+test_A20:       ; 测试 A20
     pusha
     xor ax, ax
     xor si, si
@@ -152,7 +161,8 @@ test_A20:
     popa
     jz set_8259
     ret
-set_8259:
+set_8259:       ; 8259 中断控制芯片编程
+    ; 将硬件中断重定向到 32~47
     pop ax
     mov al, 0x11
     out 0x20, al
@@ -181,14 +191,19 @@ set_8259:
     call step2
     out 0xa1, al
     call step2
-set_cr0_PE:
+set_description_table:          ; 設定描述符表
+    mov ax, ADDR_SEG_SET_PROG
+    mov ds, ax
+    lgdt [ds:gdt_info - $$]
+    lidt [ds:idt_info - $$]
+set_cr0_PE:                     ; 开启保护模式
     mov eax, cr0
-    or eax, 0x00000001
+    or eax, 0x00000001          ; 置PE位
     mov cr0, eax
-    jmp dword 0x0008:_start32
+    jmp dword 0x0008:_start32   ; 刷新流水线
 
 bits 32
-align 32
+align 4
 _start32:
     mov ax, 0x0010
     mov ds, ax
@@ -200,7 +215,13 @@ _start32:
     mov ebp, esp
     xor edi, edi
     xor esi, esi
-check_cpuid:
+clean_low16k:                   ; 清空低 16kb 地址
+    lea edi, [0]
+    mov ecx, 0x1000
+    xor eax, eax
+    rep stosd
+    xchg bx, bx
+check_cpuid:                    ; 检查 CPUID 指令支持
     pushfd
     pop eax
     mov ecx, eax
@@ -214,7 +235,7 @@ check_cpuid:
     test eax, ecx
     mov esi, 0x00000004
     jz errors32
-check_long_mode:
+check_long_mode:                ; 检查 Long-Mode 标志位
     mov eax, 0x80000000
     cpuid
     cmp eax, 0x80000001
@@ -228,7 +249,7 @@ check_long_mode:
     jz errors32
     mov esi, message.textc
     call puts32
-set_page_gdt:
+set_page_gdt:                   ; 重新设置描述符表
     lgdt [gdt64_info]
     jmp 0x0008:_try64
 _try64:

@@ -29,7 +29,8 @@ message:
     .texta      db "[MBR::err(", 0
     .textb      db ")]", 0
     .textc      db "Loading kernel16...", 13, 0
-_start:
+
+_start:                                 ; 初始化
     xor ax, ax
     mov ds, ax
     mov es, ax
@@ -40,7 +41,7 @@ _start:
     mov sp, ax
     mov bp, ax
     mov [header], dl
-clear:
+clear:                                  ; 清屏
     mov ax, 0x0400
     int 0x10
     mov ah, 0x02
@@ -54,7 +55,7 @@ clear:
     int 0x10
     mov si, message.textc
     call puts
-check_int13hx:
+check_int13hx:                          ; 检查中断15拓展(LBA磁盘功能)支持
     mov ah, 0x41
     mov dl, [header]
     mov bx, 0x55aa
@@ -63,7 +64,7 @@ check_int13hx:
     jc errors
     cmp bx, 0xaa55
     jne errors
-read_sdmpart:
+read_sdmpart:                           ; 读磁盘 SDM 分区
     mov ah, 0x42
     mov dl, [header]
     mov si, packet
@@ -71,10 +72,10 @@ read_sdmpart:
     mov ax, 0x0002
     jc errors
     mov cx, [0x7e00]
-    cmp cx, 0x4453
+    cmp cx, 0x4453                      ; 读磁盘 SDM 分区魔数检查
     jne errors
     mov cx, [0x7e02]
-    cmp cx, 0x504d
+    cmp cx, 0x504d                      ; 读磁盘 SDM 分区魔数检查
     jne errors
     mov cx, 0x04
     mov si, 0x7e10
@@ -93,7 +94,7 @@ read_sdmpart:
     mov [packet.count], ax
     mov [packet.offset], bx
     mov [packet.segment], cx
-read_bootsect:
+read_bootsect:                          ; 读磁盘主引导分区
     mov ah, 0x42
     mov dl, [header]
     mov si, packet
@@ -103,10 +104,11 @@ read_bootsect:
     xor ax, ax
     mov al, [header]
     mov [0x7e00], ax
+    ; 长跳转
     push word [packet.segment]
     push word [packet.offset]
     retf
-errors:
+errors:                                 ; 输出报错信息
     push ax
     mov si, message.texta
     call puts
@@ -116,6 +118,7 @@ errors:
     call puts
     xor ax, ax
     int 0x16
+    ; 强制关机
     mov al, 0xfe
     out 0x64, al
     jmp 0xffff:0
