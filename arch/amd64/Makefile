@@ -27,13 +27,9 @@ bin: mbr.bin setup.bin sdmp.bin
 
 kernel:
 	$(CC) kernel.c -c -o $(TEMP)/kernel.elf -m64 $(CFLAGS)
-	$(CC) kernel.c -S -o $(TEMP)/setup.s -m64 $(CFLAGS) -fverbose-asm -masm=intel
+	# $(CC) kernel.c -S -o $(TEMP)/kernel.s -m64 $(CFLAGS) -fverbose-asm -masm=intel
 	$(LD) -m elf_x86_64 $(TEMP)/kernel.elf -T ./kernel.lds \
-		--oformat binary -o $(TEMP)/kernel.bin -lc -lkc -L$(CURDIR)/lib
-	# $(CC) kernel.c -o $(TEMP)/kernel.elf -m32 $(CFLAGS)
-	# $(CC) kernel.c -S -o $(TEMP)/setup.s -m32 $(CFLAGS) -fverbose-asm -masm=intel
-	# $(LD) -m elf_i386 $(TEMP)/kernel.elf -T ./kernel.lds \
-	# 	--oformat binary -o $(TEMP)/kernel.bin
+		--oformat binary -o $(TEMP)/kernel.bin -lkc -L$(CURDIR)/lib
 
 setup.bin: setup.asm
 	$(AS) setup.asm -o $(TEMP)/setup.bin -f bin -l $(TEMP)/setup.lst

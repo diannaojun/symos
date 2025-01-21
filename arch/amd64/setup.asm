@@ -55,7 +55,6 @@ message:
     .texte  db "[Setup16::err(", 0
     .textb  db ")] ", 0
     .textc  db "Loading kernel32...", 10, 13, 0
-    .textd  db "Loading kernel64...", 10, 13, 0
     .textrega   db " EAX=", 0
     .textregc   db " ECX=", 0
     .textregd   db " EDX=", 0
@@ -331,13 +330,24 @@ build_paging:                   ; 建立临时分页表
     mov ebx, [pagings.pdpt + 4]
     mov [0x3000], eax
     mov [0x3004], ebx
-    mov ecx, 8/4*8-1
+    mov ecx, 8*8/4
     lea esi, [pagings.pd]
     lea edi, [0x4000]
-    .loop:
+    .loop1:
         lodsd
         stosd
-        loop .loop
+        loop .loop1
+    mov ecx, 8*5/4
+    lea esi, [gdt]
+    lea edi, [0x000c]
+    .loop2:
+        lodsd
+        stosd
+        loop .loop2
+    mov ax, [gdt_info]
+    mov [0x0000], ax
+    lea eax, [0x000c]
+    mov [0x0002], ax
 check_cpuid:                    ; 检查 CPUID 指令支持
     pushfd
     pop eax
@@ -367,6 +377,8 @@ check_long_mode:                ; 检查 Long-Mode 标志位
     mov esi, message.textc
     call puts32
 _try64:
+    xchg bx, bx
+    lgdt [ds:0x0000]
     mov eax, cr4                ; 开启物理地址扩展 & LA57
     or eax, 0x00000020  ; 0x00000120
     mov cr4, eax
@@ -395,6 +407,6 @@ _start64:
     mov rbp, rsp
     xor rdi, rdi
     xor rsi, rsi
-    jmp 0x98800
+    jmp 0x08800
 
 times 4096 -($ - $$) db 0

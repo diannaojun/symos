@@ -1,8 +1,23 @@
-#ifndef __ASM_H__
-#define __ASM_H__
+#ifndef __KERNEL_ASM_H__
+#define __KERNEL_ASM_H__
+
+#include <stddef.h>
 
 void jump(void *ptr);
 void call(void *ptr);
 void breakpoint(void);
+void hlt(void);
+void sti(void);
+void cli(void);
+void std(void);
+void cld(void);
+void nop(void);
+void pass(void);
+uint64_t in8(uint64_t);
+uint64_t in16(uint64_t);
+uint64_t in32(uint64_t);
+void out8(uint64_t, uint64_t);
+void out16(uint64_t, uint64_t);
+void out32(uint64_t, uint64_t);
 
-#endif // __ASM_H__
+#endif // __KERNEL_ASM_H__

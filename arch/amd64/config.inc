@@ -1,5 +1,5 @@
 %define ADDR_SEG_MBR_PROG 0x07c0
-%define ADDR_SEG_SET_PROG 0x9800
+%define ADDR_SEG_SET_PROG 0x0800
 %define ADDR_SEG_SYS_PROG 0x80000000
 
 %macro gdt_segment 4
