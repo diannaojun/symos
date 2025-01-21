@@ -1,4 +1,4 @@
-﻿**ATTENTION: Some translation here may be incorrect. Please refer to [Chinese Ver](error_zh_CN.md) for more information.**
+**ATTENTION: Some translation here may be incorrect. Please refer to [Chinese Ver](error_zh_CN.md) for more information.**
 
 **If you are sure about mistranslations here, please tell us. Thanks.**
 
