@@ -1,4 +1,4 @@
-OBJECT	:= ctype.o string.o stdio.o string.s.o math.s.o
+OBJECT	:= ctype.o string.o stdio.o string.s.o math.o
 KOBJECT	:= asm.s.o
 
 archive: $(OBJECT) $(KOBJECT)
