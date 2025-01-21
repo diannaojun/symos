@@ -36,6 +36,19 @@ gdt64:
         stt_64def
     ; 64位程序数据段
     .end:
+pagings:
+    .pml5   paging 0x2000, pag_present | pag_writable, 0            ; 5级分页
+    .pml4   paging 0x3000, pag_present | pag_writable, 0            ; 4级分页
+    .pdpt   paging 0x4000, pag_present | pag_writable, 0            ; 3级分页
+    .pd:    ; 2级大分页 2MB 映射低 16mb
+        paging 0x000000, pag_present | pag_writable | pag_huge, 0
+        paging 0x200000, pag_present | pag_writable | pag_huge, 0
+        paging 0x400000, pag_present | pag_writable | pag_huge, 0
+        paging 0x600000, pag_present | pag_writable | pag_huge, 0
+        paging 0x800000, pag_present | pag_writable | pag_huge, 0
+        paging 0xa00000, pag_present | pag_writable | pag_huge, 0
+        paging 0xc00000, pag_present | pag_writable | pag_huge, 0
+        paging 0xe00000, pag_present | pag_writable | pag_huge, 0
 gdt_info:   ; 32位全局段描述符表标识
     dw gdt.end - gdt
     dd gdt
@@ -204,67 +217,6 @@ set_cr0_PE:                     ; 开启保护模式
 
 bits 32
 align 4
-_start32:
-    mov ax, 0x0010
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov esp, 0x7c00
-    mov ebp, esp
-    xor edi, edi
-    xor esi, esi
-clean_low16k:                   ; 清空低 16kb 地址
-    lea edi, [0]
-    mov ecx, 0x1000
-    xor eax, eax
-    rep stosd
-    xchg bx, bx
-check_cpuid:                    ; 检查 CPUID 指令支持
-    pushfd
-    pop eax
-    mov ecx, eax
-    xor eax, 1 << 21
-    push eax
-    popfd
-    pushfd
-    pop eax
-    push ecx
-    popfd
-    test eax, ecx
-    mov esi, 0x00000004
-    jz errors32
-check_long_mode:                ; 检查 Long-Mode 标志位
-    mov eax, 0x80000000
-    cpuid
-    cmp eax, 0x80000001
-    mov esi, 0x00000005
-    jb errors32
-    mov eax, 0x80000001
-    cpuid
-    and edx, 1 << 29
-    test edx, edx
-    mov esi, 0x00000006
-    jz errors32
-    mov esi, message.textc
-    call puts32
-set_page_gdt:                   ; 重新设置描述符表
-    lgdt [gdt64_info]
-    jmp 0x0008:_try64
-_try64:
-    mov eax, 1010_0000b
-    mov cr4, eax
-    mov eax, 0x00000000 ; addr of page4
-    mov cr3, eax
-    mov ecx, 0xc0000080
-    rdmsr
-    or eax, 0x00000100
-    wrmsr
-    mov eax, cr0
-    or eax, 0x80000001
-    mov cr0, eax
-    jmp _start64
 errors32:
     pushad
     mov esi, message.texta
@@ -356,9 +308,101 @@ putx32:               ; void putx (eax)
     loop .putx_loop
     popad
     ret
+_start32:
+    mov ax, 0x0010
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, 0x7c00
+    mov ebp, esp
+    xor edi, edi
+    xor esi, esi
+clean_low16k:                   ; 清空低 16kb 地址
+    lea edi, [0]
+    mov ecx, 0x1000
+    xor eax, eax
+    rep stosd
+build_paging:                   ; 建立临时分页表
+    mov eax, [pagings.pml5]
+    mov ebx, [pagings.pml5 + 4]
+    mov [0x1000], eax
+    mov [0x1004], ebx
+    mov eax, [pagings.pml4]
+    mov ebx, [pagings.pml4 + 4]
+    mov [0x2000], eax
+    mov [0x2004], ebx
+    mov eax, [pagings.pdpt]
+    mov ebx, [pagings.pdpt + 4]
+    mov [0x3000], eax
+    mov [0x3004], ebx
+    mov ecx, 8/4*8-1
+    lea esi, [pagings.pd]
+    lea edi, [0x4000]
+    .loop:
+        lodsd
+        stosd
+        loop .loop
+check_cpuid:                    ; 检查 CPUID 指令支持
+    pushfd
+    pop eax
+    mov ecx, eax
+    xor eax, 1 << 21
+    push eax
+    popfd
+    pushfd
+    pop eax
+    push ecx
+    popfd
+    test eax, ecx
+    mov esi, 0x00000004
+    jz errors32
+check_long_mode:                ; 检查 Long-Mode 标志位
+    mov eax, 0x80000000
+    cpuid
+    cmp eax, 0x80000001
+    mov esi, 0x00000005
+    jb errors32
+    mov eax, 0x80000001
+    cpuid
+    and edx, 1 << 29
+    test edx, edx
+    mov esi, 0x00000006
+    jz errors32
+    mov esi, message.textc
+    call puts32
+_try64:
+    lgdt [ds:gdt64_info]        ; 重新设置描述符表
 
+    mov eax, cr4                ; 开启物理地址扩展 & LA57
+    or eax, 0x00000020  ; 0x00000120
+    mov cr4, eax
+
+    mov eax, 0x00002000 ; 0x00001000    ; 设置分页地址
+    mov cr3, eax
+
+    mov ecx, 0xc0000080         ; 开启长模式
+    rdmsr
+    or eax, 0x00000100
+    wrmsr
+
+    mov eax, cr0                ; 开启分页
+    or eax, 0x80000001
+    mov cr0, eax
+    jmp dword 0x0008:_start64   ; 刷新流水线
 bits 64
 _start64:
-    jmp $
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov rsp, 0x7c00
+    mov rbp, rsp
+    xor rdi, rdi
+    xor rsi, rsi
+    jmp 0x98800
 
 times 4096 -($ - $$) db 0

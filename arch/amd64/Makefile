@@ -1,5 +1,7 @@
 TEMP	:= $(CURDIR)/build
-CFLAGS	:= -I$(CURDIR)/include -nostdlib -nostdinc -static -Wall -fno-builtin
+CFLAGS	:= -I$(CURDIR)/include -L$(CURDIR)/lib -nostdlib -nostdinc \
+	-fno-builtin -fno-pie -static -Wno-format -Wno-unused -Wno-unused-parameter \
+	-ffunction-sections -ffreestanding
 
 build: clean boot
 
@@ -15,12 +17,19 @@ else
 	- rm $(TEMP)/*
 endif
 
-boot: archive bin
+boot: archive bin kernel
 	dd if=$(TEMP)/mbr.bin of=$(TEMP)/boot.bin seek=0 bs=512 count=1 conv=notrunc
 	dd if=$(TEMP)/sdmp.bin of=$(TEMP)/boot.bin seek=1 bs=512 count=63 conv=notrunc
 	dd if=$(TEMP)/setup.bin of=$(TEMP)/boot.bin seek=64 bs=512 count=4 conv=notrunc
+	dd if=$(TEMP)/kernel.bin of=$(TEMP)/boot.bin seek=68 bs=512 count=4 conv=notrunc
 
 bin: mbr.bin setup.bin sdmp.bin
+
+kernel:
+	$(CC) kernel.c -o $(TEMP)/kernel.o -m64 $(CFLAGS) -l c -l kc
+	# $(CC) kernel.c -S -o $(TEMP)/setup.s -m64 $(CFLAGS) -fverbose-asm -masm=intel
+	$(LD) -m elf_x86_64 --oformat binary -o $(TEMP)/kernel.bin -T ./kernel.lds \
+		$(TEMP)/kernel.o
 
 setup.bin: setup.asm
 	$(AS) setup.asm -o $(TEMP)/setup.bin -f bin -l $(TEMP)/setup.lst

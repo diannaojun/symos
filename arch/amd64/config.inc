@@ -8,7 +8,7 @@
     dw %1 & 0xffff
     db (%1 >> 16) & 0xff
     db %3 & 0xff
-    db (%4 & 0x0f) | ((%2 >> 12) & 0xf0)
+    db (%4 & 0xf0) | ((%2 >> 14) & 0x0f)
     db (%1 >> 24) & 0xff
 %endmacro
 %macro gdt_null 0
@@ -45,11 +45,11 @@
 %define sta_present         0x80
 %define sta_non_present     0x00
 ; other type
-%define stt_32def           0x04
+%define stt_32def           0x40
 %define stt_32c16           0x00
-%define stt_64def           0x02
-%define stt_avl             0x01
-%define stt_limitalign4kb   0x08
+%define stt_64def           0x20
+%define stt_avl             0x10
+%define stt_limitalign4kb   0x80
 
 ; MBR struction
 %macro mbr_null 0
@@ -74,9 +74,10 @@
 %define pag_level           0x0400
 %define pag_noexecute       0x8000
 
-%macro page 3
+%macro paging 3
     ; page (base, attribute, prot)
-    dw (%2 & 0x0fff) | (%1 & 0xf000)
-    dd (%2 >> 16) & 0xffffffff
-    dw ((%2 >> 48) & 0x0f) | (%3)
+    db %2 & 0xff
+    db ((%2 >> 8) & 0x0f) | ((%1 >> 8) & 0xf0)
+    dd (%1 >> 16) & 0xffffffff
+    dw ((%1 >> 48) & 0x0f) | (%3)
 %endmacro

@@ -1,9 +1,9 @@
 OBJECT	:= ctype.o string.o string.s.o math.o
-KOBJECT	:= jump.s.o
+KOBJECT	:= asm.s.o
 
 archive: $(OBJECT) $(KOBJECT)
-	$(AR) rcS libc.a $(OBJECT)
-	$(AR) rcS libkc.a $(KOBJECT)
+	$(AR) rcs libc.a $(OBJECT)
+	$(AR) rcs libkc.a $(KOBJECT)
 
 clean:
 	- rm *.a
