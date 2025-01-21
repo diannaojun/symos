@@ -1,12 +1,10 @@
-AS		:=	nasm
-CC		:=	gcc
 PRJ		:=	$(CURDIR)
 
 build: clean
-	$(MAKE) -C ./arch build AS=$(AS) CC=$(CC) PRJ=$(PRJ) AR=$(AR)
+	$(MAKE) -C ./arch build PRJ=$(PRJ)
 
 debug: clean
-	$(MAKE) -C ./arch debug AS=$(AS) CC=$(CC) PRJ=$(PRJ) AR=$(AR)
+	$(MAKE) -C ./arch debug PRJ=$(PRJ)
 
 run: debug
 	- bochsdbg
@@ -16,5 +14,5 @@ ifeq ($(wildcard $(PRJ)/kernel), )
 	- mkdir $(PRJ)/kernel
 else
 	- rm $(PRJ)/kernel/*
-	$(MAKE) -C ./arch clean AS=$(AS) CC=$(CC) PRJ=$(PRJ) AR=$(AR)
+	$(MAKE) -C ./arch clean PRJ=$(PRJ)
 endif

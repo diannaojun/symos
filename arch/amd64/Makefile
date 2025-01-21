@@ -26,10 +26,10 @@ boot: archive bin kernel
 bin: mbr.bin setup.bin sdmp.bin
 
 kernel:
-	$(CC) kernel.c -o $(TEMP)/kernel.o -m64 $(CFLAGS) -l c -l kc
-	# $(CC) kernel.c -S -o $(TEMP)/setup.s -m64 $(CFLAGS) -fverbose-asm -masm=intel
-	$(LD) -m elf_x86_64 --oformat binary -o $(TEMP)/kernel.bin -T ./kernel.lds \
-		$(TEMP)/kernel.o
+	$(CC) kernel.c -o $(TEMP)/kernel.o -m64 $(CFLAGS) -lc -lkc
+	$(CC) kernel.c -S -o $(TEMP)/setup.s -m64 $(CFLAGS) -fverbose-asm -masm=intel
+	$(LD) $(TEMP)/kernel.o -T ./kernel.lds \
+		--oformat binary -o $(TEMP)/kernel.bin
 
 setup.bin: setup.asm
 	$(AS) setup.asm -o $(TEMP)/setup.bin -f bin -l $(TEMP)/setup.lst

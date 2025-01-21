@@ -1,18 +1,21 @@
 ENTRY (main)
 
 SECTIONS {
-    . = 0x098800;
+    . = 0x00098800;
+    . = ALIGN(4);
     .text : {
         *(.text.main);
-        *(.text);
+        *(.text*);
     }
     .rodata : {
-        *(.rodata);
+        *(.rodata*);
     }
     .data : {
-        *(.data);
+        *(.data*);
     }
+    __bss_start = .;
     .bss : {
-        *(.bss);
+        *(.bss*);
     }
+    __bss_end = .;
 }

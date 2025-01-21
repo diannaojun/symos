@@ -1,3 +1,9 @@
+AS		:=	nasm
+CC		:=	gcc
+LD		:=	ld
+OBJCOPY :=	objcopy
+AR 		:=	ar
+
 build: amd64_build
 
 debug:
@@ -7,4 +13,4 @@ amd64_build:
 	$(MAKE) -C ./amd64 build AS=$(AS) PRJ=$(PRJ) CC=$(CC) AR=$(AR)
 
 clean:
-	$(MAKE) -C ./amd64 clean AS=$(AS) PRJ=$(PRJ) CC=$(CC) AR=$(AR)
+	$(MAKE) -C ./amd64 clean PRJ=$(PRJ)

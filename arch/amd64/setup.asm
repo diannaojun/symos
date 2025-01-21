@@ -24,16 +24,12 @@ gdt:
         sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_present,\
         stt_32def | stt_limitalign4kb
     ; 32位程序数据段, 内核级, 平坦模式
-    .end:
-gdt64:
-    .null   gdt_null
-    .code   gdt_segment 0, 0,\
+    .code64 gdt_segment 0, 0,\
         sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_present,\
         stt_64def
     ; 64位程序代码段
-    .data   gdt_segment 0, 0,\
-        sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_present,\
-        stt_64def
+    .data64 gdt_segment 0, 0,\
+        sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_present, 0
     ; 64位程序数据段
     .end:
 pagings:
@@ -52,9 +48,6 @@ pagings:
 gdt_info:   ; 32位全局段描述符表标识
     dw gdt.end - gdt
     dd gdt
-gdt64_info: ; 64位全局段描述符表标识
-    dw gdt64.end - gdt64
-    dd gdt64
 idt_info:   ; 32位空中断门描述符表标识
     times 3 dw 0
 message:
@@ -62,6 +55,7 @@ message:
     .texte  db "[Setup16::err(", 0
     .textb  db ")] ", 0
     .textc  db "Loading kernel32...", 10, 13, 0
+    .textd  db "Loading kernel64...", 10, 13, 0
     .textrega   db " EAX=", 0
     .textregc   db " ECX=", 0
     .textregd   db " EDX=", 0
@@ -373,8 +367,6 @@ check_long_mode:                ; 检查 Long-Mode 标志位
     mov esi, message.textc
     call puts32
 _try64:
-    lgdt [ds:gdt64_info]        ; 重新设置描述符表
-
     mov eax, cr4                ; 开启物理地址扩展 & LA57
     or eax, 0x00000020  ; 0x00000120
     mov cr4, eax
@@ -390,16 +382,16 @@ _try64:
     mov eax, cr0                ; 开启分页
     or eax, 0x80000001
     mov cr0, eax
-    jmp dword 0x0008:_start64   ; 刷新流水线
+    jmp dword 0x0018:_start64   ; 刷新流水线
 bits 64
 _start64:
-    mov ax, 0x10
+    mov ax, 0x0020
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
     mov ss, ax
-    mov rsp, 0x7c00
+    mov rsp, 0x7e00
     mov rbp, rsp
     xor rdi, rdi
     xor rsi, rsi
