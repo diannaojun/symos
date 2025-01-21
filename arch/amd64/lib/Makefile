@@ -1,4 +1,4 @@
-OBJECT	:= ctype.o string.o string.s.o math.s.o
+OBJECT	:= ctype.o string.o stdio.s.o string.s.o math.s.o stdio.s.o
 
 archive: $(OBJECT)
 	$(AR) rcS libc.a $^
