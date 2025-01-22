@@ -5,6 +5,7 @@
 #define _isalnum(ch) (_isalpha(ch) | isdigit(ch))
 #define _isalpha(ch) (islower(ch) | isupper(ch))
 #define _isascii(ch) (ch <= 127)
+#define _isdigit(ch) (ch >= '0' && ch <= '9')
 
 int isalnum(wchar_t);
 int isalpha(wchar_t);
