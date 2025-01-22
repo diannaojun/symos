@@ -5,11 +5,12 @@
 
 uint64_t hash1(const char *str);
 uint64_t hash2(const char *str);
-int strcpy(char *dest, const char *src);
-int strcat(char *dest, const char *src);
+char *strcpy(char *dest, const char *src);
+char *strncpy(char *dest, const char *src, size_t count);
+char *strcat(char *dest, const char *src);
+char *strncat(char *dest, const char *src, size_t count);
 int strcmp(const char *str1, const char *str2);
-int strncpy(char *dest, const char *src, size_t count);
-int strncat(char *dest, const char *src, size_t count);
 int strncmp(const char *str1, const char *str2, size_t count);
+size_t strlen(char *str);
 
 #endif // __STRING_H__

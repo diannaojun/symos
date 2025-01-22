@@ -3,8 +3,6 @@
 
 #include <stddef.h>
 
-
-
 #define REG_INT(name) void name(void); void do_##name (uint64_t rdi, uint64_t rsi, \
     uint64_t rdx, uint64_t rcx, uint64_t r8, \
     uint64_t r9, uint64_t r10, uint64_t r11, \
@@ -23,16 +21,16 @@
 #define ATTR_LEVEL1     0x20
 #define ATTR_LEVEL2     0x40
 #define ATTR_LEVEL3     0x60
-#define ATTR_PRESENT    0x80
+#define ATTR_PROGRAM    0x10
 #define ATTR_CODE       0x08
 #define ATTR_DATA       0x00
 #define ATTR_AC         0x04
 #define ATTR_WR_XR      0x02
 #define ATTR_DIRTY      0x01
 
-#define FLAG_4KB        0x80
-#define FLAG_32D        0x40
-#define FLAG_64D        0x20
+#define FLAG_4KB        0x8000
+#define FLAG_32D        0x4000
+#define FLAG_64D        0x2000
 
 REG_INT(devide_error)
 REG_INT(debug)

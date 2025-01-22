@@ -1,7 +1,12 @@
 {
   "files.associations": {
+    "*.sqlbook": "sql",
+    "*.ndjson": "jsonl",
+    "*.dbclient-js": "javascript",
+    "*.s": "gas",
     "*.asm": "nasm",
     "*.h": "c",
-    "typeinfo": "c"
+    "typeinfo": "c",
+    "cstdint": "c"
   },
 }

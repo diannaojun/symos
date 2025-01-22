@@ -11,15 +11,31 @@ static void set_idt(idt_element_t *idt, void *func, uint8_t attr){
 }
 static void set_gdt(gdt_element_t *gdt, uint64_t base, uint64_t limit, uint16_t attr){
     gdt->base_low = base & 0x0000ffff;
+    gdt->base_mid = ((base) >> 16) & 0x0000ffff;
+    gdt->base_high = ((base) >> 32) & 0xffffffff;
+    gdt->limit_low = limit & 0x0000ffff;
+    gdt->limit_high = ((limit) >> 16) & 0x0000000f;
+    gdt->attr = attr & 0x00ff;
+    gdt->flag = ((attr) >> 16) & 0x000f;
     return ;
 }
 
 void init_gdt(void){
-
+    xdt_header_t *gdr_hdr = (xdt_header_t *)0x7ef0;
+    gdt_element_t *gdt_item = (gdt_element_t *)0x1000;
+    gdr_hdr->addr = (size_t) gdt_item;
+    gdr_hdr->size = sizeof(gdt_element_t) * 5;
+    set_gdt(gdt_item + 0, 0, 0, 0);
+    set_gdt(gdt_item + 1, 0, 0xffffffff, ATTR_PRESENT | ATTR_LEVEL0 | ATTR_PROGRAM | ATTR_CODE | ATTR_WR_XR | FLAG_4KB | FLAG_32D);
+    set_gdt(gdt_item + 2, 0, 0xffffffff, ATTR_PRESENT | ATTR_LEVEL0 | ATTR_PROGRAM | ATTR_DATA | ATTR_WR_XR | FLAG_4KB | FLAG_32D);
+    set_gdt(gdt_item + 3, 0, 0, ATTR_PRESENT | ATTR_LEVEL0 | ATTR_PROGRAM | ATTR_CODE | ATTR_WR_XR | FLAG_4KB | FLAG_64D);
+    set_gdt(gdt_item + 4, 0, 0, ATTR_PRESENT | ATTR_LEVEL0 | ATTR_PROGRAM | ATTR_DATA | ATTR_WR_XR | FLAG_4KB | FLAG_64D);
+    lgdt(gdr_hdr, sizeof(gdt_element_t) * 3, sizeof(gdt_element_t) * 4);
+    return ;
 }
 
 void init_idt(void){
-    xdt_header_t *idr_hdr = (xdt_header_t *)0x7ef0;
+    xdt_header_t *idr_hdr = (xdt_header_t *)0x7ee0;
     idt_element_t *idt_item = (idt_element_t *)0x0000;
     idr_hdr->addr = (size_t)idt_item;
     idr_hdr->size = sizeof(idt_element_t) * 256;

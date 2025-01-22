@@ -3,18 +3,21 @@ bits 64
 section .text
 global strcpy, strcat, strcmp
 global strncpy, strncat, strncmp
+global strlen
 
 strcpy:
     cld
+    push rdi
     .loop:
 	    lodsb
 	    stosb
 	    test al, al
 	    jnz .loop
-    xor eax, eax
+    pop rax
     ret
 strncpy:
     cld
+    push rdi
     xchg rcx, rdx
     .loop:
 	    dec rcx
@@ -25,10 +28,11 @@ strncpy:
 	    jnz .loop
         rep stosb
     .ret:
-        xor eax, eax
+        pop rax
         ret
 strcat:
     cld
+    push rdi
     xor al, al
     xor rcx, rcx
     dec rcx
@@ -39,10 +43,11 @@ strcat:
         stosb
 	    test al, al
 	    jnz .loop
-    xor eax, eax
+    pop rax
     ret
 strncat:
     cld
+    push rdi
     xor al, al
     xchg rcx, rdx
     repnz scasb
@@ -55,8 +60,9 @@ strncat:
 	    test al, al
 	    jnz .loop
     .ret:
-        xor eax, eax
+        xor al, al
         stosb
+        pop rax
         ret
 strcmp:
     cld
@@ -72,7 +78,7 @@ strcmp:
         mov eax, 1
         ja .reta
         neg eax
-    .reta
+    .reta:
         ret
 strncmp:
     cld
@@ -85,12 +91,21 @@ strncmp:
         jne .retn
         test al, al
         jnz .loop
-    .ret
+    .ret:
         xor eax, eax
         ret
     .retn:
         mov eax, 1
         ja .reta
         neg eax
-    .reta
+    .reta:
         ret
+strlen:
+    cld
+    xor al, al
+    xor rcx, rcx
+    dec rcx
+    repnz scasb
+    xor rax, rax
+    sub rax, rcx
+    ret

@@ -3,6 +3,7 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 
 #define __STDIO_LEFT__   0x01
 #define __STDIO_SIGNED__ 0x02

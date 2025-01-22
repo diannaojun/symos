@@ -88,7 +88,17 @@ lidt:
     ret
 lgdt:
     xchg bx, bx
+    push rsi
+    lea rsi, [rel .ret]
+    push rsi
     lgdt [rdi]
+    retf
+    .ret:
+        mov ds, dx
+        mov es, dx
+        mov fs, dx
+        mov gs, dx
+        mov ss, dx
     xchg bx, bx
     ret
 swap_seg:
@@ -129,19 +139,6 @@ swap_reg:
     jnz .err
     xchg rcx, rdx
     .err ret
-swap_cs:
-    push 0x08
-    lea rdi, [rel .ret]
-    push rdi
-    retf
-    .ret:
-        mov ax, 0x10
-        mov ds, ax
-        mov es, ax
-        mov fs, ax
-        mov gs, ax
-        mov ss, ax
-    ret
 int80:
     int 0x80
     ret
