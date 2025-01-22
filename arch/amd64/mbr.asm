@@ -25,6 +25,7 @@ port:
     .puts_func  dw 0, puts
     .putc_func  dw 0, putc
     .putx_func  dw 0, putx
+    .died_func  dw 0, die
 message:
     .texta      db "[MBR::err(", 0
     .textb      db ")]", 0
@@ -116,12 +117,14 @@ errors:                                 ; 输出报错信息
     call putx
     mov si, message.textb
     call puts
+die:
     xor ax, ax
     int 0x16
     ; 强制关机
     mov al, 0xfe
     out 0x64, al
     jmp 0xffff:0
+    jmp $
 puts:               ; void puts (si)
     .puts_loop:
         mov al, [si]

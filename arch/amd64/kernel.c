@@ -1,10 +1,10 @@
 #include <kernel/asm.h>
 #include <kernel/init.h>
+#include <kernel/struct.h>
 
 int main (void) {
-    virtual_node_t *root;
-    puts_init("Loading kernel64...\n\r");
-    root = root_init();
+    init_gdt();
+    init_idt();
     breakpoint();
     for(; ; );
     return 0;

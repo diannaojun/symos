@@ -2,10 +2,32 @@
 org ADDR_SEG_SET_PROG << 4
 bits 16
 
-; ------ 00500
+; ------ 00000
+; IDT
+; ------ 01000
+; GDT
+; ------ 02000
+; PML5
+; ------ 03000
+; PML4
+; ------ 04000
+; PDPT
+; ------ 05000
+; PD
+; ------ 06000
 ; STACK
-; ------ 07c00
+; ------ 07e00
 ; BOOT INFORMATINS
+;   0   2   BOOT DEV
+;   2   2   SCREAN POS
+;   4   1   VGA MODE
+;   5   1   VGA ROWS
+;   6   1   VGA MEM CNT
+;   7   1   VGA STAT
+;   8   2   VGA ATTR
+;   A   2   MEM
+;  e0   6   IDT HDR
+;  f0   6   GDT HDR
 ; ------ 08000
 ; EMPTY
 ; ------ 9f000
@@ -33,9 +55,9 @@ gdt:
     ; 64位程序数据段
     .end:
 pagings:
-    .pml5   paging 0x2000, pag_present | pag_writable, 0            ; 5级分页
-    .pml4   paging 0x3000, pag_present | pag_writable, 0            ; 4级分页
-    .pdpt   paging 0x4000, pag_present | pag_writable, 0            ; 3级分页
+    .pml5   paging 0x3000, pag_present | pag_writable, 0            ; 5级分页
+    .pml4   paging 0x4000, pag_present | pag_writable, 0            ; 4级分页
+    .pdpt   paging 0x5000, pag_present | pag_writable, 0            ; 3级分页
     .pd:    ; 2级大分页 2MB 映射低 16mb
         paging 0x000000, pag_present | pag_writable | pag_huge, 0
         paging 0x200000, pag_present | pag_writable | pag_huge, 0
@@ -65,7 +87,24 @@ _start:
     xor ax, ax
     mov ds, ax
     mov es, ax
-    mov word [0x7e02], 0x00a0
+bootinfo:
+    mov ah, 0x0f
+    int 0x10
+    mov [0x7e04], ax
+    mov ah, 0x12
+    mov bl, 0x10
+    int 0x10
+    mov [0x7e06], bx
+    mov [0x7e08], cx
+    mov ah, 0x88
+    int 0x15
+    add ax, 1024
+    mov [0x7e0a], ax
+    mov ax, [0x7e04]
+    xchg al, ah
+    xor ah, ah
+    shl ax, 1
+    mov word [0x7e02], ax
 set_a20:                        ; 設定 A20
     call test_A20
 ; 方法 1: BIOS 中斷
@@ -130,8 +169,8 @@ set_a20:                        ; 設定 A20
 ; 无法开启 A20, 报错
     .A20_ns:
         mov ax, 0x0007
-        push word [0x7c24]
-        push word [0x7c26]
+        push word [0x7c20]
+        push word [0x7c22]
         retf
 wait_8042_1:    ; 等待函数 1
     call step2
@@ -312,42 +351,32 @@ _start32:
     mov ebp, esp
     xor edi, edi
     xor esi, esi
-clean_low16k:                   ; 清空低 16kb 地址
+clean_low16k:                   ; 清空低 24kb 地址
     lea edi, [0]
-    mov ecx, 0x1000
+    mov ecx, 0x1800
     xor eax, eax
     rep stosd
 build_paging:                   ; 建立临时分页表
     mov eax, [pagings.pml5]
     mov ebx, [pagings.pml5 + 4]
-    mov [0x1000], eax
-    mov [0x1004], ebx
-    mov eax, [pagings.pml4]
-    mov ebx, [pagings.pml4 + 4]
     mov [0x2000], eax
     mov [0x2004], ebx
-    mov eax, [pagings.pdpt]
-    mov ebx, [pagings.pdpt + 4]
+    mov eax, [pagings.pml4]
+    mov ebx, [pagings.pml4 + 4]
     mov [0x3000], eax
     mov [0x3004], ebx
+    mov eax, [pagings.pdpt]
+    mov ebx, [pagings.pdpt + 4]
+    mov [0x4000], eax
+    mov [0x4004], ebx
     mov ecx, 8*8/4
     lea esi, [pagings.pd]
-    lea edi, [0x4000]
+    lea edi, [0x5000]
     .loop1:
         lodsd
         stosd
         loop .loop1
-    mov ecx, 8*5/4
-    lea esi, [gdt]
-    lea edi, [0x000c]
-    .loop2:
-        lodsd
-        stosd
-        loop .loop2
-    mov ax, [gdt_info]
-    mov [0x0000], ax
-    lea eax, [0x000c]
-    mov [0x0002], ax
+    
 check_cpuid:                    ; 检查 CPUID 指令支持
     pushfd
     pop eax
@@ -377,20 +406,15 @@ check_long_mode:                ; 检查 Long-Mode 标志位
     mov esi, message.textc
     call puts32
 _try64:
-    xchg bx, bx
-    lgdt [ds:0x0000]
     mov eax, cr4                ; 开启物理地址扩展 & LA57
-    or eax, 0x00000020  ; 0x00000120
+    or eax, 0x00000120  ; 0x00000120
     mov cr4, eax
-
-    mov eax, 0x00002000 ; 0x00001000    ; 设置分页地址
+    mov eax, 0x00003000 ; 0x00001000    ; 设置分页地址
     mov cr3, eax
-
     mov ecx, 0xc0000080         ; 开启长模式
     rdmsr
     or eax, 0x00000100
     wrmsr
-
     mov eax, cr0                ; 开启分页
     or eax, 0x80000001
     mov cr0, eax
@@ -407,6 +431,6 @@ _start64:
     mov rbp, rsp
     xor rdi, rdi
     xor rsi, rsi
-    jmp 0x08800
+    jmp 0x00008800
 
 times 4096 -($ - $$) db 0

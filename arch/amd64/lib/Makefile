@@ -1,5 +1,5 @@
 OBJECT	:= ctype.o string.o stdio.o string.s.o math.o
-KOBJECT	:= kernel_asm.s.o kernel_init.o
+KOBJECT	:= kernel_asm.s.o kernel_init.o kernel_sys_int.s.o
 
 archive: $(OBJECT) $(KOBJECT)
 	$(AR) -rcs libc.a $(OBJECT)

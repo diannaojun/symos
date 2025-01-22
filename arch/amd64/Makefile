@@ -21,7 +21,7 @@ boot: archive bin kernel
 	dd if=$(TEMP)/mbr.bin of=$(TEMP)/boot.bin seek=0 bs=512 count=1 conv=notrunc
 	dd if=$(TEMP)/sdmp.bin of=$(TEMP)/boot.bin seek=1 bs=512 count=63 conv=notrunc
 	dd if=$(TEMP)/setup.bin of=$(TEMP)/boot.bin seek=64 bs=512 count=4 conv=notrunc
-	dd if=$(TEMP)/kernel.bin of=$(TEMP)/boot.bin seek=68 bs=512 count=4 conv=notrunc
+	dd if=$(TEMP)/kernel.bin of=$(TEMP)/boot.bin seek=68 bs=512 count=1080 conv=notrunc
 
 bin: mbr.bin setup.bin sdmp.bin
 

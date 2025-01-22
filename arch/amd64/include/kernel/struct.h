@@ -6,17 +6,16 @@
 typedef struct {
     uint16_t offset_low;
     uint16_t selector;
-    uint8_t reserved;
-    uint8_t type:4;
-    uint8_t always0:1;
-    uint8_t dpl:2;
-    uint8_t present:1;
-    uint16_t offset_high;
+    uint8_t ist;
+    uint8_t attr;
+    uint16_t offset_mid;
+    uint32_t offset_high;
+    uint32_t _high;
 } idt_element_t;
 
 typedef struct {
     uint16_t size;
-    uint32_t addr;
+    uint64_t addr;
 } idt_header_t;
 
 typedef struct virtual_node {
@@ -25,5 +24,16 @@ typedef struct virtual_node {
     uint64_t hash2;
     struct virtual_node *son, *nxt;
 } virtual_node_t;
+
+typedef struct boot_info {
+    uint16_t init_dev;
+    uint16_t screan_pos;
+    uint8_t screan_mode;
+    uint8_t screan_rows;
+    uint8_t screan_mems;
+    uint8_t screan_stat;
+    uint16_t screan_attr;
+    uint16_t loaded_mem;
+} boot_info_t;
 
 #endif // __KERNEL_STRUCT_H__
