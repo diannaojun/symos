@@ -1,12 +1,16 @@
 #include <kernel/init.h>
 
-static void set_idt(idt_element_t *base, void *func, uint8_t attr){
-    base->offset_low = ((size_t)func) & 0x0000ffff;
-    base->offset_mid = (((size_t)func) >> 16) & 0x0000ffff;
-    base->offset_high = (((size_t)func) >> 32) & 0xffffffff;
-    base->selector = 0x18;
-    base->attr = attr;
-    base->ist = 0;
+static void set_idt(idt_element_t *idt, void *func, uint8_t attr){
+    idt->base_low = ((size_t)func) & 0x0000ffff;
+    idt->base_mid = (((size_t)func) >> 16) & 0x0000ffff;
+    idt->base_high = (((size_t)func) >> 32) & 0xffffffff;
+    idt->selector = 0x18;
+    idt->attr = attr;
+    idt->ist = 0;
+    return ;
+}
+static void set_gdt(gdt_element_t *gdt, uint64_t base, uint64_t limit, uint16_t attr){
+    gdt->base_low = base & 0x0000ffff;
     return ;
 }
 
@@ -15,7 +19,7 @@ void init_gdt(void){
 }
 
 void init_idt(void){
-    idt_header_t *idr_hdr = (idt_header_t *)0x7ef0;
+    xdt_header_t *idr_hdr = (xdt_header_t *)0x7ef0;
     idt_element_t *idt_item = (idt_element_t *)0x0000;
     idr_hdr->addr = (size_t)idt_item;
     idr_hdr->size = sizeof(idt_element_t) * 256;
