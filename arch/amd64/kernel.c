@@ -2,9 +2,7 @@
 
 int main (void){
     breakpoint();
-    init_gdt();
-    breakpoint();
-    // init_idt();
+    init_idt();
     breakpoint();
     // init_pic();
     // breakpoint();

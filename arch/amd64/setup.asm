@@ -49,10 +49,8 @@ gdt:
     .code64 gdt_segment 0, 0,\
         sta_prog | sta_prog_x | sta_prog_xwr | sta_level0 | sta_present,\
         stt_64def
+        gdt_null
     ; 64位程序代码段
-    .data64 gdt_segment 0, 0,\
-        sta_prog | sta_prog_d | sta_prog_xwr | sta_level0 | sta_present, 0
-    ; 64位程序数据段
     .end:
 pagings:
     .pml5   paging 0x3000, pag_present | pag_writable, 0            ; 5级分页
