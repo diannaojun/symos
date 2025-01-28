@@ -7,7 +7,7 @@ debug: clean
 	$(MAKE) -C ./arch debug PRJ=$(PRJ)
 
 run: debug
-	- bochsdbg
+	- bochs
 
 clean: *
 ifeq ($(wildcard $(PRJ)/kernel), )

@@ -35,8 +35,6 @@ _start:                                 ; 初始化
     xor ax, ax
     mov ds, ax
     mov es, ax
-    mov fs, ax
-    mov gs, ax
     mov ss, ax
     mov ax, ADDR_SEG_MBR_PROG << 4
     mov sp, ax
@@ -127,8 +125,7 @@ die:
     jmp $
 puts:               ; void puts (si)
     .puts_loop:
-        mov al, [si]
-        inc si
+        lodsb
         test al, al
         jz .puts_ret
         call putc
@@ -140,13 +137,11 @@ putx:               ; void putx (ax)
     .putx_loop:
         push ax
         shr ax, 12
-        mov si, ax
-        cmp al, 0x0a
-        jge .big10
         add al, '0'
-        jmp .show
-        .big10  add al, 'a'-10
-        .show:
+        cmp al, '9'
+        jb .skip
+        add al, 'a'-'0'-10
+        .skip:
             push cx
             call putc
             pop cx

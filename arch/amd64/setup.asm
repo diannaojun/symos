@@ -276,8 +276,7 @@ errors32:
 puts32:
     pushad
     .puts_loop:
-        mov al, [esi]
-        inc esi
+        lodsb
         test al, al
         jz .puts_ret
         call putc32
@@ -326,12 +325,11 @@ putx32:               ; void putx (eax)
     .putx_loop:
         push eax
         shr eax, 28
-        cmp al, 0x0a
-        jge .bigger10
-        mov ah, '0'
-        jmp .less10
-        .bigger10   mov ah, 'a'-10
-        .less10     add al, ah
+        add al, '0'
+        cmp al, '9'
+        jb .skip
+        add al, 'a'-'0'-10
+        .skip:
         call putc32
         pop eax
         shl eax, 4
@@ -374,7 +372,6 @@ build_paging:                   ; 建立临时分页表
         lodsd
         stosd
         loop .loop1
-    
 check_cpuid:                    ; 检查 CPUID 指令支持
     pushfd
     pop eax
@@ -419,12 +416,6 @@ _try64:
     jmp dword 0x0018:_start64   ; 刷新流水线
 bits 64
 _start64:
-    mov ax, 0x0020
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
     mov rsp, 0x7e00
     mov rbp, rsp
     xor rdi, rdi
