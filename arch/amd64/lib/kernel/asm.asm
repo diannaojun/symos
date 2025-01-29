@@ -88,17 +88,7 @@ lidt:
     ret
 lgdt:
     xchg bx, bx
-    push rsi
-    lea rsi, [rel .ret]
-    push rsi
     lgdt [rdi]
-    retf
-    .ret:
-        mov ds, dx
-        mov es, dx
-        mov fs, dx
-        mov gs, dx
-        mov ss, dx
     xchg bx, bx
     ret
 swap_seg:

@@ -14,6 +14,7 @@
     uint64_t rflags, uint64_t rsp, uint64_t ss);
 #define INT_GATE    0x8e
 #define TRAP_GATE   0x8f
+#define SYS_GATE    0xef
 
 #define ATTR_PRESENT    0x80
 #define ATTR_NOT_PRESENT 0x0
@@ -53,10 +54,6 @@ REG_INT(syscall)
 
 #undef REG_INT
 
-
-void init_gdt(void);
-void init_idt(void);
-
 typedef struct {
     uint16_t base_low;
     uint16_t selector;
@@ -65,7 +62,7 @@ typedef struct {
     uint16_t base_mid;
     uint32_t base_high;
     uint32_t _high;
-} idt_element_t;
+} __attribute__((packed)) idt_element_t;
 
 typedef struct {
     uint16_t limit_low;
@@ -76,19 +73,19 @@ typedef struct {
     uint8_t flag:4;
     uint8_t base_high;
     uint32_t _high;
-} gdt_element_t;
+} __attribute__((packed)) gdt_element_t;
 
 typedef struct {
     uint16_t size;
     uint64_t addr;
-} xdt_header_t;
+} __attribute__((packed)) xdt_header_t;
 
 typedef struct virtual_node {
     char name[8];
     uint64_t hash1;
     uint64_t hash2;
     struct virtual_node *son, *nxt;
-} virtual_node_t;
+} __attribute__((packed)) virtual_node_t;
 
 typedef struct boot_info {
     uint16_t init_dev;
@@ -99,6 +96,65 @@ typedef struct boot_info {
     uint8_t screan_stat;
     uint16_t screan_attr;
     uint16_t loaded_mem;
-} boot_info_t;
+} __attribute__((packed)) boot_info_t;
+
+typedef struct mmblk4k {
+    unsigned present:1;
+    unsigned free:1;
+    unsigned level:2;
+    unsigned _:8;
+    uint64_t time:48;
+    unsigned __:4;
+} __attribute__((packed)) mmblk4k_t;
+
+typedef struct mmblk2m {
+    unsigned present:1;
+    unsigned free:1;
+    unsigned level:2;
+    unsigned huge:1;
+    uint8_t avilibal:7;
+    uint64_t addr:52;
+} __attribute__((packed)) mmblk2m_t;
+
+typedef struct mmblk1g {
+    unsigned present:1;
+    unsigned free:1;
+    unsigned level:2;
+    unsigned huge:1;
+    uint8_t avilibal:7;
+    uint64_t addr:52;
+} __attribute__((packed)) mmblk1g_t;
+
+typedef struct mmblk512g {
+    unsigned present:1;
+    unsigned free:1;
+    unsigned level:2;
+    uint8_t avilibal:8;
+    uint64_t addr:52;
+} __attribute__((packed)) mmblk512g_t;
+
+typedef struct mmblk256t {
+    unsigned present:1;
+    unsigned free:1;
+    unsigned level:2;
+    uint8_t avilibal:8;
+    uint64_t addr:52;
+} __attribute__((packed)) mmblk256t_t;
+
+typedef struct mmblk128p {
+    unsigned present:1;
+    unsigned free:1;
+    unsigned level:2;
+    uint8_t avilibal:8;
+    uint64_t addr:52;
+} __attribute__((packed)) mmblk128p_t;
+
+typedef struct mmblk64e {
+    unsigned present:1;
+    unsigned free:1;
+    unsigned level:2;
+    uint8_t avilibal:8;
+    uint64_t addr:52;
+} __attribute__((packed)) mmblk64e_t;
 
 #endif // __KERNEL_STRUCT_H__

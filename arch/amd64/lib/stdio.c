@@ -12,14 +12,12 @@ static char *number(char *str, int64_t x, int base, int flag, int flied_width, i
 	int len;
 	if (flag & __STDIO_UPPER__)
 		digit = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	if (!x) {
-		buffer[0] = '0';
-		len = 1;
-	} else {
+	if (!x) 
+		buffer[0] = '0', len = 1;
+	else {
 		len = 0;
-		if (x < 0) {
-			if (flag & __STDIO_SIGNAL__)
-				*str++ = '-', x = -x, --flied_width;
+		if (x < 0) { if (flag & __STDIO_SIGNAL__)
+			*str++ = '-', x = -x, --flied_width;
 		} else if (flag & __STDIO_SIGNED__)
 			*str++ = '+', --flied_width;
 		for (; x; x /= base)
@@ -27,16 +25,12 @@ static char *number(char *str, int64_t x, int base, int flag, int flied_width, i
 	}
 	if (flag & __STDIO_LEFT__) {
 		flied_width -= len;
-		while (flied_width-- > 0)
-			*str++ = space;
-		while (len--)
-			*str++ = buffer[len];
+		while (flied_width-- > 0) *str++ = space;
+		while (len--) *str++ = buffer[len];
 	} else {
-		while (len--)
-			*str++ = buffer[len];
+		while (len--) *str++ = buffer[len];
 		flied_width -= len;
-		while (flied_width-- > 0)
-			*str++ = space;
+		while (flied_width-- > 0) *str++ = space;
 	}
 	return str;
 }
@@ -53,24 +47,15 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
 		}
 		flag = 0;
 		precision = field_width = -1;
-		qualifier = 0, space = ' ';
+		qualifier = 0;
+		space = ' ';
 	loop:
 		switch (*++fmt) {
-			case '-':
-				flag |= __STDIO_LEFT__;
-				goto loop;
-			case '+':
-				flag |= __STDIO_SIGNED__;
-				goto loop;
-			case '0':
-				space = '0';
-				goto loop;
-			case '#':
-				flag |= __STDIO_EXT__;
-				goto loop;
-			case ' ':
-				space = ' ';
-				goto loop;
+			case '-': flag |= __STDIO_LEFT__; goto loop;
+			case '+': flag |= __STDIO_SIGNED__; goto loop;
+			case '0': space = '0'; goto loop;
+			case '#': flag |= __STDIO_EXT__; goto loop;
+			case ' ': space = ' '; goto loop;
 		}
 		if (isdigit(*fmt))
 			field_width = skip_atoi(&fmt);
@@ -88,8 +73,7 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
 				if (precision < 0)
 					precision = -precision, flag |= __STDIO_LEFT__;
 			}
-			if (precision < 0)
-				precision = 0;
+			if (precision < 0) precision = 0;
 		}
 		if (*fmt == 'l')
 			if (*++fmt == 'l') qualifier = 'L', ++fmt;
@@ -114,63 +98,33 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
 			case 's':
 				temp = va_arg(args, char *);
 				len = strlen(temp);
-				if (flag & __STDIO_LEFT__) {
+				if (flag & __STDIO_LEFT__)
 					while (*temp)
 						*str++ = *temp++;
-					if (field_width > len) {
-						field_width -= len;
-						while (field_width--)
-							*str++ = space;
-					}
-				} else {
-					if (field_width > len) {
-						field_width -= len;
-						while (field_width--)
-							*str++ = space;
-					}
-					while (*temp)
-						*str++ = *temp++;
+				if (field_width > len) {
+					field_width -= len;
+					while (field_width--)
+						*str++ = space;
 				}
+				if (!(flag & __STDIO_LEFT__))
+					while (*temp)
+						*str++ = *temp++;
 				break;
 			case 'd':
-			case 'i':
-                len = 10;
-                flag |= __STDIO_SIGNAL__ | __STDIO_NUMBER__;
-				break;
-			case 'u':
-                len = 10;
-                flag |= __STDIO_NUMBER__;
-				break;
-			case 'o':
-                len = 8;
-                flag |= __STDIO_NUMBER__;
-				break;
-			case 'x':
-                len = 16;
-                flag |= __STDIO_NUMBER__;
-				break;
-			case 'b':
-                len = 2;
-                flag |= __STDIO_NUMBER__;
-				break;
-			default:
-				*str++ = *fmt;
-				break;
+			case 'i': len = 10, flag |= __STDIO_SIGNAL__ | __STDIO_NUMBER__; break;
+			case 'u': len = 10, flag |= __STDIO_NUMBER__; break;
+			case 'o': len = 8, flag |= __STDIO_NUMBER__; break;
+			case 'x': len = 16, flag |= __STDIO_NUMBER__; break;
+			case 'b': len = 2, flag |= __STDIO_NUMBER__; break;
+			default: *str++ = *fmt; break;
 		}
         if(flag & __STDIO_NUMBER__){
 			switch (qualifier) {
-				case 'H':
-					num = va_arg(args, int8_t);
-					break;
-				case 'h':
-					num = va_arg(args, int16_t);
-					break;
-				case 'l':
-				case 'L':
-					num = va_arg(args, int64_t);
-					break;
-				default:
-					num = va_arg(args, int32_t);
+				case 'H': num = va_arg(args, char); break;
+				case 'h': num = va_arg(args, short); break;
+				case 'l': num = va_arg(args, long); break;
+				case 'L': num = va_arg(args, long long); break;
+				default: num = va_arg(args, int);
 			}
             str = number(str, num, len, flag, field_width, precision, space);
         }

@@ -11,7 +11,7 @@ void breakpoint(void);
 void swap_seg(uint64_t);
 void swap_reg(uint64_t);
 void lidt(void *ptr);
-void lgdt(void *ptr, uint64_t cs, uint64_t ds);
+void lgdt(void *ptr);
 void hlt(void);
 void sti(void);
 void cli(void);

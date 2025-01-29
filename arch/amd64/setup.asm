@@ -65,7 +65,7 @@ pagings:
         paging 0xa00000, pag_present | pag_writable | pag_huge, 0
         paging 0xc00000, pag_present | pag_writable | pag_huge, 0
         paging 0xe00000, pag_present | pag_writable | pag_huge, 0
-gdt_info:   ; 32位全局段描述符表标识
+gdt_info:   ; 全局段描述符表标识
     dw gdt.end - gdt
     dd gdt
 idt_info:   ; 32位空中断门描述符表标识
@@ -81,11 +81,11 @@ message:
     .textregb   db " EBX=", 0
 
 _start:
-    cli
-    xor ax, ax
+    cli                         ; 禁止中断
+    xor ax, ax                  ; 段寄存器置0
     mov ds, ax
     mov es, ax
-bootinfo:
+bootinfo:                       ; 通过 BIOS 获取基本参数
     mov ah, 0x0f
     int 0x10
     mov [0x7e04], ax
@@ -103,73 +103,73 @@ bootinfo:
     xor ah, ah
     shl ax, 1
     mov word [0x7e02], ax
-set_a20:                        ; 設定 A20
+set_a20:                        ; 设定 A20
     call test_A20
-; 方法 1: BIOS 中斷
-    ; 支持 A20 ?
-    mov ax, 0x2403
-    int 0x15
-    jb .A20_ns
-    test ah, ah
-    jnz .A20_ns
-    ; 嘗試開啓 A20
-    mov ax, 0x2402
-    int 0x15
-    jb .A20_failed
-    test ah, ah
-    jnz .A20_failed
-    ; 檢驗是否開啓
-    cmp al, 1
-    jz .A20_activated
-    mov ax, 0x2401
-    int 0x15
-    jb .A20_failed
-    test ah, ah
-    jnz .A20_failed
-    .A20_activated:
+    ; 方法 1: BIOS 中斷
+        ; 支持 A20 ?
+        mov ax, 0x2403
+        int 0x15
+        jb .A20_ns
+        test ah, ah
+        jnz .A20_ns
+        ; 嘗試開啓 A20
+        mov ax, 0x2402
+        int 0x15
+        jb .A20_failed
+        test ah, ah
+        jnz .A20_failed
+        ; 檢驗是否開啓
+        cmp al, 1
+        jz .A20_activated
+        mov ax, 0x2401
+        int 0x15
+        jb .A20_failed
+        test ah, ah
+        jnz .A20_failed
+        .A20_activated:
+            call test_A20
+        .A20_failed:
+    ; 方法 2: 鍵盤控制器 8042
+        call wait_8042_2
+        mov al, 0xad
+        out 0x64, al
+        call wait_8042_2
+        mov al, 0xd0
+        out 0x64, al
+        call wait_8042_1
+        in al, 0x60
+        push ax
+        call wait_8042_2
+        mov al, 0xd1
+        out 0x64, al
+        call wait_8042_2
+        pop ax
+        or al, 2
+        out 0x60, al
+        call wait_8042_2
+        mov al, 0xae
+        out 0x64, al
+        call wait_8042_2
+        sti
         call test_A20
-    .A20_failed:
-; 方法 2: 鍵盤控制器 8042
-    call wait_8042_2
-    mov al, 0xad
-    out 0x64, al
-    call wait_8042_2
-    mov al, 0xd0
-    out 0x64, al
-    call wait_8042_1
-    in al, 0x60
-    push ax
-    call wait_8042_2
-    mov al, 0xd1
-    out 0x64, al
-    call wait_8042_2
-    pop ax
-    or al, 2
-    out 0x60, al
-    call wait_8042_2
-    mov al, 0xae
-    out 0x64, al
-    call wait_8042_2
-    sti
-    call test_A20
-; 方法 3: 0xee 端口
-    in al, 0xee
-    call test_A20
-; 方法 4: 快速 A20 門
-    in al, 0x92
-    test al, 2
-    jnz .skip92
-    or al, 2
-    and al, 0xfe
-    out 0x92, al
-    .skip92:
+    ; 方法 3: 0xee 端口
+        in al, 0xee
         call test_A20
-; 无法开启 A20, 报错
-    .A20_ns:
-        mov ax, 0x0007
-        push word [0x7c20]
-        push word [0x7c22]
-        retf
+    ; 方法 4: 快速 A20 門
+        in al, 0x92
+        test al, 2
+        jnz .skip92
+        or al, 2
+        and al, 0xfe
+        out 0x92, al
+        .skip92:
+            call test_A20
+    ; 无法开启 A20, 报错
+        .A20_ns:
+            mov ax, 0x0007
+            push word [0x7c20]
+            push word [0x7c22]
+            retf
 wait_8042_1:    ; 等待函数 1
     call step2
     in al, 0x64
@@ -184,12 +184,13 @@ wait_8042_2:    ; 等待函数 2
     ret
 step2:          ; 等待函数 3
     nop
-    jmp $+2
+    jmp $ + 2
     nop
-    jmp $+2
+    jmp $ + 2
     nop
     ret
 test_A20:       ; 测试 A20
+    ; 尝试写 1M 位置
     pusha
     xor ax, ax
     xor si, si
@@ -237,8 +238,8 @@ set_8259:       ; 8259 中断控制芯片编程
 set_description_table:          ; 設定描述符表
     mov ax, ADDR_SEG_SET_PROG
     mov ds, ax
-    lgdt [ds:gdt_info - $$]
-    lidt [ds:idt_info - $$]
+    lgdt [gdt_info - $$]
+    lidt [idt_info - $$]
 set_cr0_PE:                     ; 开启保护模式
     mov eax, cr0
     or eax, 0x00000001          ; 置PE位
@@ -328,7 +329,7 @@ putx32:               ; void putx (eax)
         add al, '0'
         cmp al, '9'
         jb .skip
-        add al, 'a'-'0'-10
+        add al, ('a' - '0' - 10)
         .skip:
         call putc32
         pop eax
@@ -348,7 +349,7 @@ _start32:
     xor edi, edi
     xor esi, esi
 clean_low16k:                   ; 清空低 24kb 地址
-    lea edi, [0]
+    xor edi, edi
     mov ecx, 0x1800
     xor eax, eax
     rep stosd
@@ -365,18 +366,32 @@ build_paging:                   ; 建立临时分页表
     mov ebx, [pagings.pdpt + 4]
     mov [0x4000], eax
     mov [0x4004], ebx
-    mov ecx, 8*8/4
+    mov ecx, (8 * 8 / 4)
     lea esi, [pagings.pd]
     lea edi, [0x5000]
     .loop1:
         lodsd
         stosd
         loop .loop1
+    xor ecx, ecx
+    mov esi, [gdt_info + 2]
+    mov cx, [gdt_info]
+    mov edi, 0x1000
+    shr cx, 2
+    .loop2:
+        lodsd
+        stosd
+        loop .loop2
+    mov cx, [gdt_info]
+    mov ebx,  [gdt_info + 2]
+    mov [0x7ef0], cx
+    mov [0x7ef2], ebx
+    lgdt [0x7ef0]
 check_cpuid:                    ; 检查 CPUID 指令支持
     pushfd
     pop eax
     mov ecx, eax
-    xor eax, 1 << 21
+    xor eax, (1 << 21)
     push eax
     popfd
     pushfd
@@ -394,7 +409,7 @@ check_long_mode:                ; 检查 Long-Mode 标志位
     jb errors32
     mov eax, 0x80000001
     cpuid
-    and edx, 1 << 29
+    and edx, (1 << 29)
     test edx, edx
     mov esi, 0x00000006
     jz errors32

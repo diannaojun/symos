@@ -9,30 +9,6 @@ static void set_idt(idt_element_t *idt, void *func, uint8_t attr){
     idt->ist = 0;
     return ;
 }
-static void set_gdt(gdt_element_t *gdt, uint64_t base, uint64_t limit, uint16_t attr){
-    gdt->base_low = base & 0x0000ffff;
-    gdt->base_mid = ((base) >> 16) & 0x0000ffff;
-    gdt->base_high = ((base) >> 32) & 0xffffffff;
-    gdt->limit_low = limit & 0x0000ffff;
-    gdt->limit_high = ((limit) >> 16) & 0x0000000f;
-    gdt->attr = attr & 0x00ff;
-    gdt->flag = ((attr) >> 16) & 0x000f;
-    return ;
-}
-
-void init_gdt(void){
-    xdt_header_t *gdr_hdr = (xdt_header_t *)0x7ef0;
-    gdt_element_t *gdt_item = (gdt_element_t *)0x1000;
-    gdr_hdr->addr = (size_t) gdt_item;
-    gdr_hdr->size = sizeof(gdt_element_t) * 5;
-    set_gdt(gdt_item + 0, 0, 0, 0);
-    set_gdt(gdt_item + 1, 0, 0xffffffff, ATTR_PRESENT | ATTR_LEVEL0 | ATTR_PROGRAM | ATTR_CODE | ATTR_WR_XR | FLAG_4KB | FLAG_32D);
-    set_gdt(gdt_item + 2, 0, 0xffffffff, ATTR_PRESENT | ATTR_LEVEL0 | ATTR_PROGRAM | ATTR_DATA | ATTR_WR_XR | FLAG_4KB | FLAG_32D);
-    set_gdt(gdt_item + 3, 0, 0, ATTR_PRESENT | ATTR_LEVEL0 | ATTR_PROGRAM | ATTR_CODE | ATTR_WR_XR | FLAG_4KB | FLAG_64D);
-    set_gdt(gdt_item + 4, 0, 0, ATTR_PRESENT | ATTR_LEVEL0 | ATTR_PROGRAM | ATTR_DATA | ATTR_WR_XR | FLAG_4KB | FLAG_64D);
-    lgdt(gdr_hdr, sizeof(gdt_element_t) * 3, sizeof(gdt_element_t) * 4);
-    return ;
-}
 
 void init_idt(void){
     xdt_header_t *idr_hdr = (xdt_header_t *)0x7ee0;
@@ -41,10 +17,10 @@ void init_idt(void){
     idr_hdr->size = sizeof(idt_element_t) * 256;
     set_idt(idt_item + 0, devide_error, TRAP_GATE);
     set_idt(idt_item + 1, debug, TRAP_GATE);
-    set_idt(idt_item + 2, nmi, TRAP_GATE);
-    set_idt(idt_item + 3, break_point, INT_GATE);
-    set_idt(idt_item + 4, bounds, INT_GATE);
-    set_idt(idt_item + 5, over_flow, INT_GATE);
+    set_idt(idt_item + 2, nmi, INT_GATE);
+    set_idt(idt_item + 3, break_point, SYS_GATE);
+    set_idt(idt_item + 4, bounds, SYS_GATE);
+    set_idt(idt_item + 5, over_flow, SYS_GATE);
     set_idt(idt_item + 6, invalid_opcode, TRAP_GATE);
     set_idt(idt_item + 7, device_not_available, TRAP_GATE);
     set_idt(idt_item + 8, double_fault, TRAP_GATE);
@@ -54,198 +30,29 @@ void init_idt(void){
     set_idt(idt_item + 12, stack_segment, TRAP_GATE);
     set_idt(idt_item + 13, general_protection, TRAP_GATE);
     set_idt(idt_item + 14, page_fault, TRAP_GATE);
-    set_idt(idt_item + 15, reserved, TRAP_GATE);
+    // set_idt(idt_item + 15, reserved, TRAP_GATE);
     set_idt(idt_item + 16, coprocessor_error, TRAP_GATE);
-    set_idt(idt_item + 0x80, syscall, TRAP_GATE);
+    set_idt(idt_item + 0x80, syscall, SYS_GATE);
     lidt(idr_hdr);
     return ;
 }
 
-void do_devide_error(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcxA, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_debug(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_nmi(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_break_point(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        breakpoint();
-        return ;
-}
-void do_bounds(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_over_flow(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_invalid_opcode(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_device_not_available(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_double_fault(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_coprocessor_segment_overrun(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_invalid_tss(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_segment_not_available(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_stack_segment(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_general_protection(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_page_fault(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_coprocessor_error(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
-}
-void do_syscall(uint64_t rdi, uint64_t rsi,
-    uint64_t rdx, uint64_t rcx, uint64_t r8,
-    uint64_t r9, uint64_t r10, uint64_t r11,
-    uint64_t r12, uint64_t r13, uint64_t r14,
-    uint64_t r15, uint64_t rax, uint64_t rbx,
-    uint64_t rbp, uint64_t tr, uint64_t ds,
-    uint64_t es, uint64_t fs, uint64_t gs,
-    uint64_t err, uint64_t rip, uint64_t cs,
-    uint64_t rflags, uint64_t rsp, uint64_t ss){
-        return ;
+
+
+/*
+00000   IDT
+01000   GDT
+02000   PML5
+03000   PML4
+04000   PDPT
+05000   PD
+06000   PT
+07000   STACK / MBR
+08000   LODER
+*/
+
+void init_mm(void){
+    static mmblk64e_t *m64e = (mmblk64e_t *)0x100000;
+    m64e->addr = 0x0000000000000000;
+    return ;
 }

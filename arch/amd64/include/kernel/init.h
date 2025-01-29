@@ -16,4 +16,7 @@
 #define MEM_ADDR ((uint16_t *)0x7e0a)
 #define BAS_ADDR 0xb8000
 
+void init_idt(void);
+void init_mm(void);
+
 #endif // __KERNEL_INIT_H__

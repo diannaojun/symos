@@ -56,7 +56,7 @@ invalid_opcode:
     push do_invalid_opcode
     jmp errno_handle
 device_not_available:
-    push qword 6
+    push qword 7
     push do_device_not_available
     jmp errno_handle
 double_fault:
@@ -86,6 +86,7 @@ reserved:
     push do_coprocessor_segment_overrun
     jmp errno_handle
 coprocessor_error:
+    push qword 16
     push do_coprocessor_error
     jmp errno_handle
 irq13:
@@ -141,8 +142,8 @@ errno_handle:
     mov fs, ax
     mov rax, [rsp + 48]     ; err - - - - tr rbp rbx rax
     mov gs, ax
-    pop rax
-    pop rbx
-    pop rbp
-    add rsp, 72
-    iret
+    pop rax                 ; err - - - - tr rbp rbx
+    pop rbx                 ; err - - - - tr rbp
+    pop rbp                 ; err - - - - tr
+    add rsp, 48             ;
+    iretq
