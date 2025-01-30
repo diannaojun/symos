@@ -25,9 +25,9 @@ boot: archive bin kernel
 
 bin: mbr.bin setup.bin sdmp.bin
 
-kernel: font
+kernel:
 	$(CC) kernel.c -c -o $(TEMP)/kernel.elf -m64 $(CFLAGS)
-	$(LD) -m elf_x86_64 $(TEMP)/kernel.elf $(TEMP)/kernelfont.f.o \
+	$(LD) -m elf_x86_64 $(TEMP)/kernel.elf \
 		-lkc -L$(CURDIR)/lib \
 		-T ./kernel.lds \
 		--oformat binary -o $(TEMP)/kernel.bin
@@ -44,5 +44,3 @@ sdmp.bin: sdmp.asm
 archive:
 	$(MAKE) -C ./lib archive AS=$(AS) CC=$(CC) AR=$(AR)\
 		PRJ=$(PRJ) TEMP=$(TEMP) "CFLAGS=$(CFLAGS)"
-font:
-	$(AS) $(PRJ)/extr/kernelfont.asm -o $(TEMP)/kernelfont.f.o -f elf64

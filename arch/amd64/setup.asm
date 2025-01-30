@@ -376,14 +376,14 @@ build_paging:                   ; 建立临时分页表
     xor ecx, ecx
     mov esi, [gdt_info + 2]
     mov cx, [gdt_info]
-    mov edi, 0x1000
+    mov edi, 0x0000
     shr cx, 2
     .loop2:
         lodsd
         stosd
         loop .loop2
     mov cx, [gdt_info]
-    mov ebx,  [gdt_info + 2]
+    mov ebx, 0x0000
     mov [0x7ef0], cx
     mov [0x7ef2], ebx
     lgdt [0x7ef0]
