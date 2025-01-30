@@ -98,63 +98,67 @@ typedef struct boot_info {
     uint16_t loaded_mem;
 } __attribute__((packed)) boot_info_t;
 
+#define MMBLK_ABSENT    0x0 /*內存頁面不存在（大頁面、原子項）*/
+#define MMBLK_RESERVED  0x1 /*內存頁面保留（大頁面、原子項）*/
+#define MMBLK_PRESENT   0x2 /*內存頁面空閒（大頁面、原子項）*/
+#define MMBLK_FULL      0x3 /*內存頁面滿（非原子項）*/
+#define MMBLK_USED0     0x4 /*內存頁面被0環佔用（大頁面、原子項）*/
+#define MMBLK_USED1     0x5 /*內存頁面被1環佔用（大頁面、原子項）*/
+#define MMBLK_USED2     0x6 /*內存頁面被2環佔用（大頁面、原子項）*/
+#define MMBLK_USED3     0x7 /*內存頁面被3環佔用（大頁面、原子項）*/
 typedef struct mmblk4k {
-    unsigned present:1;
-    unsigned free:1;
-    unsigned level:2;
-    unsigned _:8;
-    uint64_t time:48;
-    unsigned __:4;
+    // 4KB頁面項（原子項）
+    unsigned status:3;  // 狀態
+    unsigned _:9;       // 忽略
+    uint64_t time:52;   // 分配時間戳
 } __attribute__((packed)) mmblk4k_t;
+// sizeof = 8
 
 typedef struct mmblk2m {
-    unsigned present:1;
-    unsigned free:1;
-    unsigned level:2;
-    unsigned huge:1;
-    uint8_t avilibal:7;
-    uint64_t addr:52;
+    unsigned status:3;  // 狀態
+    uint16_t avalable:9;// 可用數量
+    uint64_t addr:52;   // 下級頁表起始地址 / 分配時間戳（大頁面） 
 } __attribute__((packed)) mmblk2m_t;
+// sizeof = 8
 
 typedef struct mmblk1g {
-    unsigned present:1;
-    unsigned free:1;
-    unsigned level:2;
-    unsigned huge:1;
-    uint8_t avilibal:7;
-    uint64_t addr:52;
+    unsigned status:3;  // 狀態
+    uint16_t avalable:9;// 可用數量
+    uint64_t addr:52;   // 下級頁表起始地址 / 分配時間戳（大頁面）
 } __attribute__((packed)) mmblk1g_t;
+// sizeof = 8
 
 typedef struct mmblk512g {
-    unsigned present:1;
-    unsigned free:1;
-    unsigned level:2;
-    uint8_t avilibal:8;
-    uint64_t addr:52;
+    // 大頁面不可用
+    unsigned status:3;  // 狀態
+    uint16_t avalable:9;// 可用數量
+    uint64_t addr:52;   // 下級頁表起始地址 / 分配時間戳（大頁面）
 } __attribute__((packed)) mmblk512g_t;
+// sizeof = 8
 
 typedef struct mmblk256t {
-    unsigned present:1;
-    unsigned free:1;
-    unsigned level:2;
-    uint8_t avilibal:8;
-    uint64_t addr:52;
+    // 大頁面不可用
+    unsigned status:3;  // 狀態
+    uint16_t avalable:9;// 可用數量
+    uint64_t addr:52;   // 下級頁表起始地址 / 分配時間戳（大頁面）
 } __attribute__((packed)) mmblk256t_t;
+// sizeof = 8
 
 typedef struct mmblk128p {
-    unsigned present:1;
-    unsigned free:1;
-    unsigned level:2;
-    uint8_t avilibal:8;
-    uint64_t addr:52;
+    // 大頁面不可用
+    unsigned status:3;  // 狀態
+    uint16_t avalable:9;// 可用數量
+    uint64_t addr:52;   // 下級頁表起始地址 / 分配時間戳（大頁面）
 } __attribute__((packed)) mmblk128p_t;
+// sizeof = 8
 
 typedef struct mmblk64e {
-    unsigned present:1;
-    unsigned free:1;
-    unsigned level:2;
-    uint8_t avilibal:8;
-    uint64_t addr:52;
+    // 大頁面不可用
+    unsigned status:3;  // 狀態
+    uint16_t avalable:9;// 可用數量
+    uint64_t addr:52;   // 下級頁表起始地址 / 分配時間戳（大頁面）
 } __attribute__((packed)) mmblk64e_t;
+// sizeof = 8
+
 
 #endif // __KERNEL_STRUCT_H__

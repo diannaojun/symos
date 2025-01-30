@@ -1,7 +1,7 @@
 TEMP	:= $(CURDIR)/build
 CFLAGS	:= -I$(CURDIR)/include -L$(CURDIR)/lib -nostdinc -nostdlib -static\
 	-Wall -Wno-format -Wno-unused -Wno-unused-parameter -ffunction-sections \
-	-ffreestanding -fno-builtin -fno-pie
+	-ffreestanding -fno-builtin -fno-pie -O3
 
 build: clean boot
 
@@ -25,11 +25,12 @@ boot: archive bin kernel
 
 bin: mbr.bin setup.bin sdmp.bin
 
-kernel:
+kernel: font
 	$(CC) kernel.c -c -o $(TEMP)/kernel.elf -m64 $(CFLAGS)
-	# $(CC) kernel.c -S -o $(TEMP)/kernel.s -m64 $(CFLAGS) -fverbose-asm -masm=intel
-	$(LD) -m elf_x86_64 $(TEMP)/kernel.elf -T ./kernel.lds \
-		--oformat binary -o $(TEMP)/kernel.bin -lkc -L$(CURDIR)/lib
+	$(LD) -m elf_x86_64 $(TEMP)/kernel.elf $(TEMP)/kernelfont.f.o \
+		-lkc -L$(CURDIR)/lib \
+		-T ./kernel.lds \
+		--oformat binary -o $(TEMP)/kernel.bin
 
 setup.bin: setup.asm
 	$(AS) setup.asm -o $(TEMP)/setup.bin -f bin -l $(TEMP)/setup.lst
@@ -43,3 +44,5 @@ sdmp.bin: sdmp.asm
 archive:
 	$(MAKE) -C ./lib archive AS=$(AS) CC=$(CC) AR=$(AR)\
 		PRJ=$(PRJ) TEMP=$(TEMP) "CFLAGS=$(CFLAGS)"
+font:
+	$(AS) $(PRJ)/extr/kernelfont.asm -o $(TEMP)/kernelfont.f.o -f elf64
