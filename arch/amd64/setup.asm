@@ -2,21 +2,9 @@
 org ADDR_SEG_SET_PROG << 4
 bits 16
 
-; ------ 00000
-; IDT
-; ------ 01000
-; GDT
-; ------ 02000
-; PML5
-; ------ 03000
-; PML4
-; ------ 04000
-; PDPT
-; ------ 05000
-; PD
-; ------ 06000
+; ------ 000000
 ; STACK
-; ------ 07e00
+; ------ 007e00
 ; BOOT INFORMATINS
 ;   0   2   BOOT DEV
 ;   2   2   SCREAN POS
@@ -25,14 +13,34 @@ bits 16
 ;   6   1   VGA MEM CNT
 ;   7   1   VGA STAT
 ;   8   2   VGA ATTR
-;   A   2   MEM
+;   A   1   MEMTPYE
 ;  e0   6   IDT HDR
 ;  f0   6   GDT HDR
-; ------ 08000
+; ------ 008000
 ; EMPTY
-; ------ 9f000
+; ------ 09f000
 ; SETUP
-; ------ a0000
+; ------ 0a0000
+; ...
+; ------ 100000
+; MEM_MAP
+; ------ 101400
+; ...
+; ------ 110000
+; IDT
+; ------ 111000
+; GDT
+; ------ 112000
+; PML5
+; ------ 113000
+; PML4
+; ------ 114000
+; PDPT
+; ------ 115000
+; PD
+; ------ 116000
+; FREEPAGE
+; ------ 11b000
 
 jmp _start
 
@@ -53,9 +61,9 @@ gdt:
     ; 64位程序代码段
     .end:
 pagings:
-    .pml5   paging 0x3000, pag_present | pag_writable, 0            ; 5级分页
-    .pml4   paging 0x4000, pag_present | pag_writable, 0            ; 4级分页
-    .pdpt   paging 0x5000, pag_present | pag_writable, 0            ; 3级分页
+    .pml5   paging 0x113000, pag_present | pag_writable, 0            ; 5级分页
+    .pml4   paging 0x114000, pag_present | pag_writable, 0            ; 4级分页
+    .pdpt   paging 0x115000, pag_present | pag_writable, 0            ; 3级分页
     .pd:    ; 2级大分页 2MB 映射低 16mb
         paging 0x000000, pag_present | pag_writable | pag_huge, 0
         paging 0x200000, pag_present | pag_writable | pag_huge, 0
@@ -85,24 +93,6 @@ _start:
     xor ax, ax                  ; 段寄存器置0
     mov ds, ax
     mov es, ax
-bootinfo:                       ; 通过 BIOS 获取基本参数
-    mov ah, 0x0f
-    int 0x10
-    mov [0x7e04], ax
-    mov ah, 0x12
-    mov bl, 0x10
-    int 0x10
-    mov [0x7e06], bx
-    mov [0x7e08], cx
-    mov ah, 0x88
-    int 0x15
-    add ax, 1024
-    mov [0x7e0a], ax
-    mov ax, [0x7e04]
-    xchg al, ah
-    xor ah, ah
-    shl ax, 1
-    mov word [0x7e02], ax
 set_a20:                        ; 设定 A20
     call test_A20
     ; 方法 1: BIOS 中斷
@@ -235,6 +225,77 @@ set_8259:       ; 8259 中断控制芯片编程
     call step2
     out 0xa1, al
     call step2
+bootinfo:                       ; 通过 BIOS 获取基本参数
+    ; 屏幕信息
+    mov ah, 0x0f
+    int 0x10
+    mov [0x7e04], ax            ; VGEA 模式 / 屏幕行数
+    xchg al, ah
+    xor ah, ah
+    shl ax, 1
+    mov word [0x7e02], ax       ; 屏幕位置
+
+    mov ah, 0x12
+    mov bl, 0x10
+    int 0x10
+    mov [0x7e06], bx            ; VGA 内存数 / VGA 状态
+    mov [0x7e08], cx            ; VGA 属性
+
+    ; 内存信息
+    .e820x:
+        mov di, 0x10
+        mov ax, 0xffff
+        mov es, ax
+        mov byte [0x7e0a], 24
+        mov eax, 0xe820
+        mov ecx, 24
+        mov edx, 0x534d4150
+        xor ebx, ebx
+        int 0x15
+        jc .e801
+        cmp ecx, 24
+        jne .e820
+        .e820x.loop:
+            test eax, eax
+            jz set_description_table
+            add di, cx
+            cmp ebx, 0x534d4150
+            jne set_description_table
+            int 0x15
+            jmp .e820x.loop
+    .e820:
+        mov byte [0x7e0a], 20
+        .e820.loop:
+            test eax, eax
+            jz set_description_table
+            add di, cx
+            cmp ebx, 0x534d4150
+            jne set_description_table
+            int 0x15
+            jmp .e820.loop
+        jmp set_description_table
+    .e801:
+        mov byte [0x7e0a], 01
+        mov ax, 0xe801
+        int 0x15
+        jc .88
+        shl bx, 6
+        shr dx, 10
+        mov cx, bx
+        add bx, ax
+        jno .nover
+        inc dx
+        .nover:
+            mov [es:di], bx
+            add di, 2
+            mov [es:di], dx
+        jmp set_description_table
+    .88:
+        mov byte [0x7e0a], 0x88
+        mov ah, 0x88
+        int 0x15
+        add ax, 1024
+        mov [es:di], ax
 set_description_table:          ; 設定描述符表
     mov ax, ADDR_SEG_SET_PROG
     mov ds, ax
@@ -348,44 +409,39 @@ _start32:
     mov ebp, esp
     xor edi, edi
     xor esi, esi
-clean_low16k:                   ; 清空低 24kb 地址
-    xor edi, edi
-    mov ecx, 0x1800
-    xor eax, eax
-    rep stosd
 build_paging:                   ; 建立临时分页表
     mov eax, [pagings.pml5]
     mov ebx, [pagings.pml5 + 4]
-    mov [0x2000], eax
-    mov [0x2004], ebx
+    mov [0x112000], eax
+    mov [0x112004], ebx
     mov eax, [pagings.pml4]
     mov ebx, [pagings.pml4 + 4]
-    mov [0x3000], eax
-    mov [0x3004], ebx
+    mov [0x113000], eax
+    mov [0x113004], ebx
     mov eax, [pagings.pdpt]
     mov ebx, [pagings.pdpt + 4]
-    mov [0x4000], eax
-    mov [0x4004], ebx
+    mov [0x114000], eax
+    mov [0x114004], ebx
     mov ecx, (8 * 8 / 4)
     lea esi, [pagings.pd]
-    lea edi, [0x5000]
+    lea edi, [0x115000]
     .loop1:
         lodsd
         stosd
         loop .loop1
     xor ecx, ecx
-    mov esi, [gdt_info + 2]
+    mov ebx, 0x111000
     mov cx, [gdt_info]
-    mov edi, 0x0000
+    mov esi, [gdt_info + 2]
+    mov edi, ebx
     shr cx, 2
     .loop2:
         lodsd
         stosd
         loop .loop2
     mov cx, [gdt_info]
-    mov ebx, 0x0000
-    mov [0x7ef0], cx
     mov [0x7ef2], ebx
+    mov [0x7ef0], cx
     lgdt [0x7ef0]
 check_cpuid:                    ; 检查 CPUID 指令支持
     pushfd
@@ -419,7 +475,7 @@ _try64:
     mov eax, cr4                ; 开启物理地址扩展 & LA57
     or eax, 0x00000120  ; 0x00000120
     mov cr4, eax
-    mov eax, 0x00003000 ; 0x00001000    ; 设置分页地址
+    mov eax, 0x00113000 ; 0x00001000    ; 设置分页地址
     mov cr3, eax
     mov ecx, 0xc0000080         ; 开启长模式
     rdmsr

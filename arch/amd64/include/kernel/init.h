@@ -21,7 +21,7 @@ typedef struct boot_info {
     uint8_t screan_mems;
     uint8_t screan_stat;
     uint16_t screan_attr;
-    uint16_t loaded_mem;
+    uint8_t loaded_mem;
 } __attribute__((packed)) boot_info_t;
 
 void init_idt(void);

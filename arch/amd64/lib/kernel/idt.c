@@ -14,7 +14,7 @@ static void set_idt(idt_element_t *idt, void *func, uint8_t attr){
 
 void init_idt(void){
     xdt_header_t *idr_hdr = (xdt_header_t *)0x7ee0;
-    idt_element_t *idt_item = (idt_element_t *)0x1000;
+    idt_element_t *idt_item = (idt_element_t *)0x100000;
     idr_hdr->addr = (size_t)idt_item;
     idr_hdr->size = sizeof(idt_element_t) * 256;
     set_idt(idt_item + 0, devide_error, TRAP_GATE);

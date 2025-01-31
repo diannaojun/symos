@@ -6,7 +6,7 @@ AR 		:=	ar
 
 build: font amd64_build
 
-debug:
+debug: font
 	$(MAKE) -C ./amd64 debug AS=$(AS) PRJ=$(PRJ) CC=$(CC) AR=$(AR)
 
 amd64_build:
@@ -14,7 +14,7 @@ amd64_build:
 
 clean:
 	$(MAKE) -C ./amd64 clean PRJ=$(PRJ)
-	- rm $(PRJ)/extra/*.fnt
+	- rm $(PRJ)/fs/kernel/*.fnt
 
 font:
-	$(AS) $(PRJ)/extra/kernelfont.asm -o $(PRJ)/extra/kernelfont.fnt -f bin
+	$(AS) $(PRJ)/fs/kernel/kernel.fnt.asm -o $(PRJ)/fs/kernel/kernel.fnt -f bin
